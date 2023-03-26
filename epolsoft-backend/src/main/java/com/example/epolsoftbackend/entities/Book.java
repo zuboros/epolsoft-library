@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,7 +23,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{2,100}$")
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -34,9 +36,11 @@ public class Book {
     private User userId;
 
     @Column(name = "description")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{0,100}$")
     private String description;
 
     @Column(name = "short_description")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{0,100}$")
     private String shortDescription;
 
     @Column(name = "file")

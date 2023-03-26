@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
@@ -21,6 +22,7 @@ public class User {
     private long id;
 
     @Column(name = "name", nullable = false)
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я.]{5,100}$")
     private String name;
 
     @OneToOne(mappedBy = "userId")
