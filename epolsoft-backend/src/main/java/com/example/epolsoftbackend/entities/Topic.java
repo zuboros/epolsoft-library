@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.Set;
-
 
 @Getter
 @Setter
@@ -24,6 +24,7 @@ public class Topic implements Serializable{
     private long id;
 
     @Column(name = "name", nullable = false)
+    @Pattern(regexp = "^[a-zA-zа-яА-Я]{4,100}$")
     private String name;
 
     @OneToMany(mappedBy = "topicId")

@@ -1,10 +1,10 @@
 package com.example.epolsoftbackend.repositories;
 
-import org.apache.tomcat.jni.Library;
+import com.example.epolsoftbackend.entities.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LibraryRepository extends JpaRepository<Library, Long> {
+public interface BookRepository extends JpaRepository<Book, Long> {
 
 }
