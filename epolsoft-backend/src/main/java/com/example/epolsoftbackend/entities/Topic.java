@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.entities;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "topic")
-public class Topic{
+public class Topic implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
