@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "book")
 public class Book implements Serializable {
     @Id
-    @Column(nullable = false)
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
