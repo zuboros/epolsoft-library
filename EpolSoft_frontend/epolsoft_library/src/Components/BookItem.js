@@ -6,8 +6,8 @@ const BookItem = ({ id, ...fields }) => {
 
    return (
       <li>
-         <p><span>title: {fields.title}</span></p>
          <p><span>userId: {fields.userId}</span></p>
+         <p><span>title: {fields.title}</span></p>
          <p><span>body: {fields.body}</span></p>
          <p><span onClick={() => dispatch(deleteBook(id))}>&times;</span></p>
       </li>

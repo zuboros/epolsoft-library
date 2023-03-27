@@ -1,18 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axios } from "../axios"
 
 export const fetchBooks = createAsyncThunk(
    'books/fetchBooks',
    async function (_, { rejectWithValue }) {
       try {
 
-         const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=10');
+         const response = await axios.get('?_limit=10');
 
-         if (!response.ok) {
+         if (!response.status === 200) {
             throw new Error('Can\'t extract any elements');
          }
 
-         const data = await response.json();
-         console.log(data);
+         const data = await response.data;
          return data;
 
       } catch (error) {
@@ -25,12 +25,10 @@ export const deleteBook = createAsyncThunk(
    'book/deleteBook',
    async function (id, { rejectWithValue, dispatch }) {
       try {
-         const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
-            method: 'DELETE',
-         });
+         const response = await axios.delete(`/${id}`);
          console.log(response);
 
-         if (!response.ok) {
+         if (!response.status === 200) {
             throw new Error('Can\'t delete element. Server error.');
          }
 
@@ -44,27 +42,22 @@ export const deleteBook = createAsyncThunk(
 
 export const addNewBook = createAsyncThunk(
    'book/deleteBook',
-   async function (title, { rejectWithValue, dispatch }) {
+   async function (newBook, { rejectWithValue, dispatch }) {
       try {
 
          const book = {
-            title: title,
-            id: 1,
+            title: newBook.title,
+            userId: newBook.userId,
+            body: newBook.body
          }
 
-         const response = await fetch(`https://jsonplaceholder.typicode.com/todos`, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(book)
-         });
-
-         if (!response.ok) {
+         const response = await axios.post(``, book);
+         console.log(response);
+         if (!response.status === 201) {
             throw new Error('Can\'t add element. Server error.');
          }
 
-         const data = await response.json();
+         const data = await response;
          console.log(data);
          dispatch(addBook(data));
 

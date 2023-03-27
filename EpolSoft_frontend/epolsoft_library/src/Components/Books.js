@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addBook, removeBook, fetchBooks } from '../store/bookSlice';
+import { addNewBook, removeBook, fetchBooks } from '../store/bookSlice';
 import BookList from './BookList';
 import InputTitle from './InputTitle';
 
 function Books() {
    const [title, setTitle] = useState('');
    const dispatch = useDispatch();
+   const { status, error } = useSelector(state => state.books)
 
    const handleAction = () => {
       if (title.trim().length) {
-         dispatch(addBook({ title }));
+         dispatch(addNewBook({ title, userId: 1, body: "__" }));
          setTitle('');
       }
    }
@@ -27,6 +28,8 @@ function Books() {
             updateTitle={setTitle}
             handleAction={handleAction}
          />
+         {status === 'loading' && <h3>Loading...</h3>}
+         {error && <h3>Server error: {error}</h3>}
          <BookList />
       </div>
    );
