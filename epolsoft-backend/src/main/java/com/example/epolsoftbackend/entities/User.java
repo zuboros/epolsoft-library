@@ -17,6 +17,10 @@ import javax.validation.constraints.Pattern;
 @Table(name = "client")
 public class User implements Serializable {
 
+    public User(String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)

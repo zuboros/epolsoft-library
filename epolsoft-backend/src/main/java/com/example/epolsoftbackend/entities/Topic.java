@@ -18,6 +18,10 @@ import java.util.Set;
 @Table(name = "topic")
 public class Topic implements Serializable{
 
+    public Topic( String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)

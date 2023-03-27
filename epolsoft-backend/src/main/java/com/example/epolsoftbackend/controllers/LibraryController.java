@@ -64,4 +64,12 @@ public class LibraryController {
 
 
 
+
+
+    //результат со всеми книгами
+    @GetMapping
+    public String getAllBooks(){
+        return "asd";
+    }
+
 }
