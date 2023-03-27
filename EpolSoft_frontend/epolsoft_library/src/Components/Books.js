@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addBook, removeBook } from '../store/bookSlice';
+import { addBook, removeBook, fetchBooks } from '../store/bookSlice';
 import BookList from './BookList';
 import InputTitle from './InputTitle';
 
@@ -15,6 +15,10 @@ function Books() {
          setTitle('');
       }
    }
+
+   useEffect(() => {
+      dispatch(fetchBooks())
+   }, [dispatch])
 
    return (
       <div className='Books'>

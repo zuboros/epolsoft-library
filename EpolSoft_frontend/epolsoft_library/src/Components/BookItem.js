@@ -1,13 +1,15 @@
 import { useDispatch } from 'react-redux';
-import { removeBook } from '../store/bookSlice';
+import { removeBook, deleteBook } from '../store/bookSlice';
 
-const BookItem = ({ id, title }) => {
+const BookItem = ({ id, ...fields }) => {
    const dispatch = useDispatch();
 
    return (
       <li>
-         <span>{title}</span>
-         <span onClick={() => dispatch(removeBook({ id }))}>&times;</span>
+         <p><span>title: {fields.title}</span></p>
+         <p><span>userId: {fields.userId}</span></p>
+         <p><span>body: {fields.body}</span></p>
+         <p><span onClick={() => dispatch(deleteBook(id))}>&times;</span></p>
       </li>
    );
 };
