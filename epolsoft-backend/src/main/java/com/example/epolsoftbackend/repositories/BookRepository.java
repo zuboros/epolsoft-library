@@ -16,7 +16,6 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-
     @Modifying
     @Transactional
     @Query(value = "UPDATE book SET name = ?1, topicId = ?2, userId = ?3, description = ?4," +
