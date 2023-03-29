@@ -32,9 +32,9 @@ public class LibraryController {
         LibraryService.storeFile(file);
     }
     
-    @PostMapping("/deleteFile")
+    @PostMapping("/deleteFile/{fileName:.+}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@RequestParam("fileName") String fileName) throws IOException {
+    public void deleteFile(@PathVariable String fileName) throws IOException {
         LibraryService.deleteFile(fileName);
     }
     
