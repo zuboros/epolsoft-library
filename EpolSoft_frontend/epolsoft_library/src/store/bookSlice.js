@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { axios } from "../axios"
+import { books } from "../API/serverData";
 
+/// DON'T USE IT !!!
 export const fetchBooks = createAsyncThunk(
    'books/fetchBooks',
    async function (_, { rejectWithValue }) {
@@ -21,6 +23,7 @@ export const fetchBooks = createAsyncThunk(
    }
 );
 
+/// DON'T USE IT !!!
 export const deleteBook = createAsyncThunk(
    'book/deleteBook',
    async function (id, { rejectWithValue, dispatch }) {
@@ -40,6 +43,7 @@ export const deleteBook = createAsyncThunk(
    }
 );
 
+/// DON'T USE IT !!!
 export const addNewBook = createAsyncThunk(
    'book/addNewBook',
    async function (newBook, { rejectWithValue, dispatch }) {
@@ -80,12 +84,15 @@ const bookSlice = createSlice({
       error: null,
    },
    reducers: {
+      fetchLocalBooks(state, action) {
+         state.books.push(...books)
+         console.log(state.books);
+      },
       addBook(state, action) {
          console.log(action);
-
          state.books.push({
             id: new Date().toISOString(),
-            title: action.payload.title
+            ...action.payload
          });
       },
       removeBook(state, action) {
@@ -107,6 +114,6 @@ const bookSlice = createSlice({
 });
 
 
-export const { addBook, removeBook } = bookSlice.actions;
+export const { fetchLocalBooks, addBook, removeBook } = bookSlice.actions;
 
 export default bookSlice.reducer;
