@@ -20,10 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    implementation 'mysql:mysql-connector-java:8.0.32'
-
-
+    annotationProcessing 'org.projectlombok:lombok:1.18.24'
 }
 
 tasks.named('test') {
