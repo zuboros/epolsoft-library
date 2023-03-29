@@ -28,21 +28,12 @@ public class Topic implements Serializable{
     @Column(name = "name", nullable = false)
     @Pattern(regexp = "^[ a-zA-zа-яА-Я]{4,100}$")
     private String name;
+
     @JsonIgnore
     @OneToMany(mappedBy = "topicId", cascade = CascadeType.ALL)
     private Set<Book> books;
 
     public Topic(String name) {
         this.name = name;
-    }
-
-    public void removeBook(Book bookToRemove){
-        this.books.remove(bookToRemove);
-        bookToRemove.setTopicId(null);
-    }
-
-    public void addBook(Book bookToAdd){
-        this.books.add(bookToAdd);
-        bookToAdd.setTopicId(this);
     }
 }

@@ -35,11 +35,21 @@ public class BookService {
 
     public Optional<Book> findById(long id){
         return bookRepository.findById(id);
-
     }
 
-    public ResponseEntity<Book> updateById(Book bookToUpdate) {
-            return new ResponseEntity<>(bookRepository.saveAndFlush(bookToUpdate), HttpStatus.OK);
+    public ResponseEntity<Book> updateById(long id, NoteModel updateNote, Author author, Topic topic) {
+        Optional<Book> optionalBook = this.findById(id);
+        if(optionalBook.isPresent()) {
+            Book editableBook = optionalBook.get();
+            editableBook.setName(updateNote.getBookName());
+            editableBook.setFile(updateNote.getBookFileName());
+            editableBook.setDescription(updateNote.getBookDescription());
+            editableBook.setShortDescription(updateNote.getBookShortDescription());
+            editableBook.setTopicId(topic);
+            editableBook.setAuthorId(author);
+            return new ResponseEntity<>(bookRepository.saveAndFlush(editableBook), HttpStatus.OK);
+        }
+        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<HttpStatus> deleteById(long id) {

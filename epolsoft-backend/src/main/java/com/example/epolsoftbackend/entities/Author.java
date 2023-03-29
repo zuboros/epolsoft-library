@@ -29,7 +29,7 @@ public class Author implements Serializable {
     private String name;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "authorId")
+    @OneToOne(mappedBy = "authorId", optional = false)
     private Book book;
 
     public Author(String name) {
