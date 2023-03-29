@@ -1,57 +1,51 @@
 package com.example.epolsoftbackend.services;
 
+import com.example.epolsoftbackend.entities.Library;
+import com.example.epolsoftbackend.repositories.LibraryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.example.epolsoftbackend.repositories.*;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class LibraryService {
-    private final Path fileStorageLocation = Path.of(System.getProperty("user.home") + "/bookCollection");
-    
-    @Autowired
-    private BookRepository bookRepository;
-    
-    public String storeFile(MultipartFile file) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    private final LibraryRepository libraryRepository;
 
-        Files.copy(file.getInputStream(),
-                Path.of(fileStorageLocation.toString() + "/" + fileName),
-                StandardCopyOption.REPLACE_EXISTING);
+    public LibraryService(LibraryRepository libraryRepository) {
+        this.libraryRepository = libraryRepository;
+    }
 
-        return fileName;
+
+    public List<Library> findByCriteria(String bookName, String sortingOrder, String fieldName, int numberPage, Pageable pageable){
+            Page page = libraryRepository.findAll(new Specification<Library>() {
+            @Override
+            public Predicate toPredicate(Root<Library> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+
+                List<Predicate> predicates = new ArrayList<>();
+                if(bookName != null ) {
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("name"), bookName)));
+                }
+
+                switch (sortingOrder) {
+                    case "desc":
+                        query.orderBy(criteriaBuilder.desc(root.get(fieldName)));
+                        break;
+                    default:
+                        query.orderBy(criteriaBuilder.asc(root.get(fieldName)));
+                        break;
+                }
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        }, pageable);
+            return (List<Library>) page.getContent();
     }
-    
-    public Resource loadFileAsResource(String fileName) throws MalformedURLException {
-        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-        Resource resource = new UrlResource(filePath.toUri());
-        
-        if(resource.exists()) {
-            return resource;
-        } else {
-            return null;
-        }
-    }
-    
-    public boolean deleteFile(String fileName) throws IOException {
-        Files.deleteIfExists(Path.of(fileStorageLocation + "/" + fileName));
-        
-        return Files.exists(Path.of(fileStorageLocation + "/" + fileName));
-    }
+
 }
