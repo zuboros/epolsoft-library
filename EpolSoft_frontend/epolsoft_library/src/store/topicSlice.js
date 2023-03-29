@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { axios } from "../axios"
+import { topics } from "../API/serverData";
 
+/// DON'T USE IT !!!
 export const fetchTopics = createAsyncThunk(
    'topics/fetchTopics',
    async function (_, { rejectWithValue }) {

@@ -6,10 +6,14 @@ const BookItem = ({ id, ...fields }) => {
 
    return (
       <li>
-         <p><span>userId: {fields.userId}</span></p>
-         <p><span>title: {fields.title}</span></p>
-         <p><span>body: {fields.body}</span></p>
-         <p><span onClick={() => dispatch(deleteBook(id))}>&times;</span></p>
+         <p><span>id: {id}</span></p>
+         <p><span>name: {fields.name}</span></p>
+         <p><span>author: {fields.author}</span></p>
+         <p><span>topic: {fields.topic}</span></p>
+         <p><span>shortDescription: {fields.shortDescription}</span></p>
+         <p><span>description: {fields.description}</span></p>
+         <p><span>fileName: {fields.fileName}</span></p>
+         <p><span onClick={() => dispatch(removeBook({ id }))}>&times;</span></p>
       </li>
    );
 };

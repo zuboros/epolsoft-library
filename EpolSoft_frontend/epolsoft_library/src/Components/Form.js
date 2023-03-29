@@ -1,33 +1,53 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addNewBook, removeBook, fetchBooks, addBook } from '../store/bookSlice';
 
-const topics = [
-   {
-      id: 1,
-      name: "Gachimuchi"
-   },
-   {
-      id: 2,
-      name: "BoringWorld"
-   },
-]
+//API
+import { topics } from '../API/serverData';
 
 const AddBook = () => {
+   const dispatch = useDispatch();
+   const { status, error } = useSelector(state => state.books)
+
+
+
    const [open, setOpen] = useState(false);
    const [confirmLoading, setConfirmLoading] = useState(false);
+
    const showModal = () => {
       setOpen(true);
    };
+
+   /// Temporary !!!!
+   const temporaryConvertToBook = (values) => {
+      let { uploadFiles, ...rest } = values;
+
+      const book = {
+         id: new Date().toISOString(),
+         fileName: values.uploadFiles[0].name,
+         ...rest
+      }
+      return book;
+   }
+
    const handleSubmit = (values) => {
-      console.log(values);
 
       if (finish) {
          setConfirmLoading(true);
+
+         ///api function:
+         //dispatch(addNewBook());
+
          //////////////////////////////////
          setTimeout(() => {
+
+            ///local function:
+            dispatch(addBook(temporaryConvertToBook(values)));
+
             setOpen(false);
             setConfirmLoading(false);
-         }, 2000);
+         }, 1000);
          ////////////////////////////////////
       }
    };
@@ -50,7 +70,12 @@ const AddBook = () => {
             onOk={handleSubmit}
             confirmLoading={confirmLoading}
             onCancel={handleCancel}
-            footer={null}
+            footer={
+               <>
+                  {status === 'loading' && <h3>Loading...</h3>}
+                  {error && <h3>Server error: {error}</h3>}
+               </>
+            }
          >
             <Form
                autoComplete="off"
@@ -131,7 +156,7 @@ const AddBook = () => {
                      },
                      { whitespace: true },
                      { min: 3 },
-                     { max: 250 }
+                     { max: 500 }
                   ]}
                >
                   <Input.TextArea placeholder='enter the description'
@@ -139,7 +164,7 @@ const AddBook = () => {
                   />
                </Form.Item>
 
-               <Form.Item name="uploadFile" label="Your File"
+               <Form.Item name="uploadFiles" label="Your File"
                   valuePropName='fileList'
                   getValueFromEvent={(event) => {
                      return event?.fileList
