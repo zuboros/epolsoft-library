@@ -1,6 +1,8 @@
 package com.example.epolsoftbackend.entities;
 
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +16,11 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "client")
-public class User implements Serializable {
+@Table(name = "author")
+public class Author implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
 
@@ -26,6 +28,11 @@ public class User implements Serializable {
     @Pattern(regexp = "^[ a-zA-zа-яА-Я.]{5,100}$")
     private String name;
 
-    @OneToOne(mappedBy = "userId")
+    @JsonIgnore
+    @OneToOne(mappedBy = "authorId")
     private Book book;
+
+    public Author(String name) {
+        this.name = name;
+    }
 }

@@ -1,10 +1,8 @@
 package com.example.epolsoftbackend.entities;
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,32 +14,33 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "book")
 public class Book implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Column(name = "name")
     @Pattern(regexp = "^[ a-zA-zа-яА-Я]{2,100}$")
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     private Topic topicId;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User userId;
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private Author authorId;
 
     @Column(name = "description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{0,100}$")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,100}$")
     private String description;
 
     @Column(name = "short_description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{0,100}$")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,100}$")
     private String shortDescription;
 
     @Column(name = "file")

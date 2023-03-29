@@ -1,6 +1,8 @@
 package com.example.epolsoftbackend.entities;
 
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,14 +21,28 @@ import java.util.Set;
 public class Topic implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
 
     @Column(name = "name", nullable = false)
-    @Pattern(regexp = "^[a-zA-zа-яА-Я]{4,100}$")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{4,100}$")
     private String name;
+    @JsonIgnore
+    @OneToMany(mappedBy = "topicId", cascade = CascadeType.ALL)
+    private Set<Book> books;
 
-    @OneToMany(mappedBy = "topicId")
-    private Set<Book> book;
+    public Topic(String name) {
+        this.name = name;
+    }
+
+    public void removeBook(Book bookToRemove){
+        this.books.remove(bookToRemove);
+        bookToRemove.setTopicId(null);
+    }
+
+    public void addBook(Book bookToAdd){
+        this.books.add(bookToAdd);
+        bookToAdd.setTopicId(this);
+    }
 }
