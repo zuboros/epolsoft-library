@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addNewBook, removeBook, fetchBooks } from '../store/bookSlice';
 import BookList from './BookList';
 import InputTitle from './InputTitle';
+import Form from "./Form";
 
 function Books() {
    const [title, setTitle] = useState('');
@@ -23,6 +24,7 @@ function Books() {
 
    return (
       <div className='Books'>
+         <Form />
          <InputTitle
             value={title}
             updateTitle={setTitle}
