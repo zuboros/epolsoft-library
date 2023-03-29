@@ -86,14 +86,12 @@ const bookSlice = createSlice({
    reducers: {
       fetchLocalBooks(state, action) {
          state.books.push(...books)
-         console.log(state.books);
       },
       addBook(state, action) {
-         console.log(action);
-         state.books.push({
-            id: new Date().toISOString(),
-            ...action.payload
-         });
+         state.books.push(action.payload);
+      },
+      editBook(state, action) {
+         state.books = state.books.map(book => book.id === action.payload.id ? { ...book, ...action.payload } : book);
       },
       removeBook(state, action) {
          state.books = state.books.filter(book => book.id !== action.payload.id);
@@ -114,6 +112,6 @@ const bookSlice = createSlice({
 });
 
 
-export const { fetchLocalBooks, addBook, removeBook } = bookSlice.actions;
+export const { fetchLocalBooks, addBook, removeBook, editBook } = bookSlice.actions;
 
 export default bookSlice.reducer;
