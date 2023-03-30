@@ -1,7 +1,8 @@
 FROM openjdk:11
 
+RUN mkdir -p ./bookCollection
+
 VOLUME [ "/bookCollection" ]
-VOLUME [ "/data/postgres-librarydb" ]
 
 ARG JAR_FILE=epolsoft-backend/build/libs/*.jar
 
