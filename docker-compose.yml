@@ -10,15 +10,17 @@ services:
     depends_on:
       - postgres-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/librarydb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO}
+    volumes:
+      - ./bookCollection:/bookCollection:rw
   postgres-db:
     build:
       context: .
       dockerfile: postgres.dockerfile
-    container_name: ${PG_CONTAINER_NAME}
+    container_name: 'postgres-14'
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -29,5 +31,4 @@ services:
     volumes:
       - dbvol:/data/postgres-librarydb
 volumes:
-  dbvol:
-    external: true
+  dbvol: null
