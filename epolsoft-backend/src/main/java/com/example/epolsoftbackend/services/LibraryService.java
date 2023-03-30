@@ -23,7 +23,7 @@ public class LibraryService {
     }
 
 
-    public List<Library> findByCriteria(String bookName, String sortingOrder, String fieldName, int numberPage, Pageable pageable){
+    public List<Library> findByCriteria(String bookName, String sortingOrder, String fieldName, Pageable pageable){
             Page page = libraryRepository.findAll(new Specification<Library>() {
             @Override
             public Predicate toPredicate(Root<Library> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
