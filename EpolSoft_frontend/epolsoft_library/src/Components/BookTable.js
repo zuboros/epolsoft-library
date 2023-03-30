@@ -62,6 +62,16 @@ function BookTable() {
     setEditRowKey(record.key);
   };
 
+  const downloadFile = (url) => {
+    const fileName = url.split("/").pop();
+    const aTag = document.createElement("a");
+    aTag.href = url;
+    aTag.setAttribute("download", fileName);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
+  }
+
   const columns = [
     {
       title: "ID",
@@ -100,9 +110,15 @@ function BookTable() {
       editTable: true,
     },
     {
-      title: "FileName",
+      title: "File",
       dataIndex: "fileName",
       align: "center",
+      render: (_, record) => {
+
+        return (
+          <Button type='primary' onClick={() => { downloadFile("https://community.developers.refinitiv.com/storage/attachments/6024-data-file-download-guide-v26.pdf") }}>Download</Button>
+        )
+      }
     },
     {
       title: "Action",
@@ -166,7 +182,6 @@ function BookTable() {
     children,
     ...restProps
   }) => {
-    console.log(children);
 
 
     return (

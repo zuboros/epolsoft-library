@@ -1,19 +1,19 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNewBook, removeBook, fetchBooks, addBook } from '../store/bookSlice';
-
-//API
-import { topics } from '../API/serverData';
 
 const AddBook = () => {
    const dispatch = useDispatch();
    const { status, error } = useSelector(state => state.books)
-
-
+   const topics = useSelector(state => state.topics.topics)
 
    const [open, setOpen] = useState(false);
    const [confirmLoading, setConfirmLoading] = useState(false);
+
+   useEffect(() => {
+
+   }, [])
 
    const showModal = () => {
       setOpen(true);
@@ -62,7 +62,7 @@ const AddBook = () => {
    return (
       <>
          <Button type="primary" onClick={showModal}>
-            Open Modal with async logic
+            Add Book
          </Button>
          <Modal
             title="Title"

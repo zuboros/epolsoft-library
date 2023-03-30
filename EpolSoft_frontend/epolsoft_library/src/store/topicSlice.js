@@ -36,6 +36,9 @@ const topicSlice = createSlice({
       error: null,
    },
    reducers: {
+      fetchLocalTopics(state, action) {
+         state.topics = topics;
+      },
       addTopic(state, action) {
          console.log(action);
 

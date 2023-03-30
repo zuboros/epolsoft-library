@@ -4,6 +4,8 @@ import { addNewBook, removeBook, fetchBooks, fetchLocalBooks } from '../store/bo
 import BookList from './BookList';
 import Form from "./Form";
 import BookTable from "./BookTable";
+import SearchBook from "./SearchBook";
+import { Space } from 'antd';
 
 function Books() {
    const [title, setTitle] = useState('');
@@ -27,7 +29,10 @@ function Books() {
 
    return (
       <div className='Books'>
-         <Form />
+         <Space style={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
+            <SearchBook />
+            <Form />
+         </Space>
          {status === 'loading' && <h3>Loading...</h3>}
          {error && <h3>Server error: {error}</h3>}
          <BookTable />

@@ -85,7 +85,7 @@ const bookSlice = createSlice({
    },
    reducers: {
       fetchLocalBooks(state, action) {
-         state.books.push(...books)
+         state.books = books;
       },
       addBook(state, action) {
          state.books.push(action.payload);
