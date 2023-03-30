@@ -1,3 +1,5 @@
 FROM postgres:14
 
-COPY *.sql /docker-entrypoint-initdb.d/
+VOLUME [ "/data/postgres-librarydb" ]
+
+COPY ./init-db-sql-scripts/*.sql /docker-entrypoint-initdb.d/
