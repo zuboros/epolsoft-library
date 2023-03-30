@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { axios } from "../axios"
-import { books } from "../API/serverData";
+import { books, books2 } from "../API/serverData";
 
 /// DON'T USE IT !!!
 export const fetchBooks = createAsyncThunk(
@@ -91,7 +91,12 @@ const bookSlice = createSlice({
          state.books.push(action.payload);
       },
       editBook(state, action) {
+         console.log(action.payload);
+
          state.books = state.books.map(book => book.id === action.payload.id ? { ...book, ...action.payload } : book);
+      },
+      sortBook(state, action) {
+         state.books = books2;
       },
       removeBook(state, action) {
          state.books = state.books.filter(book => book.id !== action.payload.id);
@@ -112,6 +117,6 @@ const bookSlice = createSlice({
 });
 
 
-export const { fetchLocalBooks, addBook, removeBook, editBook } = bookSlice.actions;
+export const { fetchLocalBooks, addBook, removeBook, editBook, sortBook } = bookSlice.actions;
 
 export default bookSlice.reducer;

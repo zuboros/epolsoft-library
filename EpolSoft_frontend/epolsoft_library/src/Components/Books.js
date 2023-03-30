@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addNewBook, removeBook, fetchBooks, fetchLocalBooks } from '../store/bookSlice';
 import BookList from './BookList';
 import Form from "./Form";
+import BookTable from "./BookTable";
 
 function Books() {
    const [title, setTitle] = useState('');
@@ -16,20 +17,21 @@ function Books() {
       }
    }
 
-   useEffect(() => {
+   /* useEffect(() => {
       /// API function:
       //dispatch(fetchBooks())
 
       ///Local Storage:
       dispatch(fetchLocalBooks({}))
-   }, [dispatch])
+   }, [dispatch]) */
 
    return (
       <div className='Books'>
          <Form />
          {status === 'loading' && <h3>Loading...</h3>}
          {error && <h3>Server error: {error}</h3>}
-         <BookList />
+         <BookTable />
+         {/* <BookList /> */}
       </div>
    );
 }
