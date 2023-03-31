@@ -20,7 +20,7 @@ const SearchBook = () => {
             rules={[
                {
                   required: true,
-                  message: "Please enter your name"
+                  message: "Enter some book name"
                },
                { whitespace: true },
                { min: 3 }

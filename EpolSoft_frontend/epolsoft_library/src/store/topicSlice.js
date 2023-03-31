@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { axios } from "../axios"
 import { topics } from "../API/serverData";
 
 /// DON'T USE IT !!!
-export const fetchTopics = createAsyncThunk(
+/* export const fetchTopics = createAsyncThunk(
    'topics/fetchTopics',
    async function (_, { rejectWithValue }) {
       try {
@@ -22,7 +21,7 @@ export const fetchTopics = createAsyncThunk(
       }
    }
 );
-
+ */
 const setError = (state, action) => {
    state.status = 'rejected';
    state.error = action.payload;
@@ -51,7 +50,7 @@ const topicSlice = createSlice({
          state.topics = state.topics.filter(topic => topic.id !== action.payload.id);
       }
    },
-   extraReducers: {
+   /* extraReducers: {
       [fetchTopics.pending]: (state) => {
          state.status = 'loading';
          state.error = null;
@@ -61,10 +60,10 @@ const topicSlice = createSlice({
          state.topics = action.payload;
       },
       [fetchTopics.rejected]: setError,
-   }
+   } */
 });
 
 
-export const { addTopic, removeTopic } = topicSlice.actions;
+export const { addTopic, removeTopic, fetchLocalTopics } = topicSlice.actions;
 
 export default topicSlice.reducer;

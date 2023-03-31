@@ -1,7 +1,8 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewBook, removeBook, fetchBooks, addBook } from '../store/bookSlice';
+import { postBook } from '../store/bookSlice';
+import { fetchLocalTopics } from '../store/topicSlice';
 
 const AddBook = () => {
    const dispatch = useDispatch();
@@ -12,42 +13,31 @@ const AddBook = () => {
    const [confirmLoading, setConfirmLoading] = useState(false);
 
    useEffect(() => {
-
+      dispatch(fetchLocalTopics({}));
    }, [])
 
    const showModal = () => {
       setOpen(true);
    };
 
-   /// Temporary !!!!
-   const temporaryConvertToBook = (values) => {
-      let { uploadFiles, ...rest } = values;
-
-      const book = {
-         id: new Date().toISOString(),
-         fileName: values.uploadFiles[0].name,
-         ...rest
-      }
-      return book;
-   }
-
    const handleSubmit = (values) => {
 
       if (finish) {
          setConfirmLoading(true);
-
          ///api function:
-         //dispatch(addNewBook());
 
+         dispatch(postBook({ ...values, topicId: (topics.find((topic) => topic.name === values.topic)).id }));
+         setOpen(false);
+         setConfirmLoading(false);
          //////////////////////////////////
-         setTimeout(() => {
+         /* setTimeout(() => {
 
             ///local function:
             dispatch(addBook(temporaryConvertToBook(values)));
 
             setOpen(false);
             setConfirmLoading(false);
-         }, 1000);
+         }, 1000); */
          ////////////////////////////////////
       }
    };
@@ -128,7 +118,7 @@ const AddBook = () => {
                >
                   <AutoComplete
                      options={topics.map((topic) => ({ value: topic.name }))}
-                     placeholder="try not to cum"
+                     placeholder="Please enter the topic"
                      filterOption={(inputValue, option) =>
                         option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                      }
@@ -194,6 +184,7 @@ const AddBook = () => {
                         setFileList([info.file]);
                      }}
                      showUploadList={false}
+                     accept=".txt,.pdf,.azw,.azw3,.mobi,.epub"
                   >
                      <Button>Upload</Button>
                      {fileList[0]?.name}

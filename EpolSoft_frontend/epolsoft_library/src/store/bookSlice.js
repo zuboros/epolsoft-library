@@ -1,20 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { axios } from "../axios"
-import { books, books2 } from "../API/serverData";
+//import { axios } from "../axios"
+import { books, books2, getAllBooks } from "../API/serverData";
 
-/// DON'T USE IT !!!
+const serverResponse = async (data) => { setTimeout((e) => (e), 2000); return { data: data } };
+
+
 export const fetchBooks = createAsyncThunk(
    'books/fetchBooks',
-   async function (_, { rejectWithValue }) {
+   async function ({ page, pageSize }, { rejectWithValue }) {
       try {
 
-         const response = await axios.get('?_limit=10');
+         /* const response = await axios.get('');
 
          if (!response.status === 200) {
             throw new Error('Can\'t extract any elements');
-         }
+         } */
 
-         const data = await response.data;
+         //const data = await response.data;
+         console.log('FETCH');
+
+         const { data } = await serverResponse(getAllBooks.slice(pageSize * page - pageSize, pageSize * page));
+
          return data;
 
       } catch (error) {
@@ -23,19 +29,23 @@ export const fetchBooks = createAsyncThunk(
    }
 );
 
-/// DON'T USE IT !!!
 export const deleteBook = createAsyncThunk(
    'book/deleteBook',
    async function (id, { rejectWithValue, dispatch }) {
       try {
-         const response = await axios.delete(`/${id}`);
+         /* const response = await axios.delete(`/${id}`);
          console.log(response);
 
          if (!response.status === 200) {
             throw new Error('Can\'t delete element. Server error.');
-         }
+         } */
+         console.log('Delete');
 
-         dispatch(removeBook({ id }));
+         const { data } = await serverResponse(id);
+         //console.log(data);
+
+
+         dispatch(removeBook({ id: data.id }));
 
       } catch (error) {
          return rejectWithValue(error.message);
@@ -43,27 +53,75 @@ export const deleteBook = createAsyncThunk(
    }
 );
 
-/// DON'T USE IT !!!
-export const addNewBook = createAsyncThunk(
-   'book/addNewBook',
+
+export const postBook = createAsyncThunk(
+   'book/postBook',
    async function (newBook, { rejectWithValue, dispatch }) {
       try {
+         //console.log(newBook);
+
+         /* const formData = new FormData();
+         formData.append("file", newBook.uploadFiles[0]);
+         const response = await axios.post('upload_file', formData, {
+            headers: {
+               'Content-Type': 'multipart/form-data'
+            }
+         });
+
+         if (!response.status === 200) {
+            throw new Error('Can\'t post the file');
+         }
+         else {
+
+            const { topic, uploadFiles, ...rest } = newBook;
+
+            const book = {
+               ...rest,
+               fileName: response.data.fileName
+            }
+
+            const response = await axios.post(``, book);
+
+            if (!response.status === 200) {
+               throw new Error('Can\'t add element. Server error.');
+            }
+
+            const { data } = response;
+            dispatch(addBook(data));
+
+         }
+ */
+         const { uploadFiles, ...rest } = newBook;
+
+         const id = new Date().toISOString();
 
          const book = {
-            title: newBook.title,
-            userId: newBook.userId,
-            body: newBook.body
+            key: id,
+            id: id,
+            ...rest,
+            authorName: rest.author,
+            topicName: rest.topic,
+            fileName: newBook.uploadFiles[0].name
          }
+         console.log(book);
 
-         const response = await axios.post(``, book);
-         console.log(response);
-         if (!response.status === 201) {
-            throw new Error('Can\'t add element. Server error.');
-         }
+         dispatch(addBook(book));
 
-         const data = await response;
-         console.log(data);
-         dispatch(addBook(data));
+      } catch (error) {
+         return rejectWithValue(error.message);
+      }
+   }
+);
+
+export const putBook = createAsyncThunk(
+   'book/putBook',
+   async function (newBook, { rejectWithValue, dispatch }) {
+      try {
+         console.log(newBook);
+
+         console.log('put');
+
+         dispatch(editBook(newBook));
 
       } catch (error) {
          return rejectWithValue(error.message);
@@ -91,8 +149,6 @@ const bookSlice = createSlice({
          state.books.push(action.payload);
       },
       editBook(state, action) {
-         console.log(action.payload);
-
          state.books = state.books.map(book => book.id === action.payload.id ? { ...book, ...action.payload } : book);
       },
       sortBook(state, action) {

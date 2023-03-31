@@ -1,38 +1,34 @@
-import { Table, Space, Form, Input, Dropdown, Button, Popconfirm } from 'antd';
-import { DownloadOutlined, EditOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
+import { Table, Space, Form, Input, Button, Popconfirm, AutoComplete } from 'antd';
 import { useState, useEffect } from 'react';
-import { fetchLocalBooks, removeBook, editBook, sortBook } from "../store/bookSlice";
+import { deleteBook, putBook, sortBook, fetchBooks } from "../store/bookSlice";
 import { useDispatch, useSelector } from 'react-redux';
 
 function BookTable() {
   const dispatch = useDispatch();
   const books = useSelector(state => state.books.books);
+  const topics = useSelector(state => state.topics.topics)
 
-  const [gridData, setGridData] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [editRowKey, setEditRowKey] = useState("");
-  const [sortedInfo, setSortedInfo] = useState({});
   const [form] = Form.useForm();
 
-  const loadData = async () => {
-    setLoading(true);
-    const response = dispatch(fetchLocalBooks({}));
-    setGridData(response)
-    setLoading(false);
-  }
-
-  const modifiedData = (books) => books.map((book) => ({
+  const modifiedData = (books) => books?.map((book) => ({
     key: book.id,
     ...book,
   }));
 
   useEffect(() => {
-    loadData();
+    setLoading(true);
+    dispatch(fetchBooks({ page: 1, pageSize }));
+    setLoading(false);
   }, [])
 
   const handleDelete = (value) => {
-    dispatch(removeBook({ id: value.id }));
-    setGridData(modifiedData(books));
+    setLoadingDelete(true);
+    dispatch(deleteBook({ id: value.id }));
+    setLoadingDelete(false);
   }
 
   const isEditing = (record) => {
@@ -46,12 +42,24 @@ function BookTable() {
   const save = async (record) => {
     try {
       const row = await form.validateFields();
-      console.log({ id: record.id, ...row });
+      //console.log({ id: record.id, ...row });
 
-      dispatch(editBook({ id: record.id, ...row }))
+      //dispatch(editBook({ id: record.id, ...row }))
+
+      const newBook = {
+        ...(books.find((book) => book.id === record.id)),
+        ...row,
+        authorId: (topics.find((topic) => topic.name === record.topicName))
+      }
+
+      console.log(newBook);
+
+
+      dispatch(putBook(newBook))
+
       setEditRowKey("");
+
     } catch (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   };
@@ -93,13 +101,13 @@ function BookTable() {
     },
     {
       title: "Author",
-      dataIndex: "author",
+      dataIndex: "authorName",
       align: "center",
       editTable: true,
     },
     {
       title: "Topic",
-      dataIndex: "topic",
+      dataIndex: "topicName",
       align: "center",
       editTable: true,
     },
@@ -145,7 +153,7 @@ function BookTable() {
                     title="Are you sure?"
                     onConfirm={() => handleDelete(record)}
                   >
-                    <Button danger type="primary" >Delete</Button>
+                    <Button danger type="primary" loading={loadingDelete}>Delete</Button>
                   </Popconfirm>
 
                   <Button type="primary" onClick={() => edit(record)} >Edit</Button>
@@ -187,18 +195,46 @@ function BookTable() {
     return (
       <td {...restProps}>
         {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{ margin: 0 }}
-            rules={[
-              {
-                required: true,
-                message: `Please input some value in ${title} field`,
-              },
-            ]}
-          >
-            <Input value={children} />
-          </Form.Item>
+          dataIndex === "topicName" ?
+            <Form.Item
+              name="topic"
+              rules={[
+                {
+                  required: true,
+                },
+                {
+                  validator(_, value) {
+                    return new Promise((resolve, reject) => {
+                      topics.find((topic) => topic.name === value) ?
+                        resolve("Success!") :
+                        reject("The topic is not correct");
+                    })
+                  }
+                }
+              ]}
+            >
+              <AutoComplete
+                options={topics.map((topic) => ({ value: topic.name }))}
+                placeholder="Please enter the topic"
+                filterOption={(inputValue, option) =>
+                  option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                }
+              >
+              </AutoComplete>
+            </Form.Item>
+            :
+            <Form.Item
+              name={dataIndex}
+              style={{ margin: 0 }}
+              rules={[
+                {
+                  required: true,
+                  message: `Please input some value in ${title} field`,
+                },
+              ]}
+            >
+              <Input value={dataIndex} />
+            </Form.Item>
         ) : (
           children
         )}
@@ -220,12 +256,19 @@ function BookTable() {
           bordered
           loading={loading}
           pagination={{
-            pageSize: 10,
+            pageSize: pageSize,
             total: 100,
-            onChange: (page) => {
-              console.log('page: ' + page);
+            onChange: (page, pageSize) => {
 
+              setPageSize(pageSize);
+              dispatch(fetchBooks({ page: page, pageSize: pageSize }));
             }
+          }}
+          expandable={{
+            expandedRowRender: (record) => (
+              <p><b>Description: </b>{record.description}</p>
+            ),
+            rowExpandable: (record) => record.info !== "Not Expandable",
           }}
         />
       </Form>
