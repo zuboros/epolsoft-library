@@ -1,4 +1,4 @@
-package com.example.epolsoftbackend.entities;
+package com.example.epolsoftbackend.library;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Immutable;

@@ -1,4 +1,4 @@
-package com.example.epolsoftbackend.services;
+package com.example.epolsoftbackend.file;
 
 import org.springframework.stereotype.Service;
 
@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

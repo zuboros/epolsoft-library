@@ -1,8 +1,9 @@
-package com.example.epolsoftbackend.entities;
+package com.example.epolsoftbackend.book;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.epolsoftbackend.author.Author;
+import com.example.epolsoftbackend.topic.Topic;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -32,19 +33,20 @@ public class Book implements Serializable {
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     private Topic topicId;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author authorId;
 
     @Column(name = "description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,100}$")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,255}$")
     private String description;
 
     @Column(name = "short_description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,100}$")
+    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,150}$")
     private String shortDescription;
 
     @Column(name = "file")
+    @Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
     private String file;
 
     @UpdateTimestamp
