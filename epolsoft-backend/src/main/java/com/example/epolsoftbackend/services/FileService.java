@@ -1,121 +1,87 @@
-package com.example.epolsoftbackend.controllers;
+package com.example.epolsoftbackend.services;
 
-import com.example.epolsoftbackend.entities.Author;
-import com.example.epolsoftbackend.entities.Book;
-import com.example.epolsoftbackend.entities.Library;
-import com.example.epolsoftbackend.entities.Topic;
-import com.example.epolsoftbackend.payload.NoteModel;
-import com.example.epolsoftbackend.services.*;
+import java.io.File;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ResponseEntity;
+import java.util.Date;
+import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+@Getter
+@Setter
+@NoArgsConstructor
+@Service
+public class FileService {
+    private final Path fileStorageLocation = Path.of(System.getProperty("user.dir") + File.separator + "bookCollection");
+    
+    public String storeFile(MultipartFile file) throws IOException {
+        //String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = new Date();
+        String dirTodayName = formatter.format(date);
+        
+        Files.createDirectories(Paths.get(fileStorageLocation + File.separator + dirTodayName));
+        
+        String fileUUIDName = UUID.randomUUID().toString();
 
-@RestController
-@RequestMapping("/library")
-public class LibraryController {
-    final FileService fileService;
-    final BookService bookService;
-    final AuthorService authorService;
-    final TopicService topicService;
-    final LibraryService libraryService;
-
-    public LibraryController(FileService fileService, BookService bookService, AuthorService authorService, TopicService topicService, LibraryService libraryService) {
-        this.fileService = fileService;
-        this.bookService = bookService;
-        this.authorService = authorService;
-        this.topicService = topicService;
-        this.libraryService = libraryService;
-    }
-
-
-    @PostMapping("/uploadFile")
-    @ResponseStatus(HttpStatus.OK)
-    public void uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        fileService.storeFile(file);
+        Files.copy(file.getInputStream(),
+                Path.of(fileStorageLocation + File.separator
+                        + dirTodayName + File.separator
+                        + fileUUIDName),
+                StandardCopyOption.REPLACE_EXISTING);
+        
+        return dirTodayName + "/" + fileUUIDName;
     }
     
-    @PostMapping("/deleteFile")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@RequestParam("fileName") String fileName) throws IOException {
-        fileService.deleteFile(fileName);
+    public Resource loadFileAsResource(String filePathStr) throws MalformedURLException {
+        if (filePathStr == null || filePathStr.isBlank() || !filePathStr.contains("/")) {
+            return null;
+        }
+        
+        String dirName = filePathStr.split("/")[0];
+        String fileName = filePathStr.split("/")[1];
+        
+        Path newFileStorageLocation = Path.of(this.fileStorageLocation + File.separator + dirName);
+        
+        Path filePath = newFileStorageLocation.resolve(fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+        
+        if(resource.exists()) {
+            return resource;
+        } else {
+            return null;
+        }
     }
     
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws MalformedURLException {
-        // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(fileName);
-
-        // Try to determine file's content type
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            //logger.info("Could not determine file type.");
+    public boolean deleteFile(String filePathStr) throws IOException {
+        if (filePathStr == null || filePathStr.isBlank() || !filePathStr.contains("/")) {
+            return false;
         }
-
-        // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+        
+        String dirName = filePathStr.split("/")[0];
+        String fileName = filePathStr.split("/")[1];
+        
+        Path newFileStorageLocation = Path.of(this.fileStorageLocation + File.separator + dirName);
+        
+        Files.deleteIfExists(Path.of(newFileStorageLocation + File.separator + fileName));
+        
+        return Files.exists(Path.of(newFileStorageLocation + File.separator + fileName));
     }
-
-    //CRUD data operations
-    @PostMapping()
-    public ResponseEntity<Book> createNote(@RequestBody NoteModel newNote){
-        var topic = topicService.searchExistingOrCreateNew(newNote.getTopicId(), newNote.getTopicName());
-        var newAuthor = authorService.create(newNote.getAuthorName());
-        return bookService.create(newNote, newAuthor, topic);
-    }
-
-    @GetMapping()
-    public ResponseEntity<List<Library>> getBooks(@RequestParam(value = "numberPage", defaultValue = "1") int numberPage,
-                                                  @RequestParam(value = "sortingOrder") String sortingOrder,
-                                                  @RequestParam(value = "size", defaultValue = "10") int size,
-                                                  @RequestParam(value = "sortingField", defaultValue = "name") String sortingField){
-        Pageable pageable = PageRequest.of(numberPage - 1, size);
-        return new ResponseEntity<>(libraryService.findByCriteria(null, sortingOrder, sortingField,
-                pageable), HttpStatus.OK);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Book> updateOneBook(@PathVariable("id") long id, @RequestBody NoteModel updateNote) {
-        Author author = authorService.searchExistingOrCreateNew(updateNote.getAuthorId(), updateNote.getAuthorName());
-        Topic topic = topicService.searchExistingOrCreateNew(updateNote.getTopicId(), updateNote.getTopicName());
-        return bookService.updateById(id, updateNote, author, topic);
-    }
-
-    @GetMapping("/get/authors")
-    public ResponseEntity<List<Author>> getAllAuthors(){
-        return authorService.getAll();
-    }
-    @GetMapping("/get/topics")
-    public ResponseEntity<List<Topic>> getAllTopics(){
-        return topicService.getAll();
-    }
-
-    @DeleteMapping("/deleteNote/{id}")
-    public ResponseEntity<HttpStatus> deleteNote(@PathVariable("id") long id) {
-            return bookService.deleteById(id);
-    }
-
 }
