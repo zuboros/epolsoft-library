@@ -1,6 +1,5 @@
-package com.example.epolsoftbackend.repositories;
+package com.example.epolsoftbackend.library;
 
-import com.example.epolsoftbackend.entities.Library;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

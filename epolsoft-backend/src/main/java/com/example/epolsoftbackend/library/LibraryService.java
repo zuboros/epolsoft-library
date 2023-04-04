@@ -1,7 +1,5 @@
-package com.example.epolsoftbackend.services;
+package com.example.epolsoftbackend.library;
 
-import com.example.epolsoftbackend.entities.Library;
-import com.example.epolsoftbackend.repositories.LibraryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Pageable;
@@ -22,30 +20,18 @@ public class LibraryService {
         this.libraryRepository = libraryRepository;
     }
 
-
-    public List<Library> findByCriteria(String bookName, String sortingOrder, String fieldName, Pageable pageable){
-            Page page = libraryRepository.findAll(new Specification<Library>() {
+    public List findByCriteria(Pageable pageable){
+        Page page = libraryRepository.findAll(new Specification<Library>() {
             @Override
             public Predicate toPredicate(Root<Library> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 
                 List<Predicate> predicates = new ArrayList<>();
-                if(bookName != null ) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("name"), bookName)));
-                }
-
-                switch (sortingOrder) {
-                    case "desc":
-                        query.orderBy(criteriaBuilder.desc(root.get(fieldName)));
-                        break;
-                    default:
-                        query.orderBy(criteriaBuilder.asc(root.get(fieldName)));
-                        break;
-                }
 
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         }, pageable);
-            return (List<Library>) page.getContent();
+            List result = List.of((List<Library>) page.getContent(), page.getTotalElements());
+            return result;
     }
 
 }
