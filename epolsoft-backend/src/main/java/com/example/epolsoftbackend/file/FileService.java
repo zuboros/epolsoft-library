@@ -1,4 +1,4 @@
-package com.example.epolsoftbackend.file;
+package com.example.epolsoftbackend.services;
 
 import java.io.File;
 import org.springframework.stereotype.Service;
@@ -18,47 +18,62 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.UUID;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Service
 public class FileService {
-    private final Path fileStorageLocation = Path.of(System.getProperty("user.dir") + File.separator + "bookCollection");
+    private final Path fileStorageLocation = Path.of(
+            System.getProperty("user.dir") + File.separator + "bookCollection");
     
     public String storeFile(MultipartFile file) throws IOException {
-        //String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        
         if (file == null || file.isEmpty()) {
             return null;
         }
         
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
-        String dirTodayName = formatter.format(date);
+        String dirTodayPathStr = formatter.format(date);
+        String[] dirTodayPathStrArray = dirTodayPathStr.split("/");
         
-        Files.createDirectories(Paths.get(fileStorageLocation + File.separator + dirTodayName));
+        Path dirTodayPath = Paths.get(fileStorageLocation + File.separator
+                + dirTodayPathStrArray[0] + File.separator
+                + dirTodayPathStrArray[1] + File.separator
+                + dirTodayPathStrArray[2]);
         
-        String fileUUIDName = UUID.randomUUID().toString();
+        Files.createDirectories(dirTodayPath);
+        
+        String fileUUIDName = UUID.randomUUID() + fileName.substring(fileName.lastIndexOf("."));
+        System.out.println(fileUUIDName);
 
         Files.copy(file.getInputStream(),
-                Path.of(fileStorageLocation + File.separator
-                        + dirTodayName + File.separator
-                        + fileUUIDName),
+                Path.of(dirTodayPath + File.separator + fileUUIDName),
                 StandardCopyOption.REPLACE_EXISTING);
         
-        return dirTodayName + "/" + fileUUIDName;
+        return dirTodayPathStr + "/" + fileUUIDName;
     }
     
     public Resource loadFileAsResource(String filePathStr) throws MalformedURLException {
-        if (filePathStr == null || filePathStr.isBlank() || !filePathStr.contains("/")) {
+        if (filePathStr == null
+                || filePathStr.isBlank()
+                || !filePathStr.contains("/")) {
             return null;
         }
         
-        String dirName = filePathStr.split("/")[0];
-        String fileName = filePathStr.split("/")[1];
+        String[] filePathStrArray = filePathStr.split("/");
         
-        Path newFileStorageLocation = Path.of(this.fileStorageLocation + File.separator + dirName);
+        String dirPathStr = filePathStrArray[0] + File.separator
+                + filePathStrArray[1] + File.separator
+                + filePathStrArray[2];
+        
+        String fileName = filePathStrArray[filePathStrArray.length - 1];
+        
+        Path newFileStorageLocation = Path.of(this.fileStorageLocation
+                + File.separator + dirPathStr);
         
         Path filePath = newFileStorageLocation.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
@@ -71,17 +86,27 @@ public class FileService {
     }
     
     public boolean deleteFile(String filePathStr) throws IOException {
-        if (filePathStr == null || filePathStr.isBlank() || !filePathStr.contains("/")) {
+        if (filePathStr == null
+                || filePathStr.isBlank()
+                || !filePathStr.contains("/")) {
             return false;
         }
         
-        String dirName = filePathStr.split("/")[0];
-        String fileName = filePathStr.split("/")[1];
+        String[] filePathStrArray = filePathStr.split("/");
         
-        Path newFileStorageLocation = Path.of(this.fileStorageLocation + File.separator + dirName);
+        String dirPathStr = filePathStrArray[0] + File.separator
+                + filePathStrArray[1] + File.separator
+                + filePathStrArray[2];
         
-        Files.deleteIfExists(Path.of(newFileStorageLocation + File.separator + fileName));
+        String fileName = filePathStrArray[filePathStrArray.length - 1];
         
-        return Files.exists(Path.of(newFileStorageLocation + File.separator + fileName));
+        Path newFileStorageLocation = Path.of(this.fileStorageLocation 
+                + File.separator + dirPathStr);
+        
+        Files.deleteIfExists(Path.of(newFileStorageLocation
+                + File.separator + fileName));
+        
+        return Files.exists(Path.of(newFileStorageLocation
+                + File.separator + fileName));
     }
 }
