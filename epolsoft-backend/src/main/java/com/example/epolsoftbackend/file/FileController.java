@@ -15,7 +15,6 @@ import com.example.epolsoftbackend.file.FileService;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -52,7 +51,7 @@ public class FileController {
         }
 
         // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(book.getFile());
+        Resource resource = fileService.loadFileAsResource(book.getFilePath());
 
         // Try to determine file's content type
         String contentType = null;
@@ -69,7 +68,7 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + book.getName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + book.getFileName() + "\"")
                 .body(resource);
     }
 }
