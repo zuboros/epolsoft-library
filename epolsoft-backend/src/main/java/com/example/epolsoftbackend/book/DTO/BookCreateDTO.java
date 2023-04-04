@@ -1,7 +1,7 @@
-package com.example.epolsoftbackend.book;
+package com.example.epolsoftbackend.book.DTO;
 
-import com.example.epolsoftbackend.author.AuthorDTO;
-import com.example.epolsoftbackend.topic.TopicDTO;
+import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
+import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -10,15 +10,13 @@ import lombok.*;
 @ToString
 @Setter
 @Getter
-public class BookDTO {
-    @JsonProperty("id")
-    private long id;
+public class BookCreateDTO {
     @JsonProperty("name")
     private String name;
     @JsonProperty("topic")
-    private TopicDTO topicDTO;
-    @JsonProperty("author")
-    private AuthorDTO authorDTO;
+    private TopicResponseDTO topicResponseDTO;
+    @JsonProperty("user")
+    private UserResponseDTO userResponseDTO;
     @JsonProperty("description")
     private String description;
     @JsonProperty("shortDescription")

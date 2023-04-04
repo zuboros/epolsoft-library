@@ -1,5 +1,9 @@
 package com.example.epolsoftbackend.book;
 
+import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
+import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
+import com.example.epolsoftbackend.topic.TopicService;
+import com.example.epolsoftbackend.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,15 +15,22 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final UserService userService;
+    private final TopicService topicService;
 
-    public BookService(BookRepository bookRepository, BookMapper bookMapper) {
+    public BookService(BookRepository bookRepository, BookMapper bookMapper, UserService userService, TopicService topicService) {
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
+        this.userService = userService;
+        this.topicService = topicService;
     }
 
-    public ResponseEntity<BookDTO> create(BookDTO bookDTO){
+    public ResponseEntity<BookCreateDTO> create(BookCreateDTO bookCreateDTO){
         try {
-            return new ResponseEntity<>(bookMapper.bookToBookDTO(bookRepository.saveAndFlush(bookMapper.bookDTOToBook(bookDTO))), HttpStatus.CREATED);
+            Book createBook = bookMapper.bookCreateDTOToBook(bookCreateDTO);
+            createBook.setTopicId(topicService.findById(createBook.getTopicId().getId()).orElse(null));
+            createBook.setUserId(userService.findById(createBook.getUserId().getId()).orElse(null));
+            return new ResponseEntity<>(bookMapper.bookToBookCreateDTO(bookRepository.saveAndFlush(createBook)), HttpStatus.CREATED);
         } catch (Exception e) {return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
     }
 
@@ -27,10 +38,14 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    public ResponseEntity<BookDTO> updateById(BookDTO bookDTO){
+    public ResponseEntity<BookUpdateDTO> updateById(BookUpdateDTO bookUpdateDTO){
         try{
-            return new ResponseEntity<>(bookMapper.bookToBookDTO(bookRepository
-                    .saveAndFlush(bookMapper.bookDTOToBook(bookDTO))),HttpStatus.OK);
+            Book updateBook = bookMapper.bookUpdateDTOToBook(bookUpdateDTO);
+            updateBook.setTopicId(topicService.findById(updateBook.getTopicId().getId()).orElse(null));
+            updateBook.setUserId(userService.findById(updateBook.getUserId().getId()).orElse(null));
+
+            return new ResponseEntity<>(bookMapper.bookToBookUpdateDTO(bookRepository
+                    .saveAndFlush(updateBook)),HttpStatus.OK);
         }
        catch (Exception e ) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
     }

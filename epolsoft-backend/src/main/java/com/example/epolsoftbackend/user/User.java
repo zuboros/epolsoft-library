@@ -1,8 +1,11 @@
-package com.example.epolsoftbackend.topic;
+package com.example.epolsoftbackend.user;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.example.epolsoftbackend.book.Book;
+import com.example.epolsoftbackend.user_role.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,28 +16,39 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Set;
+import javax.validation.constraints.Email;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "topic")
-public class Topic implements Serializable{
+@Table(name = "user")
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
 
-    @Column(name = "name", nullable = false)
-    @Length(min = 3, max = 255)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "is_active")
-    private boolean isActive;
+    @Email
+    @Length(min = 0, max = 255)
+    @Column(name = "mail")
+    private String mail;
+
+    @Column(name = "password_hash")
+    @Length(min = 1, max = 255)
+    private String passwordHash;
+
+    @Column(name = "is_blocked")
+    private boolean isBlocked;
+
+    @Column(name = "avatar")
+    @Length(min = 0, max = 255)
+    private String avatar;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
@@ -44,9 +58,16 @@ public class Topic implements Serializable{
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<UserRole> roles;
+
     @JsonIgnore
     @OneToMany(
-            mappedBy = "topicId",
+            mappedBy = "userId",
             cascade = CascadeType.ALL
     )
     private Set<Book> books;

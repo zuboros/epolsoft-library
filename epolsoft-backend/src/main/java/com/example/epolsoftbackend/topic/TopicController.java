@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.topic;
 
+import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ public class TopicController {
     }
 
     @GetMapping("/get/topics")
-    public ResponseEntity<List<TopicDTO>> getAllTopics(){
+    public ResponseEntity<List<TopicResponseDTO>> getAllTopics(){
         return topicService.getAllTopics();
     }
 

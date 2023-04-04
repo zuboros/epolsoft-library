@@ -2,8 +2,6 @@ package com.example.epolsoftbackend.library;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Immutable;
-import org.springframework.data.annotation.ReadOnlyProperty;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -37,40 +35,4 @@ public class Library {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    public long getId(){
-        return this.id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
 }

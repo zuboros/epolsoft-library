@@ -1,5 +1,7 @@
 package com.example.epolsoftbackend.book;
 
+import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
+import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +16,13 @@ public class BookController {
     }
 
     @PostMapping()
-    public ResponseEntity<BookDTO> createNote(@RequestBody BookDTO bookDTO){
-        return bookService.create(bookDTO);
+    public ResponseEntity<BookCreateDTO> createNote(@RequestBody BookCreateDTO bookCreateDTO){
+        return bookService.create(bookCreateDTO);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<BookDTO> updateOneBook(@RequestBody BookDTO bookDTO) {
-        return bookService.updateById(bookDTO);
+    public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO) {
+        return bookService.updateById(bookUpdateDTO);
     }
 
     @DeleteMapping("/deleteNote/{id}")//delete file
