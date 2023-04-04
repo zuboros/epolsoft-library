@@ -1,4 +1,4 @@
-package com.example.epolsoftbackend.services;
+package com.example.epolsoftbackend.file;
 
 import java.io.File;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class FileService {
     private final Path fileStorageLocation = Path.of(
             System.getProperty("user.dir") + File.separator + "bookCollection");
     
-    public String storeFile(MultipartFile file) throws IOException {
+    public String[] storeFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
         }
@@ -46,15 +46,16 @@ public class FileService {
                 + dirTodayPathStrArray[2]);
         
         Files.createDirectories(dirTodayPath);
-        
-        String fileUUIDName = UUID.randomUUID() + fileName.substring(fileName.lastIndexOf("."));
-        System.out.println(fileUUIDName);
+
+        String fileUUIDName = UUID.randomUUID().toString();
 
         Files.copy(file.getInputStream(),
                 Path.of(dirTodayPath + File.separator + fileUUIDName),
                 StandardCopyOption.REPLACE_EXISTING);
+
+        String[] resp = new String[] {"fileName: " + fileName, "filePath: " + dirTodayPathStr + "/" + fileUUIDName};
         
-        return dirTodayPathStr + "/" + fileUUIDName;
+        return resp;
     }
     
     public Resource loadFileAsResource(String filePathStr) throws MalformedURLException {
@@ -74,7 +75,7 @@ public class FileService {
         
         Path newFileStorageLocation = Path.of(this.fileStorageLocation
                 + File.separator + dirPathStr);
-        
+
         Path filePath = newFileStorageLocation.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
         
