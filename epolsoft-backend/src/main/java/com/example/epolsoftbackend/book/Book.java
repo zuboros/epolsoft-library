@@ -33,7 +33,7 @@ public class Book implements Serializable {
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     private Topic topicId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author authorId;
 
@@ -45,9 +45,13 @@ public class Book implements Serializable {
     @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,150}$")
     private String shortDescription;
 
-    @Column(name = "file")
+    @Column(name = "file_name")
     @Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
-    private String file;
+    private String fileName;
+
+    @Column(name = "file_path")
+    @Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
+    private String filePath;
 
     @UpdateTimestamp
     @Column(name = "updated_at")

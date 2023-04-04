@@ -1,6 +1,7 @@
 package com.example.epolsoftbackend.author;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import com.example.epolsoftbackend.book.Book;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +31,7 @@ public class Author implements Serializable {
     private String name;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "authorId", optional = false, cascade = CascadeType.ALL)
-    private Book book;
+    @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL)
+    private Set<Book> books;
 
 }
