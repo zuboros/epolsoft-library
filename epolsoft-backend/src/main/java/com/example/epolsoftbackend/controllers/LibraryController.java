@@ -89,9 +89,9 @@ public class LibraryController {
 
     @GetMapping()
     public ResponseEntity<List<Library>> getBooks(@RequestParam(value = "numberPage", defaultValue = "1") int numberPage,
-                                                  @RequestParam("sortingOrder") String sortingOrder,
+                                                  @RequestParam(value = "sortingOrder") String sortingOrder,
                                                   @RequestParam(value = "size", defaultValue = "10") int size,
-                                                  @RequestParam(value = "sortingField") String sortingField){
+                                                  @RequestParam(value = "sortingField", defaultValue = "name") String sortingField){
         Pageable pageable = PageRequest.of(numberPage - 1, size);
         return new ResponseEntity<>(libraryService.findByCriteria(null, sortingOrder, sortingField,
                 pageable), HttpStatus.OK);
