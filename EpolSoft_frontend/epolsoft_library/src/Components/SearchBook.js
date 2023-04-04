@@ -1,7 +1,7 @@
 import { Input, Space, Button, Form } from "antd"
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchLocalBooks } from '../store/bookSlice';
+import { fetchLocalBooks } from '../redux/reducers/bookSlice';
 
 const SearchBook = () => {
    const [bookName, setBookName] = useState("");

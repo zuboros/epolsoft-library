@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { topics } from "../API/serverData";
+import { topics } from "../../data/serverData";
 
 /// DON'T USE IT !!!
 /* export const fetchTopics = createAsyncThunk(

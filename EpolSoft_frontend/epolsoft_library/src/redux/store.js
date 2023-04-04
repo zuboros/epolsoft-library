@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit"
-import bookReducer from './bookSlice';
-import topicReducer from "./topicSlice";
+import bookReducer from './reducers/bookSlice';
+import topicReducer from "./reducers/topicSlice";
 
 export default configureStore({
    reducer: {
       books: bookReducer,
-      topics: topicReducer,
+      topics: topicReducer
    }
 });

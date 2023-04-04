@@ -1,25 +1,35 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 //import { axios } from "../axios"
-import { books, books2, getAllBooks } from "../API/serverData";
+import { books, books2, getAllBooks } from "../../data/serverData";
+import { createRequest } from '../../common/requestGenerator';
+import * as axios from "../../lib/actionAxiosTypes";
+import * as entities from "../entities"
 
 const serverResponse = async (data) => { setTimeout((e) => (e), 2000); return { data: data } };
 
+const initialState = {
+   [entities.BOOKS]: [],
+   status: null,
+   error: null,
+   loading: null,
+   deleteLoading: null,
+   postLoading: null,
+   totalBooks: null,
+}
 
 export const fetchBooks = createAsyncThunk(
-   'books/fetchBooks',
-   async function ({ page, pageSize }, { rejectWithValue }) {
+   `${entities.BOOKS}/${entities.FETCH_BOOKS}`,
+   async function ({ pageNum, pageSize, sortOrder, sortField }, { rejectWithValue }) {
       try {
 
-         /* const response = await axios.get('');
-
-         if (!response.status === 200) {
-            throw new Error('Can\'t extract any elements');
-         } */
-
-         //const data = await response.data;
-         console.log('FETCH');
-
-         const { data } = await serverResponse(getAllBooks.slice(pageSize * page - pageSize, pageSize * page));
+         const data = await createRequest({
+            method: axios.GET, url: axios.PATH_GET_BOOKS_WITH_PARAMS({ pageNum, pageSize, sortOrder, sortField }),
+            postCallback: (data) => {
+               console.log(axios.GET);                      ///
+               console.log(data.data);                   ///
+               return data.data;
+            }
+         });
 
          return data;
 
@@ -129,21 +139,92 @@ export const putBook = createAsyncThunk(
    }
 );
 
+export const extractData = async (dispatch, queryParams) => {
+   console.log('query address: ' + axios.PATH_GET_BOOKS_WITH_PARAMS(queryParams));
+   await createRequest({
+      preCallback: () => dispatch(setLoading(false)),
+      method: axios.GET, url: axios.PATH_GET_BOOKS_WITH_PARAMS(queryParams),
+      postCallback: (data) => {
+         console.log(axios.GET);                      ///
+         console.log(data);                   ///
+         setTotalBooks(data.data[1])
+         return data.data[0];
+      },
+      redux_cfg: {
+         dispatch,
+         actions: [fetchLocalBooks, setLoading]
+      }
+   })
+}
+export const deleteData = async (dispatch, id) =>
+   await createRequest({
+      preCallback: () => dispatch(setDeleteLoading(false)),
+      method: axios.DELETE, url: axios.PATH_DELETE_BOOK({ id }),
+      postCallback: () => {
+         console.log(axios.DELETE);                                           ///
+         console.log("entity: " + id + " was deleted");                    ///
+         return { id };
+      },
+      redux_cfg: {
+         dispatch,
+         actions: [removeBook, setDeleteLoading]
+      }
+   })
+
+
+export const postData = async (dispatch, data) => {
+
+   const sendData = {
+      file: data.uploadFiles[0],
+      data
+   }
+   delete sendData.data['uploadFiles'];
+
+   const formData = new FormData
+   formData.append(sendData.file.name, sendData.file);
+
+   console.log('formData');
+   console.log(sendData.file);
+
+
+
+   await createRequest({
+      method: axios.POST, url: axios.PATH_UPLOAD_FILE,
+      body: {
+         data: formData,
+      }
+   })
+
+   await createRequest({
+      method: axios.POST, url: axios.PATH_POST_BOOK,
+      body: {
+         ...sendData.data,
+      },
+      postCallback: (dataAfter) => {
+         console.log(axios.POST);                                           ///
+         const { data } = dataAfter;
+         console.log(data);                    ///
+         return data;
+      },
+      redux_cfg: {
+         dispatch,
+         actions: [addBook]
+      }
+   })
+}
+
+
 const setError = (state, action) => {
    state.status = 'rejected';
    state.error = action.payload;
 }
 
 const bookSlice = createSlice({
-   name: 'books',
-   initialState: {
-      books: [],
-      status: null,
-      error: null,
-   },
+   name: entities.BOOKS,
+   initialState,
    reducers: {
       fetchLocalBooks(state, action) {
-         state.books = books;
+         state.books = action.payload;
       },
       addBook(state, action) {
          state.books.push(action.payload);
@@ -156,16 +237,30 @@ const bookSlice = createSlice({
       },
       removeBook(state, action) {
          state.books = state.books.filter(book => book.id !== action.payload.id);
-      }
+      },
+      setLoading(state, action) {
+         state.loading = !action.payload;
+      },
+      setDeleteLoading(state, action) {
+         state.deleteLoading = !action.payload;
+      },
+      setPostLoading(state, action) {
+         state.deleteLoading = !action.payload;
+      },
+      setTotalBooks(state, action) {
+         state.totalBooks = action.payload;
+      },
    },
    extraReducers: {
       [fetchBooks.pending]: (state) => {
          state.status = 'loading';
+         //state.loading = true;
          state.error = null;
       },
       [fetchBooks.fulfilled]: (state, action) => {
          state.status = 'resolve';
-         state.books = action.payload;
+         //state.loading = false;
+         state[entities.BOOKS] = action.payload;
       },
       [fetchBooks.rejected]: setError,
       [deleteBook.rejected]: setError,
@@ -173,6 +268,6 @@ const bookSlice = createSlice({
 });
 
 
-export const { fetchLocalBooks, addBook, removeBook, editBook, sortBook } = bookSlice.actions;
+export const { fetchLocalBooks, addBook, removeBook, editBook, sortBook, setLoading, setDeleteLoading, setPostLoading, setTotalBooks } = bookSlice.actions;
 
 export default bookSlice.reducer;

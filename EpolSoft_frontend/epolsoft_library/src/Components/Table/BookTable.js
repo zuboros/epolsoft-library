@@ -1,33 +1,39 @@
 import { Table, Space, Form, Input, Button, Popconfirm, AutoComplete } from 'antd';
 import { useState, useEffect } from 'react';
-import { deleteBook, putBook, sortBook, fetchBooks } from "../store/bookSlice";
+import { deleteBook, putBook, sortBook, fetchBooks } from "../../redux/reducers/bookSlice";
 import { useDispatch, useSelector } from 'react-redux';
+import { extractData, deleteData } from '../../redux/reducers/bookSlice';
+import { convertBooksToTable, downloadFile } from './features/tablemethods';
 
-function BookTable() {
+const INITIAL_PAGE_NUM = 1;
+const INITIAL_PAGE_SIZE = 5;
+const INITIAL_ORDER_FIELD = "id";
+const ASC_ORDER = "ASC";
+const DESC_ORDER = "DESC";
+
+function BookTable({ loading, deleteLoading }) {
   const dispatch = useDispatch();
   const books = useSelector(state => state.books.books);
   const topics = useSelector(state => state.topics.topics)
 
-  const [pageSize, setPageSize] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [pageNum, setPageNum] = useState(INITIAL_PAGE_NUM);
+  const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE);
+  const [sortField, setSortField] = useState(INITIAL_ORDER_FIELD);
+  const [sortOrder, setSortOrder] = useState(ASC_ORDER);
+
+  const [load_ing, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [editRowKey, setEditRowKey] = useState("");
   const [form] = Form.useForm();
 
-  const modifiedData = (books) => books?.map((book) => ({
-    key: book.id,
-    ...book,
-  }));
-
   useEffect(() => {
-    setLoading(true);
-    dispatch(fetchBooks({ page: 1, pageSize }));
-    setLoading(false);
+    //dispatch(fetchBooks({ page: 1, pageSize }));
+    extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder });
   }, [])
 
   const handleDelete = (value) => {
     setLoadingDelete(true);
-    dispatch(deleteBook({ id: value.id }));
+    deleteData(dispatch, value.id)
     setLoadingDelete(false);
   }
 
@@ -64,21 +70,17 @@ function BookTable() {
     }
   };
   const edit = (record) => {
+    console.log('edit');
+    console.log(record);
+    setEditRowKey(record.key);
+
+
     form.setFieldValue({
       ...record,
+      name: record.name
     });
-    setEditRowKey(record.key);
   };
 
-  const downloadFile = (url) => {
-    const fileName = url.split("/").pop();
-    const aTag = document.createElement("a");
-    aTag.href = url;
-    aTag.setAttribute("download", fileName);
-    document.body.appendChild(aTag);
-    aTag.click();
-    aTag.remove();
-  }
 
   const columns = [
     {
@@ -90,24 +92,31 @@ function BookTable() {
       dataIndex: "name",
       align: "center",
       editTable: true,
-      sorter: async () => {
+      onHeaderCell: (column) => {
+        return {
+          onClick: () => {
+            console.log(column);
+            setSortField(column.dataIndex);
+            setSortOrder(sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER);
+            extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER });
+          }
+        };
+      },
+      /* sorter: async () => {
         //CHANGE!!!
         console.log('Clicked sort button');
-        await setTimeout(() => {
-          dispatch(sortBook({}))
-
-        }, 1000)
-      }
+        toggle();
+      } */
     },
     {
       title: "Author",
-      dataIndex: "authorName",
+      dataIndex: "author",
       align: "center",
       editTable: true,
     },
     {
       title: "Topic",
-      dataIndex: "topicName",
+      dataIndex: "topic",
       align: "center",
       editTable: true,
     },
@@ -135,7 +144,7 @@ function BookTable() {
       render: (_, record) => {
         const editable = isEditing(record);
         return (
-          modifiedData.length >= 1 ? (
+          convertBooksToTable.length >= 1 ? (
             <Space>
               {editable ? (
                 <span>
@@ -153,7 +162,7 @@ function BookTable() {
                     title="Are you sure?"
                     onConfirm={() => handleDelete(record)}
                   >
-                    <Button danger type="primary" loading={loadingDelete}>Delete</Button>
+                    <Button danger type="primary" loading={deleteLoading}>Delete</Button>
                   </Popconfirm>
 
                   <Button type="primary" onClick={() => edit(record)} >Edit</Button>
@@ -190,14 +199,13 @@ function BookTable() {
     children,
     ...restProps
   }) => {
-
-
     return (
       <td {...restProps}>
         {editing ? (
           dataIndex === "topicName" ?
             <Form.Item
               name="topic"
+              style={{ margin: 0 }}
               rules={[
                 {
                   required: true,
@@ -233,7 +241,7 @@ function BookTable() {
                 },
               ]}
             >
-              <Input value={dataIndex} />
+              <Input />
             </Form.Item>
         ) : (
           children
@@ -252,16 +260,16 @@ function BookTable() {
               cell: EditableCell,
             }
           }}
-          dataSource={modifiedData(books)}
+          dataSource={convertBooksToTable(books)}
           bordered
           loading={loading}
           pagination={{
             pageSize: pageSize,
             total: 100,
             onChange: (page, pageSize) => {
-
+              setPageNum(page);
               setPageSize(pageSize);
-              dispatch(fetchBooks({ page: page, pageSize: pageSize }));
+              extractData(dispatch, { pageNum: page, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder });
             }
           }}
           expandable={{

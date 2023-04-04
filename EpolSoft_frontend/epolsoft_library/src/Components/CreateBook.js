@@ -1,10 +1,10 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postBook } from '../store/bookSlice';
-import { fetchLocalTopics } from '../store/topicSlice';
+import { postData, postFile } from '../redux/reducers/bookSlice';
+import { fetchLocalTopics } from '../redux/reducers/topicSlice';
 
-const AddBook = () => {
+const CreateBook = () => {
    const dispatch = useDispatch();
    const { status, error } = useSelector(state => state.books)
    const topics = useSelector(state => state.topics.topics)
@@ -25,9 +25,9 @@ const AddBook = () => {
       if (finish) {
          setConfirmLoading(true);
          ///api function:
-
-         dispatch(postBook({ ...values, topicId: (topics.find((topic) => topic.name === values.topic)).id }));
-         setOpen(false);
+         postData(dispatch, values);
+         //dispatch(postBook({ ...values, topicId: (topics.find((topic) => topic.name === values.topic)).id }));
+         //setOpen(false);
          setConfirmLoading(false);
          //////////////////////////////////
          /* setTimeout(() => {
@@ -198,4 +198,4 @@ const AddBook = () => {
       </>
    );
 };
-export default AddBook;
+export default CreateBook;
