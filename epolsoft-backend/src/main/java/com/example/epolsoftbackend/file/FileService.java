@@ -1,4 +1,4 @@
-package com.example.epolsoftbackend.services;
+package com.example.epolsoftbackend.file;
 
 import java.io.File;
 import org.springframework.stereotype.Service;
@@ -46,14 +46,13 @@ public class FileService {
                 + dirTodayPathStrArray[2]);
         
         Files.createDirectories(dirTodayPath);
-        
-        String fileUUIDName = UUID.randomUUID() + fileName.substring(fileName.lastIndexOf("."));
-        System.out.println(fileUUIDName);
+
+        String fileUUIDName = UUID.randomUUID().toString();
 
         Files.copy(file.getInputStream(),
                 Path.of(dirTodayPath + File.separator + fileUUIDName),
                 StandardCopyOption.REPLACE_EXISTING);
-        
+
         return dirTodayPathStr + "/" + fileUUIDName;
     }
     
@@ -74,7 +73,7 @@ public class FileService {
         
         Path newFileStorageLocation = Path.of(this.fileStorageLocation
                 + File.separator + dirPathStr);
-        
+
         Path filePath = newFileStorageLocation.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
         
