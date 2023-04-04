@@ -28,7 +28,7 @@ public class FileService {
     private final Path fileStorageLocation = Path.of(
             System.getProperty("user.dir") + File.separator + "bookCollection");
     
-    public String[] storeFile(MultipartFile file) throws IOException {
+    public String storeFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
         }
@@ -53,9 +53,7 @@ public class FileService {
                 Path.of(dirTodayPath + File.separator + fileUUIDName),
                 StandardCopyOption.REPLACE_EXISTING);
 
-        String[] resp = new String[] {"fileName: " + fileName, "filePath: " + dirTodayPathStr + "/" + fileUUIDName};
-        
-        return resp;
+        return dirTodayPathStr + "/" + fileUUIDName;
     }
     
     public Resource loadFileAsResource(String filePathStr) throws MalformedURLException {
