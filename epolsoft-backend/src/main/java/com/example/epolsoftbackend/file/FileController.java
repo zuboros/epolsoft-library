@@ -15,6 +15,7 @@ import com.example.epolsoftbackend.file.FileService;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,7 +31,7 @@ public class FileController {
 
     @PostMapping("/uploadFile")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String[]> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(fileService.storeFile(file), HttpStatus.OK);
     }
 
