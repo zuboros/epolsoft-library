@@ -23,6 +23,8 @@ public class BookDTO {
     private String description;
     @JsonProperty("shortDescription")
     private String shortDescription;
-    @JsonProperty("file")
-    private String file;
+    @JsonProperty("fileName")
+    private String fileName;
+    @JsonProperty("filePath")
+    private String filePath;
 }
