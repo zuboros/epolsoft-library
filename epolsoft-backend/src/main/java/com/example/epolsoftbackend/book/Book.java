@@ -46,11 +46,11 @@ public class Book implements Serializable {
     private String shortDescription;
 
     @Column(name = "file_name")
-    @Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
+    //@Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
     private String fileName;
 
     @Column(name = "file_path")
-    @Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
+    //@Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
     private String filePath;
 
     @UpdateTimestamp

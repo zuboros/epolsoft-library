@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.topic;
 
+import com.example.epolsoftbackend.author.Author;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,5 +21,4 @@ public class TopicService {
     public ResponseEntity<List<TopicDTO>> getAllTopics(){
         return new ResponseEntity<>(topicMapper.listTopicToListTopicDTO(topicRepository.findAll()), HttpStatus.OK);
     }
-
 }
