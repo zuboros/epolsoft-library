@@ -6,7 +6,7 @@ export const PUT = 'put';
 //BOOKS
 
 export const PATH_GET_BOOKS_WITH_PARAMS = ({ pageNum, pageSize, sortField, sortOrder }) =>
-   `/api/library?number=${(pageNum - 1) || "0"}&size=${pageSize || "0"}&sort=${sortField || "id"},${sortOrder || "ASC"}`;
+   `/api/library?page=${(pageNum - 1) || "0"}&size=${pageSize || "0"}&sort=${sortField || "id"},${sortOrder || "ASC"}`;
 
 export const PATH_GET_BOOKS = "/library";
 

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { extractData, deleteData } from '../../redux/reducers/bookSlice';
 import { convertBooksToTable, downloadFile } from './features/tablemethods';
 
+const INITIAL_BOOKS_TOTAL = 1;
 const INITIAL_PAGE_NUM = 1;
 const INITIAL_PAGE_SIZE = 5;
 const INITIAL_ORDER_FIELD = "id";
@@ -13,7 +14,7 @@ const DESC_ORDER = "DESC";
 
 function BookTable({ loading, deleteLoading }) {
   const dispatch = useDispatch();
-  const books = useSelector(state => state.books.books);
+  const { books, totalBooks } = useSelector(state => state.books);
   const topics = useSelector(state => state.topics.topics)
 
   const [pageNum, setPageNum] = useState(INITIAL_PAGE_NUM);
@@ -29,7 +30,11 @@ function BookTable({ loading, deleteLoading }) {
   useEffect(() => {
     //dispatch(fetchBooks({ page: 1, pageSize }));
     extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder });
-  }, [])
+    console.log('effect');
+    console.log(totalBooks);
+
+
+  }, [dispatch])
 
   const handleDelete = (value) => {
     setLoadingDelete(true);
@@ -265,7 +270,7 @@ function BookTable({ loading, deleteLoading }) {
           loading={loading}
           pagination={{
             pageSize: pageSize,
-            total: 100,
+            total: totalBooks || INITIAL_BOOKS_TOTAL,
             onChange: (page, pageSize) => {
               setPageNum(page);
               setPageSize(pageSize);

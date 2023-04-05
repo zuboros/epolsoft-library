@@ -147,7 +147,7 @@ export const extractData = async (dispatch, queryParams) => {
       postCallback: (data) => {
          console.log(axios.GET);                      ///
          console.log(data);                   ///
-         setTotalBooks(data.data[1])
+         dispatch(setTotalBooks(data.data[1]));
          return data.data[0];
       },
       redux_cfg: {
