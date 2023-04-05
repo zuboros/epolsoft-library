@@ -15,4 +15,5 @@ public class UserLoginDTO {
 
     @JsonProperty("password")
     private String password;
+
 }
