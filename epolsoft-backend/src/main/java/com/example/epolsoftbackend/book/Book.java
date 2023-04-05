@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "book")
 public class Book implements Serializable {
+
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -66,4 +67,5 @@ public class Book implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
 }

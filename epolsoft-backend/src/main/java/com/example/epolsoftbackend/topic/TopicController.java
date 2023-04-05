@@ -3,7 +3,6 @@ package com.example.epolsoftbackend.topic;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,9 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/topic")
 public class TopicController {
-    final TopicService topicService;
+    final TopicServiceImpl topicService;
 
-    public TopicController(TopicService topicService) {
+    public TopicController(TopicServiceImpl topicService) {
         this.topicService = topicService;
     }
 
@@ -23,3 +22,4 @@ public class TopicController {
         return topicService.getAllTopics();
     }
 }
+

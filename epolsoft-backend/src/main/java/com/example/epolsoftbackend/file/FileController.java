@@ -1,7 +1,8 @@
 package com.example.epolsoftbackend.file;
 
 import com.example.epolsoftbackend.book.Book;
-import com.example.epolsoftbackend.book.BookService;
+import com.example.epolsoftbackend.book.BookServiceImpl;
+import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,28 +20,38 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/file")
 public class FileController {
-    final FileService fileService;
-    final BookService bookService;
 
-    public FileController(FileService fileService, BookService bookService) {
+    final FileServiceImpl fileService;
+    final BookServiceImpl bookService;
+
+    public FileController(FileServiceImpl fileService, BookServiceImpl bookService, UserServiceImpl userService) {
         this.fileService = fileService;
         this.bookService = bookService;
     }
 
-    @PostMapping("/uploadFile")
+    @PostMapping("/upload")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(fileService.storeFile(file), HttpStatus.OK);
     }
 
-    @PostMapping("/deleteFile")
+    @PostMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@RequestParam("fileName") String fileName) throws IOException {
-        fileService.deleteFile(fileName);
+    public void deleteFile(@PathVariable("id") long id, @RequestParam("type") String type) throws IOException {
+        Optional<Book> optionalBook = bookService.findById(id);
+        Book book = optionalBook.isEmpty() ? null : optionalBook.get();
+
+        if (book == null) {
+            return;
+        }
+
+        String filePath = type.equals("book") ? book.getFilePath() : book.getUserId().getAvatarPath();
+
+        fileService.deleteFile(filePath);
     }
 
-    @GetMapping("/downloadFile/{id}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable long id, HttpServletRequest request) throws MalformedURLException {
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable long id, @RequestParam("type") String type, HttpServletRequest request) throws MalformedURLException {
 
         Optional<Book> optionalBook = bookService.findById(id);
         Book book = optionalBook.isEmpty() ? null : optionalBook.get();
@@ -49,8 +60,11 @@ public class FileController {
             return null;
         }
 
+        String resourcePath = type.equals("book") ? book.getFilePath() : book.getUserId().getAvatarPath();
+        String resourceName = type.equals("book") ? book.getFileName() : book.getUserId().getAvatarName();
+
         // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(book.getFilePath());
+        Resource resource = fileService.loadFileAsResource(resourcePath);
 
         // Try to determine file's content type
         String contentType = null;
@@ -67,7 +81,8 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + book.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resourceName + "\"")
                 .body(resource);
     }
+
 }

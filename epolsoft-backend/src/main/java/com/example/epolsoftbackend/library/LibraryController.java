@@ -1,6 +1,5 @@
 package com.example.epolsoftbackend.library;
 
-import org.springframework.data.domain.jaxb.SpringDataJaxb.PageDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +12,10 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/api/library")
 public class LibraryController {
-    final LibraryService libraryService;
 
-    public LibraryController(LibraryService libraryService) {
+    final LibraryServiceImpl libraryService;
+
+    public LibraryController(LibraryServiceImpl libraryService) {
         this.libraryService = libraryService;
     }
 
@@ -23,4 +23,5 @@ public class LibraryController {
     public ResponseEntity<List> getBooks(Pageable pageable){
         return new ResponseEntity<>(libraryService.findByCriteria(pageable), HttpStatus.OK);
     }
+
 }

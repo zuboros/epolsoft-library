@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/book")
 public class BookController {
-    final BookService bookService;
+    final BookServiceImpl bookService;
 
-    public BookController(BookService bookService) {
+    public BookController(BookServiceImpl bookService) {
         this.bookService = bookService;
     }
 

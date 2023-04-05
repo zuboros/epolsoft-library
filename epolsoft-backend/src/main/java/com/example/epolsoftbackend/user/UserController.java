@@ -1,7 +1,5 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
-import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
 import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +9,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/authors")
 public class UserController {
-    final UserService userService;
 
-    public UserController(UserService userService) {
+    final UserServiceImpl userService;
+
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
