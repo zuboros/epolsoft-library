@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS public.user
+CREATE TABLE IF NOT EXISTS public.author
 (
     id bigint NOT NULL,
     name VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT user_pkey PRIMARY KEY (id)
+    CONSTRAINT author_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.topic
@@ -21,15 +21,15 @@ CREATE TABLE IF NOT EXISTS public.book
     short_description VARCHAR(150) COLLATE pg_catalog."default" NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
-    user_id BIGINT,
+    author_id BIGINT,
     topic_id BIGINT,
     CONSTRAINT book_pkey PRIMARY KEY (id),
     CONSTRAINT book_topic_fkey FOREIGN KEY (topic_id)
         REFERENCES public.topic (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT book_user_fkey FOREIGN KEY (user_id)
-        REFERENCES public.user (id) MATCH SIMPLE
+    CONSTRAINT book_author_fkey FOREIGN KEY (author_id)
+        REFERENCES public.author (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -44,8 +44,8 @@ SELECT b.id,
        b.updated_at,
        b.created_at,
        t.name AS topic,
-       a.name AS user
+       a.name AS author
 FROM book b
          JOIN topic t ON b.topic_id = t.id
-         JOIN user a ON b.user_id = a.id;
+         JOIN author a ON b.author_id = a.id;
 
