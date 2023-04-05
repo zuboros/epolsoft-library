@@ -11,9 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/topic")
 public class TopicController {
-    final TopicServiceImpl topicService;
+    final TopicService topicService;
 
-    public TopicController(TopicServiceImpl topicService) {
+    public TopicController(TopicService topicService) {
         this.topicService = topicService;
     }
 

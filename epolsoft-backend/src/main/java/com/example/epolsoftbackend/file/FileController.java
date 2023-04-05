@@ -1,7 +1,9 @@
 package com.example.epolsoftbackend.file;
 
 import com.example.epolsoftbackend.book.Book;
+import com.example.epolsoftbackend.book.BookService;
 import com.example.epolsoftbackend.book.BookServiceImpl;
+import com.example.epolsoftbackend.user.UserService;
 import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -21,10 +23,10 @@ import java.util.Optional;
 @RequestMapping("/api/file")
 public class FileController {
 
-    final FileServiceImpl fileService;
-    final BookServiceImpl bookService;
+    final FileService fileService;
+    final BookService bookService;
 
-    public FileController(FileServiceImpl fileService, BookServiceImpl bookService, UserServiceImpl userService) {
+    public FileController(FileService fileService, BookService bookService) {
         this.fileService = fileService;
         this.bookService = bookService;
     }

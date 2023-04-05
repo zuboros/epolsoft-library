@@ -10,9 +10,9 @@ import java.util.List;
 @RequestMapping("/api/authors")
 public class UserController {
 
-    final UserServiceImpl userService;
+    final UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
