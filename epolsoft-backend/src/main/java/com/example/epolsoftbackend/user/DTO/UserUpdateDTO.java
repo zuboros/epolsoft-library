@@ -22,6 +22,9 @@ public class UserUpdateDTO {
     @JsonProperty("password")
     private String password;
 
-    @JsonProperty("avatar")
+    @JsonProperty("avatarName")
     private String avatar;
+
+    @JsonProperty("avatarPath")
+    private String avatarPath;
 }

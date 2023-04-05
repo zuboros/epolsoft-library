@@ -27,9 +27,6 @@ public class Library {
     @Column(name = "short_description")
     private String shortDescription;
 
-    @Column(name = "file")
-    private String file;
-
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
