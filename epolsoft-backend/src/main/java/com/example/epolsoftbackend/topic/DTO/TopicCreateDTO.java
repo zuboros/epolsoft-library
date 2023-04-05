@@ -1,18 +1,14 @@
-package com.example.epolsoftbackend.author;
+package com.example.epolsoftbackend.topic.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Builder
 @ToString
+@Data
 @Getter
 @Setter
-@Data
-public class AuthorDTO {
-
-    @JsonProperty("id")
-    private long id;
-
+public class TopicCreateDTO {
     @JsonProperty("name")
     private String name;
 }

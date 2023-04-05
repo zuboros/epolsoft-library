@@ -2,14 +2,14 @@ package com.example.epolsoftbackend.book;
 
 import java.io.Serializable;
 
-import com.example.epolsoftbackend.author.Author;
+import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.topic.Topic;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,32 +26,38 @@ public class Book implements Serializable {
     private long id;
 
     @Column(name = "name")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я]{2,100}$")
+    @Length(min = 2, max = 255)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "topic_id", referencedColumnName = "id")
-    private Topic topicId;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    private Author authorId;
-
-    @Column(name = "description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,255}$")
-    private String description;
-
     @Column(name = "short_description")
-    @Pattern(regexp = "^[ a-zA-zа-яА-Я.,-]{0,150}$")
+    @Length(min = 5, max = 150)
     private String shortDescription;
 
+    @Column(name = "description")
+    @Length(min = 20, max = 255)
+    private String description;
+
     @Column(name = "file_name")
-    //@Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
+    @Length(min = 0, max = 255)
     private String fileName;
 
     @Column(name = "file_path")
-    //@Pattern(regexp = "^[a-zA-zа-яА-Я.,_-]{0,255}$")
+    @Length(min = 0, max = 255)
     private String filePath;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "topic_id",
+            referencedColumnName = "id"
+    )
+    private Topic topicId;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id"
+    )
+    private User userId;
 
     @UpdateTimestamp
     @Column(name = "updated_at")

@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS public.role
     name VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
 );
 
+ALTER TABLE public.user RENAME TO public.user;
+
 ALTER TABLE public.user
     ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITHOUT TIME ZONE,
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITHOUT TIME ZONE,
-    ADD COLUMN IF NOT EXISTS isBlocked boolean NOT NULL,
+    ADD COLUMN IF NOT EXISTS is_blocked boolean NOT NULL,
     ADD COLUMN IF NOT EXISTS mail citext NOT NULL UNIQUE,
     ADD COLUMN IF NOT EXISTS avatar VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
     ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) COLLATE pg_catalog."default" NOT NULL;
@@ -30,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.user_role
 ALTER TABLE public.topic
     ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITHOUT TIME ZONE,
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITHOUT TIME ZONE,
-    ADD COLUMN IF NOT EXISTS isActive BOOLEAN NOT NULL;
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL;
 
 INSERT INTO public.role (id, name) VALUES (1, "USER"),
                                           (2, "ADMIN"),
@@ -38,5 +40,5 @@ INSERT INTO public.role (id, name) VALUES (1, "USER"),
 
 ALTER TABLE public.book
     DROP IF EXISTS COLUMN file,
-    ADD COLUMN IF NOT EXISTS fileName VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
-    ADD COLUMN IF NOT EXISTS filePath VARCHAR(255) COLLATE pg_catalog."default" NOT NULL;
+    ADD COLUMN IF NOT EXISTS file_name VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
+    ADD COLUMN IF NOT EXISTS file_path VARCHAR(255) COLLATE pg_catalog."default" NOT NULL;
