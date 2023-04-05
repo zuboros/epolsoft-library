@@ -1,21 +1,25 @@
 import './App.css';
 import Books from './components/Books'
-import { Switch, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import NotFoundPage from './pages/NotFoundPage'
+import { Layout } from './components/layers/layout'
+
 
 function App() {
 
   return (
     <div className='App'>
-      {/* <Switch>
-        <Route exact path='/' component={HomePage} />
-        <Route exact path='/login' component={LoginPage} />
-        <Route exact path='/register' component={RegisterPage} />
-      </Switch> */}
-
-      <Books />
+      <Routes>
+        <Route path='/' element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='*' element={<NotFoundPage />} />
+        </Route>
+      </Routes>
     </div>
   );
 }

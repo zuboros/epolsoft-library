@@ -1,8 +1,9 @@
 //import { Redirect } from 'react-router-dom'
+import Books from '../components/Books'
 
 const HomePage = () => {
    return (
-      {/* <Redirect to="login" /> */ }
+      <Books />
    )
 }
 
