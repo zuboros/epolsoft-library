@@ -22,7 +22,7 @@ const UserProfile = () => {
    return (
       <>
          <Avatar src="https://thumbs.dreamstime.com/b/avatar-van-de-geekmens-104871313.jpg" />
-         {userInfo.roles.find()}
+         { }
       </>
    )
 }
