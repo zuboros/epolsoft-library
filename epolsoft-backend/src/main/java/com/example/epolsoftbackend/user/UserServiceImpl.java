@@ -61,12 +61,14 @@ public class UserServiceImpl implements UserService {
 
         newUser.setMail(userRegistrationDTO.getMail());
         newUser.setName(userRegistrationDTO.getName());
-        newUser.setPasswordHash(hashPassword(userRegistrationDTO.getPassword()));
+        try {
+            newUser.setPasswordHash(hashPassword(userRegistrationDTO.getPassword()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
-        newUser.setAvatarPath("");  //Аватар задается при регистрации?
-        newUser.setAvatarName("");
-        newUser.setIsBlocked(false);
-        newUser.setRoles(new HashSet<Role>().add(role));
+        newUser.setBlocked(false);
+        newUser.getRoles().add(new UserRole(newUser, role));
 
         userRepository.save(newUser);
     }
