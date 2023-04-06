@@ -57,7 +57,8 @@ public class UserController {
 
         String hashedPass = userService.hashPassword(userLoginDTO.getPassword());
 
-        if (userLoginDTO.getMail().equals(user.getMail()) && hashedPass.equals(user.getPasswordHash())) {
+        if (userLoginDTO.getMail().equals(user.getMail())
+                && hashedPass.equals(user.getPasswordHash()) && !user.isBlocked()) {
             //return token
         }
 
