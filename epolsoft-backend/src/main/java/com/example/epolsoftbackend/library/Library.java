@@ -15,10 +15,10 @@ public class Library {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "topic")
+    @Column(name = "topic_name")
     private String topic;
 
-    @Column(name = "author")
+    @Column(name = "user_name")
     private String author;
 
     @Column(name = "description")
