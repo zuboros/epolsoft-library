@@ -7,5 +7,6 @@ import java.util.List;
 public interface LibraryService {
 
     List findByCriteria(Pageable pageable);
+    List getBooksUser(Long id, Pageable pageable);
 
 }

@@ -24,4 +24,9 @@ public class LibraryController {
         return new ResponseEntity<>(libraryService.findByCriteria(pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/user/books")
+    public ResponseEntity<List> getBooksUser(@RequestParam("id") long id, Pageable pageable) {
+        return new ResponseEntity<>(libraryService.getBooksUser(id, pageable), HttpStatus.OK);
+    }
+
 }
