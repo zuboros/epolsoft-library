@@ -1,5 +1,4 @@
-//import { Redirect } from 'react-router-dom'
-import Books from '../components/Books'
+import Books from '../components/books/books'
 
 const HomePage = () => {
    return (

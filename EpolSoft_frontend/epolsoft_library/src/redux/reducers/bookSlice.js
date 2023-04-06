@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { books, books2, getAllBooks } from "../../data/serverData";
 import { createRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
-import * as entities from "../entities"
+import * as entities from "../entitiesConst"
 
 const serverResponse = async (data) => { setTimeout((e) => (e), 2000); return { data: data } };
 
@@ -182,11 +182,6 @@ export const postData = async (dispatch, data) => {
 
    const formData = new FormData
    formData.append(sendData.file.name, sendData.file);
-
-   console.log('formData');
-   console.log(sendData.file);
-
-
 
    await createRequest({
       method: axios.POST, url: axios.PATH_UPLOAD_FILE,

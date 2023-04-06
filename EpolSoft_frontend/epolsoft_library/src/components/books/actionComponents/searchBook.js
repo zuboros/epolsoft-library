@@ -1,7 +1,8 @@
 import { Input, Space, Button, Form } from "antd"
+import { SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchLocalBooks } from '../redux/reducers/bookSlice';
+import { fetchLocalBooks } from '../../../redux/reducers/bookSlice';
 
 const SearchBook = () => {
    const [bookName, setBookName] = useState("");
@@ -15,7 +16,7 @@ const SearchBook = () => {
    }
 
    return (
-      <Form >
+      <Form component={false}>
          <Form.Item name="name" label="Name"
             rules={[
                {
@@ -28,7 +29,7 @@ const SearchBook = () => {
          >
             <Space >
                <Input value={bookName} onChange={(e) => setBookName(e.target.value)} />
-               <Button type="primary" onClick={handleSearch} >Search</Button>
+               <Button type="primary" onClick={handleSearch} ><SearchOutlined /></Button>
             </Space>
          </Form.Item>
       </Form>

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
-import CreateBook from "./CreateBook";
-import BookTable from "./Table/BookTable";
-import SearchBook from "./SearchBook";
+import CreateBook from "./actionComponents/createBook";
+import { BookTable } from "./table/bookTable";
+import SearchBook from "./actionComponents/searchBook";
 import { Space } from 'antd';
 
 function Books() {

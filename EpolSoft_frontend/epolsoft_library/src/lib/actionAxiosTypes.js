@@ -30,3 +30,9 @@ export const PATH_UPLOAD_FILE = "/library/uploadFile";
 //TOPICS
 
 export const PATH_GET_TOPICS = `/library/topics`
+
+
+//AUTH
+
+export const PATH_USER_REGISTER = `/api/user/register`
+export const PATH_USER_LOGIN = `/api/user/login`

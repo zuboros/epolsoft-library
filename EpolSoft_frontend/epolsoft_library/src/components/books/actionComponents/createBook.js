@@ -1,8 +1,9 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
+import { FileAddOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postData, postFile } from '../redux/reducers/bookSlice';
-import { fetchLocalTopics } from '../redux/reducers/topicSlice';
+import { postData, postFile } from '../../../redux/reducers/bookSlice';
+import { fetchLocalTopics } from '../../../redux/reducers/topicSlice';
 
 const CreateBook = () => {
    const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const CreateBook = () => {
    return (
       <>
          <Button type="primary" onClick={showModal}>
-            Add Book
+            <FileAddOutlined />
          </Button>
          <Modal
             title="Title"

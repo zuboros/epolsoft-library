@@ -1,9 +1,11 @@
 import { Table, Space, Form, Input, Button, Popconfirm, AutoComplete } from 'antd';
+import { SaveOutlined, StopOutlined, DeleteOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
-import { deleteBook, putBook, sortBook, fetchBooks } from "../../redux/reducers/bookSlice";
+import { deleteBook, putBook, sortBook, fetchBooks } from "../../../redux/reducers/bookSlice";
 import { useDispatch, useSelector } from 'react-redux';
-import { extractData, deleteData } from '../../redux/reducers/bookSlice';
+import { extractData, deleteData } from '../../../redux/reducers/bookSlice';
 import { convertBooksToTable, downloadFile } from './features/tablemethods';
+import { useLoaderData } from 'react-router-dom';
 
 const INITIAL_BOOKS_TOTAL = 1;
 const INITIAL_PAGE_NUM = 1;
@@ -13,6 +15,8 @@ const ASC_ORDER = "ASC";
 const DESC_ORDER = "DESC";
 
 function BookTable({ loading, deleteLoading }) {
+  const as = useLoaderData();
+
   const dispatch = useDispatch();
   const { books, totalBooks } = useSelector(state => state.books);
   const topics = useSelector(state => state.topics.topics)
@@ -22,8 +26,6 @@ function BookTable({ loading, deleteLoading }) {
   const [sortField, setSortField] = useState(INITIAL_ORDER_FIELD);
   const [sortOrder, setSortOrder] = useState(ASC_ORDER);
 
-  const [load_ing, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [editRowKey, setEditRowKey] = useState("");
   const [form] = Form.useForm();
 
@@ -37,9 +39,7 @@ function BookTable({ loading, deleteLoading }) {
   }, [dispatch])
 
   const handleDelete = (value) => {
-    setLoadingDelete(true);
     deleteData(dispatch, value.id)
-    setLoadingDelete(false);
   }
 
   const isEditing = (record) => {
@@ -132,17 +132,6 @@ function BookTable({ loading, deleteLoading }) {
       editTable: true,
     },
     {
-      title: "File",
-      dataIndex: "fileName",
-      align: "center",
-      render: (_, record) => {
-
-        return (
-          <Button type='primary' onClick={() => { downloadFile("https://community.developers.refinitiv.com/storage/attachments/6024-data-file-download-guide-v26.pdf") }}>Download</Button>
-        )
-      }
-    },
-    {
       title: "Action",
       dataIndex: "action",
       align: "center",
@@ -154,23 +143,24 @@ function BookTable({ loading, deleteLoading }) {
               {editable ? (
                 <span>
                   <Space size="middle">
-                    <Button type="primary" onClick={(e) => save(record)} >Save</Button>
+                    <Button type="primary" onClick={(e) => save(record)} ><SaveOutlined /></Button>
                     <Popconfirm title="Are you sure to cancel?" onConfirm={cancel}>
-                      <Button>Cancel</Button>
+                      <Button><StopOutlined /></Button>
                     </Popconfirm>
                   </Space>
                 </span>
               ) : (
                 <Space>
 
+                  <Button type='primary' onClick={() => { downloadFile("https://community.developers.refinitiv.com/storage/attachments/6024-data-file-download-guide-v26.pdf") }}><DownloadOutlined /></Button>
+                  <Button type="primary" onClick={() => edit(record)} ><EditOutlined /></Button>
                   <Popconfirm
                     title="Are you sure?"
                     onConfirm={() => handleDelete(record)}
                   >
-                    <Button danger type="primary" loading={deleteLoading}>Delete</Button>
+                    <Button danger type="primary" loading={deleteLoading}><DeleteOutlined /></Button>
                   </Popconfirm>
 
-                  <Button type="primary" onClick={() => edit(record)} >Edit</Button>
 
                 </Space>
               )}
@@ -289,4 +279,4 @@ function BookTable({ loading, deleteLoading }) {
   )
 }
 
-export default BookTable;
+export { BookTable };
