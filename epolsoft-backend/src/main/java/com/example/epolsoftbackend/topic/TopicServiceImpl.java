@@ -45,7 +45,7 @@ public class TopicServiceImpl implements TopicService {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics(){
+    public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics() {
         return new ResponseEntity<>(topicMapper.listTopicToListTopicResponseDTO(topicRepository.findAll(new Specification<Topic>() {
             @Override
             public Predicate toPredicate(Root<Topic> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -54,4 +54,17 @@ public class TopicServiceImpl implements TopicService {
         })), HttpStatus.OK);
         }
 
+    public ResponseEntity<HttpStatus> deleteById(long id) {
+        try {
+            if (!topicRepository.findById(id).get().isActive()) {
+                topicRepository.deleteById(id);
+
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
