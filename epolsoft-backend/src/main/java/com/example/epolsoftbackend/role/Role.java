@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 
@@ -33,5 +34,5 @@ public class Role implements Serializable{
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<UserRole> roles;
+    private List<UserRole> roles;
 }
