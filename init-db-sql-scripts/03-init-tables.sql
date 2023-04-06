@@ -69,6 +69,7 @@ SELECT b.id,
        b.updated_at,
        b.created_at,
        t.name AS topic_name,
+       u.id AS user_id,
        u.name AS user_name
 FROM book b
          JOIN public.topic t ON b.topic_id = t.id

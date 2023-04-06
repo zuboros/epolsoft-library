@@ -21,6 +21,9 @@ public class Library {
     @Column(name = "user_name")
     private String author;
 
+    @Column(name = "user_id")
+    private String authorId;
+
     @Column(name = "description")
     private String description;
 
