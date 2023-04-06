@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping("/api/library")
 public class LibraryController {
 
-    final LibraryServiceImpl libraryService;
+    final LibraryService libraryService;
 
-    public LibraryController(LibraryServiceImpl libraryService) {
+    public LibraryController(LibraryService libraryService) {
         this.libraryService = libraryService;
     }
 

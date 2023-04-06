@@ -1,27 +1,37 @@
 package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.role.Role;
+import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
 import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
 import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
+import com.example.epolsoftbackend.user_role.UserRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.roleRepository = roleRepository;
     }
 
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
@@ -30,6 +40,10 @@ public class UserServiceImpl implements UserService {
 
     public Optional<User> findById(long id) {
         return userRepository.findById(id);
+    }
+
+    public Optional<User> findByMail(String mail) {
+        return userRepository.findByMail(mail);
     }
 
     public ResponseEntity<HttpStatus> deleteById(long id) {
@@ -41,11 +55,30 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    public ResponseEntity<> createNewUser(UserRegistrationDTO userRegistrationDTO){
-//            User newUser = new User();
-//            newUser.setMail();
-//            Role role = new Role();
-//            newUser.getRoles().add();
-//            newUser.setBlocked(false);
-//    }
+    public void createNewUser(UserRegistrationDTO userRegistrationDTO) {
+        User newUser = new User();
+        Role role = roleRepository.findByName("USER").get();
+
+        newUser.setMail(userRegistrationDTO.getMail());
+        newUser.setName(userRegistrationDTO.getName());
+        newUser.setPasswordHash(hashPassword(userRegistrationDTO.getPassword()));
+
+        newUser.setAvatarPath("");  //Аватар задается при регистрации?
+        newUser.setAvatarName("");
+        newUser.setIsBlocked(false);
+        newUser.setRoles(new HashSet<Role>().add(role));
+
+        userRepository.save(newUser);
+    }
+
+    public String hashPassword(String pass) throws NoSuchAlgorithmException {
+        MessageDigest crypt = MessageDigest.getInstance("SHA-512");
+        crypt.update(pass.getBytes(StandardCharsets.UTF_8));
+
+        byte[] bytes = crypt.digest();
+        BigInteger bi = new BigInteger(1, bytes);
+
+        return String.format("%0" + (bytes.length << 1) + "x", bi);
+    }
+
 }
