@@ -16,7 +16,7 @@ public class UserRegistrationDTO {
     @JsonProperty("mail")
     private String mail;
 
-    @JsonProperty("mail")
+    @JsonProperty("password")
     private String password;
 
 }
