@@ -2,7 +2,9 @@ package com.example.epolsoftbackend.book;
 
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
+import com.example.epolsoftbackend.topic.TopicService;
 import com.example.epolsoftbackend.topic.TopicServiceImpl;
+import com.example.epolsoftbackend.user.UserService;
 import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,10 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-    private final UserServiceImpl userService;
-    private final TopicServiceImpl topicService;
+    private final UserService userService;
+    private final TopicService topicService;
 
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, UserServiceImpl userService, TopicServiceImpl topicService) {
+    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, UserService userService, TopicService topicService) {
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
         this.userService = userService;
