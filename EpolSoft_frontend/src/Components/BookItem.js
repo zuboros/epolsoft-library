@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { removeBook, deleteBook, editBook } from '../store/bookSlice';
+import { removeBook, deleteBook, editBook } from '../redux/reducers/bookSlice';
 import { useState } from "react"
 import { Button, Input } from 'antd';
 

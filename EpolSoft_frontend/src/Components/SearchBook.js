@@ -1,7 +1,7 @@
 import { Input, Space, Button, Form } from "antd"
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchLocalBooks } from '../store/bookSlice';
+import { fetchLocalBooks } from '../redux/reducers/bookSlice';
 
 const SearchBook = () => {
    const [bookName, setBookName] = useState("");
@@ -20,7 +20,7 @@ const SearchBook = () => {
             rules={[
                {
                   required: true,
-                  message: "Please enter your name"
+                  message: "Enter some book name"
                },
                { whitespace: true },
                { min: 3 }
