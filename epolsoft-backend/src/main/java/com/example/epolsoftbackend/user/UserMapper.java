@@ -1,10 +1,8 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
-import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
-import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
-import com.example.epolsoftbackend.user.DTO.UserUpdateDTO;
+import com.example.epolsoftbackend.user.DTO.*;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -14,9 +12,21 @@ public interface UserMapper {
     public UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     //UserRequest
+    @Mapping(source = "user.roles", target = "roles")
     public UserResponseDTO userToUserResponseDTO(User user);
+    @Mapping(source = "userResponseDTO.roles", target = "roles")
     public User userResponseDTOToUser(UserResponseDTO userResponseDTO);
+    @Mapping(source = "user.roles", target = "roles")
     public List<UserResponseDTO> listUserToListUserResponseDTO(List<User> userList);
+
+    //UserRequest
+    @Mapping(source = "user.roles", target = "roles")
+    public UserLoginResponseDTO userToUserLoginResponseDTO(User user);
+    @Mapping(source = "userLoginResponseDTO.roles", target = "roles")
+    public User userLoginResponseDTOToUser(UserLoginResponseDTO userLoginResponseDTO);
+    @Mapping(source = "user.roles", target = "roles")
+    public List<UserLoginResponseDTO> listUserToListUserLoginResponseDTO(List<User> userList);
+
 
     //UserRegistration
     public UserRegistrationDTO userToUserRegistrationDTO(User user);

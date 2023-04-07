@@ -26,10 +26,13 @@ public class FileController {
     final FileService fileService;
     final BookService bookService;
     final UserService userService;
+    final UserService userService;
 
+    public FileController(FileService fileService, BookService bookService, UserService userService) {
     public FileController(FileService fileService, BookService bookService, UserService userService) {
         this.fileService = fileService;
         this.bookService = bookService;
+        this.userService = userService;
         this.userService = userService;
     }
 
@@ -55,11 +58,15 @@ public class FileController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable long id, @RequestParam("type") String type, HttpServletRequest request) throws MalformedURLException {
-        String resourcePath = type.equals("book") ? bookService.findById(id).get().getFilePath() : userService.findById(id).get().getAvatarPath();
-        String resourceName = type.equals("book") ? bookService.findById(id).get().getFileName() : userService.findById(id).get().getAvatarName();
+    public ResponseEntity<Resource> downloadFile(@PathVariable long id, @RequestParam("type") String type,
+                                                 HttpServletRequest request) throws MalformedURLException {
 
-        if (resourcePath == null) {
+        String resourcePath = type.equals("book") ?
+                bookService.findById(id).get().getFilePath() : userService.findById(id).get().getAvatarPath();
+        String resourceName = type.equals("book") ?
+                bookService.findById(id).get().getFileName() : userService.findById(id).get().getAvatarName();
+
+        if (resourcePath == null || resourceName == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 

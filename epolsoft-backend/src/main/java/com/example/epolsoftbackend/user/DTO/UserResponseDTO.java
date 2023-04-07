@@ -1,7 +1,11 @@
 package com.example.epolsoftbackend.user.DTO;
 
+import com.example.epolsoftbackend.role.Role;
+import com.example.epolsoftbackend.user_role.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
+import java.util.Set;
 
 @Builder
 @ToString
@@ -22,5 +26,6 @@ public class UserResponseDTO {
     @JsonProperty("isBlocked")
     private boolean isBlocked;
 
-    //maybe time in response
+    @JsonProperty("roles")
+    private Set<UserRole> roles;
 }

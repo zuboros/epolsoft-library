@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.library;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +20,12 @@ public class LibraryServiceImpl implements LibraryService {
 
     public List findByCriteria(Pageable pageable) {
         Page page = libraryRepository.findAll(pageable);
+        List result = List.of(page.getContent(), page.getTotalElements());
+        return result;
+    }
+
+    public List getBooksUser(Long id, Pageable pageable){
+        Page page = libraryRepository.findAll(Specification.where(LibrarySpecifications.booksFromUser(id)), pageable);
         List result = List.of(page.getContent(), page.getTotalElements());
         return result;
     }

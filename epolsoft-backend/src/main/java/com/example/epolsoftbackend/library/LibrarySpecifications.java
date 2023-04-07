@@ -10,5 +10,9 @@ public class LibrarySpecifications{
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.like(root.get(field), "%"+value+"%"));
     }
+    public static Specification<Library> booksFromUser(long id){
+        return ((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("user_id"), id));
+    }
 
 }
