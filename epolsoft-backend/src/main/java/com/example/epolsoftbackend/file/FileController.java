@@ -2,9 +2,7 @@ package com.example.epolsoftbackend.file;
 
 import com.example.epolsoftbackend.book.Book;
 import com.example.epolsoftbackend.book.BookService;
-import com.example.epolsoftbackend.book.BookServiceImpl;
 import com.example.epolsoftbackend.user.UserService;
-import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,13 +24,10 @@ public class FileController {
     final FileService fileService;
     final BookService bookService;
     final UserService userService;
-    final UserService userService;
 
-    public FileController(FileService fileService, BookService bookService, UserService userService) {
     public FileController(FileService fileService, BookService bookService, UserService userService) {
         this.fileService = fileService;
         this.bookService = bookService;
-        this.userService = userService;
         this.userService = userService;
     }
 

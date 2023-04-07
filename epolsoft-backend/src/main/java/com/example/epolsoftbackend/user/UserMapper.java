@@ -12,12 +12,17 @@ public interface UserMapper {
     public UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     //UserRequest
-    @Mapping(source = "user.roles", target = "roles")
     public UserResponseDTO userToUserResponseDTO(User user);
-    @Mapping(source = "userResponseDTO.roles", target = "roles")
     public User userResponseDTOToUser(UserResponseDTO userResponseDTO);
-    @Mapping(source = "user.roles", target = "roles")
     public List<UserResponseDTO> listUserToListUserResponseDTO(List<User> userList);
+
+    //UserRequest
+    @Mapping(source = "user.roles", target = "roles")
+    public UserBookResponseDTO userToUserBookResponseDTO(User user);
+    @Mapping(source = "userBookResponseDTO.roles", target = "roles")
+    public User userBookResponseDTOToUser(UserBookResponseDTO userBookResponseDTO);
+    @Mapping(source = "user.roles", target = "roles")
+    public List<UserBookResponseDTO> listUserToListUserBookResponseDTO(List<User> userList);
 
     //UserRequest
     @Mapping(source = "user.roles", target = "roles")

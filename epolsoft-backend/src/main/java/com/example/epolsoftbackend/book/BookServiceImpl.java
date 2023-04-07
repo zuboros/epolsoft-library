@@ -47,6 +47,8 @@ public class BookServiceImpl implements BookService {
 
             return responseEntity;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -89,7 +91,10 @@ public class BookServiceImpl implements BookService {
 
             return responseEntity;
         }
-       catch (Exception e ) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+       catch (Exception e ) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     public ResponseEntity<HttpStatus> deleteById(long id) {

@@ -64,7 +64,12 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e);
         }
 
+        System.out.println(role);
+
         newUser.setBlocked(false);
+
+        System.out.println(newUser.getRoles());
+
         newUser.getRoles().add(new UserRole(newUser, role));
 
         return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);

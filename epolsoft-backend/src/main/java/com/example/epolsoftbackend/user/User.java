@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ public class User implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<UserRole> roles;
+    private List<UserRole> roles = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(
