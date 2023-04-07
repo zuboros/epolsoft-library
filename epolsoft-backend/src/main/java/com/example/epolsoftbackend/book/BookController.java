@@ -21,12 +21,12 @@ public class BookController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO) {
-        return bookService.updateById(bookUpdateDTO);
+    public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO, Long idUser) {
+        return bookService.updateById(bookUpdateDTO, idUser);
     }
 
-    @DeleteMapping("/deleteNote/{id}")//delete file
-    public ResponseEntity<HttpStatus> deleteNote(@PathVariable("id") long id) {
-        return bookService.deleteById(id);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteNote(@PathVariable("id") Long id, Long idUser) {
+        return bookService.deleteById(id, idUser);
     }
 }

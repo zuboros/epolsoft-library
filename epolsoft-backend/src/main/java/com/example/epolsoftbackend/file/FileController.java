@@ -2,7 +2,9 @@ package com.example.epolsoftbackend.file;
 
 import com.example.epolsoftbackend.book.Book;
 import com.example.epolsoftbackend.book.BookService;
+import com.example.epolsoftbackend.book.BookServiceImpl;
 import com.example.epolsoftbackend.user.UserService;
+import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -39,15 +42,18 @@ public class FileController {
 
     @PostMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@PathVariable("id") long id) throws IOException {
+    public void deleteFile(@PathVariable("id") long id, @RequestParam("type") String type, Long idUser) throws IOException {
         Optional<Book> optionalBook = bookService.findById(id);
         Book book = optionalBook.isEmpty() ? null : optionalBook.get();
 
         if (book == null) {
             return;
         }
+        else if (!Objects.equals(book.getUserId().getId(), idUser)){
+            return;
+        }
 
-        String filePath = book.getFilePath();
+        String filePath = type.equals("book") ? book.getFilePath() : book.getUserId().getAvatarPath();
 
         fileService.deleteFile(filePath);
     }

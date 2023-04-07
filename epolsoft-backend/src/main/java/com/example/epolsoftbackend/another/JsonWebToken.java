@@ -53,7 +53,7 @@ public class JsonWebToken {
         return jwtToken;
     }
 
-    public Jws<Claims> parseToken(String jwtString) {
+    public Jws<Claims> validateToken(String jwtString) {
 
         Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
                 SignatureAlgorithm.HS256.getJcaName());
@@ -62,7 +62,6 @@ public class JsonWebToken {
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(jwtString);//signature exception expiredjwtexception if time token is vse
-//        jws.getBody().get("mail", String.class);
         return jws;
     }
 

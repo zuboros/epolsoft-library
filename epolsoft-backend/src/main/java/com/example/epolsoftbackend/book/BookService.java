@@ -11,7 +11,7 @@ public interface BookService {
 
     ResponseEntity<BookCreateDTO> create(BookCreateDTO bookCreateDTO);
     Optional<Book> findById(long id);
-    ResponseEntity<BookUpdateDTO> updateById(BookUpdateDTO bookUpdateDTO);
-    ResponseEntity<HttpStatus> deleteById(long id);
+    ResponseEntity<BookUpdateDTO> updateById(BookUpdateDTO bookUpdateDTO, Long userID);
+    ResponseEntity<HttpStatus> deleteById(Long id, Long userId);
 
 }
