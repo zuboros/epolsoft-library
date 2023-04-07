@@ -18,5 +18,7 @@ public interface UserService {
     ResponseEntity<HttpStatus> deleteById(long id);
     ResponseEntity<UserBookResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO);
     String hashPassword(String pass) throws NoSuchAlgorithmException;
+    ResponseEntity<UserResponseDTO> blockUser(long id);
+    ResponseEntity<UserResponseDTO> unblockUser(long id);
 
 }

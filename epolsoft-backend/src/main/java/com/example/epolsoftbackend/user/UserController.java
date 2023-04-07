@@ -66,4 +66,14 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @PutMapping("/block/{id}")
+    public ResponseEntity<UserResponseDTO> blockUser(@PathVariable("id") long id) {
+        return userService.blockUser(id);
+    }
+
+    @PutMapping("/unblock/{id}")
+    public ResponseEntity<UserResponseDTO> unblockUser(@PathVariable("id") long id) {
+        return userService.unblockUser(id);
+    }
+
 }

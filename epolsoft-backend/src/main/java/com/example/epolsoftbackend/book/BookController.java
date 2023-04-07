@@ -20,7 +20,7 @@ public class BookController {
         return bookService.create(bookCreateDTO);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO) {
         return bookService.updateById(bookUpdateDTO);
     }

@@ -86,4 +86,32 @@ public class UserServiceImpl implements UserService {
         return String.format("%0" + (bytes.length << 1) + "x", bi);
     }
 
+    public ResponseEntity<UserResponseDTO> blockUser(long id) {
+        User userNeedToBlock = userRepository.findById(id).get();
+
+        if (containsRole(userNeedToBlock.getRoles(), "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        userNeedToBlock.setBlocked(true);
+
+        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToBlock)), HttpStatus.OK);
+    }
+
+    public ResponseEntity<UserResponseDTO> unblockUser(long id) {
+        User userNeedToUnblock = userRepository.findById(id).get();
+
+        if (containsRole(userNeedToUnblock.getRoles(), "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        userNeedToUnblock.setBlocked(false);
+
+        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock)), HttpStatus.OK);
+    }
+
+    private boolean containsRole(final List<UserRole> list, final String roleName){
+        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
+    }
+
 }
