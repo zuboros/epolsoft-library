@@ -15,7 +15,7 @@ public interface UserService {
     Optional<User> findById(long id);
     Optional<User> findByMail(String mail);
     ResponseEntity<HttpStatus> deleteById(long id);
-    void createNewUser(UserRegistrationDTO userRegistrationDTO);
+    ResponseEntity<UserResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO);
     String hashPassword(String pass) throws NoSuchAlgorithmException;
 
 }

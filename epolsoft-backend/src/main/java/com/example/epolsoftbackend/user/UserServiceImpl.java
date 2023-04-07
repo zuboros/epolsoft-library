@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void createNewUser(UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO) {
         User newUser = new User();
         Role role = roleRepository.findByName("USER").get();
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         newUser.setBlocked(false);
         newUser.getRoles().add(new UserRole(newUser, role));
 
-        userRepository.save(newUser);
+        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);
     }
 
     public String hashPassword(String pass) throws NoSuchAlgorithmException {
