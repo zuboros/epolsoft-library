@@ -9,6 +9,9 @@ import lombok.*;
 @Getter
 @Setter
 public class TopicCreateDTO {
+
     @JsonProperty("name")
     private String name;
+
+
 }
