@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
+import com.example.epolsoftbackend.user.DTO.UserBookResponseDTO;
 import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
 import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
 import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
@@ -31,8 +32,8 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return new ResponseEntity<>(userMapper.listUserToListUserResponseDTO(userRepository.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<UserBookResponseDTO>> getAllUsers() {
+        return new ResponseEntity<>(userMapper.listUserToListUserBookResponseDTO(userRepository.findAll()), HttpStatus.OK);
     }
 
     public Optional<User> findById(long id) {
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public ResponseEntity<UserResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserBookResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO) {
         User newUser = new User();
         Role role = roleRepository.findByName("USER").get();
 
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
         newUser.getRoles().add(new UserRole(newUser, role));
 
-        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.userToUserBookResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);
     }
 
     public String hashPassword(String pass) throws NoSuchAlgorithmException {

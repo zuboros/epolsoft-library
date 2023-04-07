@@ -1,10 +1,7 @@
 package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.another.JsonWebToken;
-import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
-import com.example.epolsoftbackend.user.DTO.UserLoginResponseDTO;
-import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
-import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
+import com.example.epolsoftbackend.user.DTO.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +26,13 @@ public class UserController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<UserResponseDTO>> getAllAuthors() {
+    public ResponseEntity<List<UserBookResponseDTO>> getAllAuthors() {
         return userService.getAllUsers();
     }
 
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signUp(
+    public ResponseEntity<UserBookResponseDTO> signUp(
             @RequestBody UserRegistrationDTO userRegistrationDTO) {
 
         Optional<User> optUser = userService.findByMail(userRegistrationDTO.getMail());
