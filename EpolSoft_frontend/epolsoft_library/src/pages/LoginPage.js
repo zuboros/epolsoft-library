@@ -1,6 +1,6 @@
 import { Button, Form, Input } from 'antd';
 import { NavLink } from 'react-router-dom'
-import { userLogin } from '../redux/reducers/userSlice'
+import { userLogin } from '../redux/reducers/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import Error from '../components/common/error'
 import { useNavigate } from 'react-router-dom'

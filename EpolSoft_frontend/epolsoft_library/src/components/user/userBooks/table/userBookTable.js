@@ -9,7 +9,7 @@ const INITIAL_ORDER_FIELD = "id";
 const ASC_ORDER = "ASC";
 const DESC_ORDER = "DESC";
 
-const UserTable = ({ entities, totalEntities, hiddenColumns, loading, buttonHandler }) => {
+const UserTableTable = ({ entities, totalEntities, hiddenColumns, loading, editBtnHandler }) => {
 
    const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE);
 
@@ -32,15 +32,37 @@ const UserTable = ({ entities, totalEntities, hiddenColumns, loading, buttonHand
          dataIndex: "action",
          key: "action",
          render: (_, record) =>
-            <Space>
-               {!record?.isBlocked ?
-                  <Button danger onClick={() => buttonHandler(record)} ><StopOutlined /></Button> :
-                  <Button onClick={() => buttonHandler(record)}><ClockCircleOutlined /></Button>
-               }
-            </Space>
+            null
       })
       return cols;
    }
+
+   {/* <Space>
+      {editable ? (
+         <span>
+            <Space size="middle">
+               <Button type="primary" onClick={(e) => save(record)} ><SaveOutlined /></Button>
+               <Popconfirm title="Are you sure to cancel?" onConfirm={cancel}>
+                  <Button><StopOutlined /></Button>
+               </Popconfirm>
+            </Space>
+         </span>
+      ) : (
+         <Space>
+
+            <Button type='primary' onClick={() => { downloadFile("https://community.developers.refinitiv.com/storage/attachments/6024-data-file-download-guide-v26.pdf") }}><DownloadOutlined /></Button>
+            {privateItem && <><Button type="primary" onClick={() => edit(record)} ><EditOutlined /></Button>
+               <Popconfirm
+                  title="Are you sure?"
+                  onConfirm={() => deleteButton(record)}
+               >
+                  <Button danger type="primary" loading={deleteLoading}><DeleteOutlined /></Button>
+               </Popconfirm></>}
+
+
+         </Space>
+      )}
+   </Space> */}
 
    return (
       <Table dataSource={dataSource}
@@ -61,4 +83,4 @@ const UserTable = ({ entities, totalEntities, hiddenColumns, loading, buttonHand
    )
 }
 
-export default UserTable;
+export default UserTableTable;

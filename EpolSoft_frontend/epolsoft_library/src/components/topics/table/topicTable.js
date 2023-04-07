@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Space, Table, Button } from 'antd'
-import { StopOutlined, ClockCircleOutlined } from '@ant-design/icons'
+import { DeleteOutlined } from '@ant-design/icons'
 
 const INITIAL_ENTITIES_TOTAL = 1;
 const INITIAL_PAGE_NUM = 1;
@@ -9,7 +9,9 @@ const INITIAL_ORDER_FIELD = "id";
 const ASC_ORDER = "ASC";
 const DESC_ORDER = "DESC";
 
-const UserTable = ({ entities, totalEntities, hiddenColumns, loading, buttonHandler }) => {
+const UserTable = ({ entities, totalEntities, hiddenColumns, loading, deleteBtnHandler }) => {
+
+
 
    const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE);
 
@@ -33,9 +35,9 @@ const UserTable = ({ entities, totalEntities, hiddenColumns, loading, buttonHand
          key: "action",
          render: (_, record) =>
             <Space>
-               {!record?.isBlocked ?
-                  <Button danger onClick={() => buttonHandler(record)} ><StopOutlined /></Button> :
-                  <Button onClick={() => buttonHandler(record)}><ClockCircleOutlined /></Button>
+               {!record?.isActive ?
+                  <Button danger onClick={() => deleteBtnHandler(record)} ><DeleteOutlined /></Button> :
+                  null
                }
             </Space>
       })

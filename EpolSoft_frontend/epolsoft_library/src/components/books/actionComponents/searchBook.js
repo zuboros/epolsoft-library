@@ -16,8 +16,8 @@ const SearchBook = () => {
    }
 
    return (
-      <Form component={false}>
-         <Form.Item name="name" label="Name"
+      <Form component={false} disabled>
+         <Form.Item name="name" label="Name" style={{ margin: 0 }}
             rules={[
                {
                   required: true,

@@ -3,9 +3,16 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postData, postFile } from '../../../redux/reducers/bookSlice';
-import { fetchLocalTopics } from '../../../redux/reducers/topicSlice';
+import { fetchTopics } from '../../../redux/reducers/topicSlice';
 
-const CreateBook = () => {
+const noWhiteSpace = {
+   validator: (_, value) =>
+      !value.includes(" ")
+         ? Promise.resolve()
+         : Promise.reject(new Error("No spaces allowed"))
+}
+
+const CreateBook = ({ auth }) => {
    const dispatch = useDispatch();
    const { status, error } = useSelector(state => state.books)
    const topics = useSelector(state => state.topics.topics)
@@ -14,7 +21,7 @@ const CreateBook = () => {
    const [confirmLoading, setConfirmLoading] = useState(false);
 
    useEffect(() => {
-      dispatch(fetchLocalTopics({}));
+      dispatch(fetchTopics(auth));
    }, [])
 
    const showModal = () => {
@@ -25,25 +32,12 @@ const CreateBook = () => {
 
       if (finish) {
          setConfirmLoading(true);
-         ///api function:
-         postData(dispatch, values);
-         //dispatch(postBook({ ...values, topicId: (topics.find((topic) => topic.name === values.topic)).id }));
-         //setOpen(false);
+         postData(dispatch, values, auth);
          setConfirmLoading(false);
-         //////////////////////////////////
-         /* setTimeout(() => {
-
-            ///local function:
-            dispatch(addBook(temporaryConvertToBook(values)));
-
-            setOpen(false);
-            setConfirmLoading(false);
-         }, 1000); */
-         ////////////////////////////////////
+         setOpen(false);
       }
    };
    const handleCancel = () => {
-      console.log('Clicked cancel button');
       setOpen(false);
    };
 
@@ -82,7 +76,8 @@ const CreateBook = () => {
                         message: "Please enter your name"
                      },
                      { whitespace: true },
-                     { min: 3 }
+                     { min: 3 },
+                     noWhiteSpace,
                   ]}
                >
                   <Input placeholder="enter the book's name" />
@@ -95,7 +90,8 @@ const CreateBook = () => {
                         message: "Please enter the author"
                      },
                      { whitespace: true },
-                     { min: 3 }
+                     { min: 3 },
+                     noWhiteSpace,
                   ]}
                >
                   <Input placeholder="enter the author's name" />

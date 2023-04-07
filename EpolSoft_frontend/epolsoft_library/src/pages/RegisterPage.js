@@ -1,7 +1,7 @@
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import Error from '../components/common/error'
-import { registerUser } from '../redux/reducers/userSlice'
+import { registerUser } from '../redux/reducers/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'

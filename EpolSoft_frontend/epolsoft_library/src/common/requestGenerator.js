@@ -1,6 +1,6 @@
 import { axios } from "../lib/axios";
 
-export async function createRequest({ preCallback, pre_redux_cfg, url, method, body, axios_cfg, postCallback, redux_cfg }) {
+export async function createRequest({ preCallback, pre_redux_cfg, url, method, body, axios_cfg, extensionHandler, postCallback, redux_cfg }) {
 
    try {
 
@@ -10,8 +10,10 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
 
       let data = await axios[method](url, body, axios_cfg);
 
-      if (data.status > 300 && data.status < 199)
+      if (data.status > 300 && data.status < 199) {
+         !!extensionHandler && extensionHandler(data);
          throw new Error("server status response: " + data.status);
+      }
 
       let dataAfter = !!postCallback ? postCallback(data) : data;
 

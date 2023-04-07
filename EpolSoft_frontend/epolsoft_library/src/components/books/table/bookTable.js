@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { deleteBook, putBook, sortBook, fetchBooks } from "../../../redux/reducers/bookSlice";
 import { useDispatch, useSelector } from 'react-redux';
 import { extractData, deleteData } from '../../../redux/reducers/bookSlice';
-import { convertBooksToTable, downloadFile } from './features/tablemethods';
-import { useLoaderData } from 'react-router-dom';
+import { convertBooksToTable, downloadFile } from './features/tableMethods';
 
 const INITIAL_BOOKS_TOTAL = 1;
 const INITIAL_PAGE_NUM = 1;
@@ -14,8 +13,7 @@ const INITIAL_ORDER_FIELD = "id";
 const ASC_ORDER = "ASC";
 const DESC_ORDER = "DESC";
 
-function BookTable({ loading, deleteLoading }) {
-  const as = useLoaderData();
+function BookTable({ loading, deleteLoading, privateItem, deleteButton }) {
 
   const dispatch = useDispatch();
   const { books, totalBooks } = useSelector(state => state.books);
@@ -32,15 +30,8 @@ function BookTable({ loading, deleteLoading }) {
   useEffect(() => {
     //dispatch(fetchBooks({ page: 1, pageSize }));
     extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder });
-    console.log('effect');
-    console.log(totalBooks);
-
 
   }, [dispatch])
-
-  const handleDelete = (value) => {
-    deleteData(dispatch, value.id)
-  }
 
   const isEditing = (record) => {
     return record.key === editRowKey
@@ -89,10 +80,6 @@ function BookTable({ loading, deleteLoading }) {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
-    },
-    {
       title: "Name",
       dataIndex: "name",
       align: "center",
@@ -107,29 +94,64 @@ function BookTable({ loading, deleteLoading }) {
           }
         };
       },
-      /* sorter: async () => {
-        //CHANGE!!!
-        console.log('Clicked sort button');
-        toggle();
-      } */
     },
     {
       title: "Author",
       dataIndex: "author",
       align: "center",
       editTable: true,
+      onHeaderCell: (column) => {
+        return {
+          onClick: () => {
+            console.log(column);
+            setSortField(column.dataIndex);
+            setSortOrder(sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER);
+            extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER });
+          }
+        };
+      },
     },
     {
       title: "Topic",
       dataIndex: "topic",
       align: "center",
       editTable: true,
+      onHeaderCell: (column) => {
+        return {
+          onClick: () => {
+            console.log(column);
+            setSortField(column.dataIndex);
+            setSortOrder(sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER);
+            extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER });
+          }
+        };
+      },
     },
     {
       title: "ShortDescription",
       dataIndex: "shortDescription",
       align: "center",
       editTable: true,
+      onHeaderCell: (column) => {
+        return {
+          onClick: () => {
+            console.log(column);
+            setSortField(column.dataIndex);
+            setSortOrder(sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER);
+            extractData(dispatch, { pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === ASC_ORDER ? DESC_ORDER : ASC_ORDER });
+          }
+        };
+      },
+    },
+    {
+      title: "CreatedAt",
+      dataIndex: "createdAt",
+      align: "center",
+    },
+    {
+      title: "UpdatedAt",
+      dataIndex: "updatedAt",
+      align: "center",
     },
     {
       title: "Action",
@@ -153,13 +175,13 @@ function BookTable({ loading, deleteLoading }) {
                 <Space>
 
                   <Button type='primary' onClick={() => { downloadFile("https://community.developers.refinitiv.com/storage/attachments/6024-data-file-download-guide-v26.pdf") }}><DownloadOutlined /></Button>
-                  <Button type="primary" onClick={() => edit(record)} ><EditOutlined /></Button>
-                  <Popconfirm
-                    title="Are you sure?"
-                    onConfirm={() => handleDelete(record)}
-                  >
-                    <Button danger type="primary" loading={deleteLoading}><DeleteOutlined /></Button>
-                  </Popconfirm>
+                  {privateItem && <><Button type="primary" onClick={() => edit(record)} ><EditOutlined /></Button>
+                    <Popconfirm
+                      title="Are you sure?"
+                      onConfirm={() => deleteButton(record)}
+                    >
+                      <Button danger type="primary" loading={deleteLoading}><DeleteOutlined /></Button>
+                    </Popconfirm></>}
 
 
                 </Space>

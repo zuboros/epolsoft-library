@@ -15,6 +15,7 @@ const initialState = {
    deleteLoading: null,
    postLoading: null,
    totalBooks: null,
+   success: null,
 }
 
 export const fetchBooks = createAsyncThunk(
@@ -156,10 +157,15 @@ export const extractData = async (dispatch, queryParams) => {
       }
    })
 }
-export const deleteData = async (dispatch, id) =>
+export const deleteData = async (dispatch, id, auth) =>
    await createRequest({
       preCallback: () => dispatch(setDeleteLoading(false)),
       method: axios.DELETE, url: axios.PATH_DELETE_BOOK({ id }),
+      body: {
+         headers: {
+            'Authorization': auth
+         }
+      },
       postCallback: () => {
          console.log(axios.DELETE);                                           ///
          console.log("entity: " + id + " was deleted");                    ///
@@ -170,9 +176,28 @@ export const deleteData = async (dispatch, id) =>
          actions: [removeBook, setDeleteLoading]
       }
    })
-
-
-export const postData = async (dispatch, data) => {
+export const extractDataByUserId = async (dispatch, userId, auth) => {
+   await createRequest({
+      preCallback: () => dispatch(setLoading(false)),
+      method: axios.GET, url: axios.PATH_GET_BOOKS_BY_USER_ID({ id: userId }),
+      body: {
+         headers: {
+            'Authorization': auth
+         }
+      },
+      postCallback: (data) => {
+         console.log(axios.GET);                      ///
+         console.log(data);                   ///
+         dispatch(setTotalBooks(data.data[1]));
+         return data.data[0];
+      },
+      redux_cfg: {
+         dispatch,
+         actions: [fetchLocalBooks, setLoading, setSuccess]
+      }
+   })
+}
+export const postData = async (dispatch, data, auth) => {
 
    const sendData = {
       file: data.uploadFiles[0],
@@ -187,13 +212,23 @@ export const postData = async (dispatch, data) => {
       method: axios.POST, url: axios.PATH_UPLOAD_FILE,
       body: {
          data: formData,
-      }
+      },
+      axios_cfg: {
+         headers: {
+            'Authorization': auth
+         }
+      },
    })
 
    await createRequest({
       method: axios.POST, url: axios.PATH_POST_BOOK,
       body: {
          ...sendData.data,
+      },
+      axios_cfg: {
+         headers: {
+            'Authorization': auth
+         }
       },
       postCallback: (dataAfter) => {
          console.log(axios.POST);                                           ///
@@ -236,6 +271,9 @@ const bookSlice = createSlice({
       setLoading(state, action) {
          state.loading = !action.payload;
       },
+      setSuccess(state, _) {
+         state.success = true;
+      },
       setDeleteLoading(state, action) {
          state.deleteLoading = !action.payload;
       },
@@ -259,10 +297,11 @@ const bookSlice = createSlice({
       },
       [fetchBooks.rejected]: setError,
       [deleteBook.rejected]: setError,
+
    }
 });
 
 
-export const { fetchLocalBooks, addBook, removeBook, editBook, sortBook, setLoading, setDeleteLoading, setPostLoading, setTotalBooks } = bookSlice.actions;
+export const { fetchLocalBooks, addBook, removeBook, editBook, sortBook, setLoading, setDeleteLoading, setPostLoading, setTotalBooks, setSuccess } = bookSlice.actions;
 
 export default bookSlice.reducer;

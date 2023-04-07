@@ -4,60 +4,35 @@ import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
 
 
-const userToken = localStorage.getItem('userToken')
-   ? localStorage.getItem('userToken')
-   : null
-
-const userInfo = localStorage.getItem('userInfo')
-   ? localStorage.getItem('userInfo')
-   : null
-
-const setLocalStoreToken = ({ userInfo, userToken }) => {
-   console.log({ userInfo, userToken });
-   if (!userInfo && !userToken)
-      return;
-
-
-
-   localStorage.setItem(`userInfo`, JSON.stringify(userInfo));
-   localStorage.setItem(`userToken`, userToken);
-}
-
-const removeLocalStoreToken = ({ userInfo, userToken }) => {
-   if (userInfo && userToken)
-      return;
-
-   localStorage.removeItem(`userInfo`);
-   localStorage.removeItem(`userToken`);
-}
-
 const initialState = {
    loading: false,
-   userInfo, // for user object
-   userToken, // for storing the JWT
+   [entities.USERS]: [],
    error: null,
-   success: false, // for monitoring the registration process.
+   success: false,
+   totalUsers: null,
 }
 
 
 
-export const registerUser = createAsyncThunk(
-   'auth/register',
-   async ({ userName, email, password }, { rejectWithValue, dispatch }) => {
+export const fetchUsers = createAsyncThunk(
+   `${[entities.USERS]}/fetchUsers`,
+   async (auth, { rejectWithValue, dispatch }) => {
       try {
-         console.log('data: ' + userName, email, password);
 
          await createRequest({
-            method: axios.POST, url: axios.PATH_USER_REGISTER,
+            method: axios.GET, url: axios.PATH_GET_USERS,
             body: {
-               userName,
-               email,
-               password,
+               headers: {
+                  'Authorization': auth
+               }
             },
             postCallback: (dataAfter) => {
-               console.log(axios.POST);
-               console.log(dataAfter);                    ///
-               return dataAfter;
+               const { data } = dataAfter;
+               return data;
+            },
+            redux_cfg: {
+               dispatch,
+               actions: [setUsers, setTotalUsers]
             }
          })
 
@@ -72,32 +47,30 @@ export const registerUser = createAsyncThunk(
    }
 )
 
-export const userLogin = createAsyncThunk(
-   'auth/login',
-   async ({ email, password }, { rejectWithValue, dispatch }) => {
+export const blockUser = createAsyncThunk(
+   `${[entities.USERS]}/blockUser`,
+   async ({ auth, id }, { rejectWithValue, dispatch }) => {
       try {
-         console.log('data: ' + email, password);
 
          await createRequest({
-            method: axios.POST, url: axios.PATH_USER_LOGIN,
-            body: {
-               email,
-               password,
+            method: axios.POST, url: axios.PATH_BLOCK_USERS(id),
+            body: {},
+            axios_cfg: {
+               headers: {
+                  'Authorization': auth
+               }
             },
-            postCallback: (dataAfter) => {
-               const { data } = dataAfter;
-               console.log(axios.POST);
-               console.log(data);
-               return data;
+            postCallback: () => {
+               return { id };
             },
             redux_cfg: {
                dispatch,
-               actions: [setUserInfo, setUserToken]
+               actions: [updateBlockUser]
             }
          })
 
       } catch (error) {
-         // return custom error message from API if any
+         // return custom error message from backend if present
          if (error.response && error.response.data.message) {
             return rejectWithValue(error.response.data.message)
          } else {
@@ -107,53 +80,37 @@ export const userLogin = createAsyncThunk(
    }
 )
 
-
-const authSlice = createSlice({
-   name: entities.AUTH,
+const userSlice = createSlice({
+   name: entities.USERS,
    initialState,
    reducers: {
-      setUserInfo(state, { payload }) {
-         console.log('sdac');
-         console.log(state.userInfo);
-         console.log(payload);
-         state.userInfo = payload;
+      setUsers(state, { payload }) {
+         state[entities.USERS] = payload[0];
       },
-      setUserToken(state, { payload }) {
-         state.userToken = payload.userToken;
-         setLocalStoreToken({ userInfo: payload, userToken: payload.userToken });
+      setTotalUsers(state, { payload }) {
+         state.totalUsers = payload[1];
+      },
+      updateBlockUser(state, { payload }) {
+         state[entities.USERS] = state[entities.USERS].map(user => user.id !== payload.id ? user : { ...user, isBlocked: !user.isBlocked });
       }
    },
    extraReducers: {
       // login user
-      [userLogin.pending]: (state) => {
+      [fetchUsers.pending]: (state) => {
          state.loading = true
          state.error = null
       },
-      [userLogin.fulfilled]: (state, { payload }) => {
+      [fetchUsers.fulfilled]: (state, { payload }) => {
          state.loading = false
-         //state.userInfo = payload
-         //state.userToken = payload.userToken
+         state.success = true
       },
-      [userLogin.rejected]: (state, { payload }) => {
-         state.loading = false
-         state.error = payload
-      },
-      // register user
-      [registerUser.pending]: (state) => {
-         state.loading = true
-         state.error = null
-      },
-      [registerUser.fulfilled]: (state, { payload }) => {
-         state.loading = false
-         state.success = true // registration successful
-      },
-      [registerUser.rejected]: (state, { payload }) => {
+      [fetchUsers.rejected]: (state, { payload }) => {
          state.loading = false
          state.error = payload
       },
    },
 })
 
-export const { setUserInfo, setUserToken } = authSlice.actions;
+export const { setUsers, setTotalUsers, updateBlockUser } = userSlice.actions;
 
-export default authSlice.reducer
+export default userSlice.reducer
