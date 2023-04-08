@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.topic;
 
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
+import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,9 +31,13 @@ public class TopicServiceImpl implements TopicService {
 
     public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO){
         try {
-            return new ResponseEntity<>(topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(topicMapper.topicCreateDTOToTopic(topicCreateDTO))),
+            return new ResponseEntity<>(topicMapper.topicToTopicResponseDTO(
+                    topicRepository.saveAndFlush(topicMapper.topicCreateDTOToTopic(topicCreateDTO))),
                     HttpStatus.CREATED);
-        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);}
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public Optional<Topic> findById(Long id) {
@@ -54,6 +59,21 @@ public class TopicServiceImpl implements TopicService {
         })), HttpStatus.OK);
         }
 
+    public ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicUpdateDTO) {
+        Topic topicForUpdate = topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO);
+        Topic actualTopic = topicRepository.findById(topicForUpdate.getId()).get();
+
+        if (actualTopic.isActive()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        actualTopic.setName(topicForUpdate.getName());
+
+        return new ResponseEntity<>(topicMapper.topicToTopicResponseDTO(
+                topicRepository.saveAndFlush(actualTopic)),
+                HttpStatus.OK);
+    }
+
     public ResponseEntity<HttpStatus> deleteById(long id) {
         try {
             if (!topicRepository.findById(id).get().isActive()) {
@@ -64,6 +84,7 @@ public class TopicServiceImpl implements TopicService {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

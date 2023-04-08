@@ -13,5 +13,4 @@ public class TopicCreateDTO {
     @JsonProperty("name")
     private String name;
 
-
 }

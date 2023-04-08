@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.topic;
 
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
+import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -20,4 +21,7 @@ public interface TopicMapper {
     public TopicCreateDTO topicToTopicCreateDTO(Topic topic);
     public Topic topicCreateDTOToTopic(TopicCreateDTO topicCreateDTO);
     public List<TopicCreateDTO> listTopicToListTopicCreateDTO(List<Topic> topicList);
+
+    //TopicUpdate
+    public Topic topicUpdateDTOtoTopic(TopicUpdateDTO topicUpdateDTO);
 }

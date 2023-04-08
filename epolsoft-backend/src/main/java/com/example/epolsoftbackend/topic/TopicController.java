@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.topic;
 
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
+import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,18 @@ public class TopicController {
     }
 
     @GetMapping("/get/available")
-    public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics(){
+    public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics() {
         return topicService.getAllAvailableTopics();
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO){
+    public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO) {
         return topicService.createTopic(topicCreateDTO);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicUpdateDTO) {
+        return topicService.updateTopic(topicUpdateDTO);
     }
 
     @DeleteMapping("/delete/{id}")
