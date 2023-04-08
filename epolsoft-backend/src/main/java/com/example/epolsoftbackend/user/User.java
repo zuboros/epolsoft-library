@@ -2,6 +2,8 @@ package com.example.epolsoftbackend.user;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.example.epolsoftbackend.book.Book;
@@ -23,13 +25,13 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -67,7 +69,7 @@ public class User implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<UserRole> roles;
+    private List<UserRole> roles = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -41,11 +42,14 @@ public class FileController {
 
     @PostMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@PathVariable("id") long id, @RequestParam("type") String type) throws IOException {
+    public void deleteFile(@PathVariable("id") long id, @RequestParam("type") String type, Long idUser) throws IOException {
         Optional<Book> optionalBook = bookService.findById(id);
         Book book = optionalBook.isEmpty() ? null : optionalBook.get();
 
         if (book == null) {
+            return;
+        }
+        else if (!Objects.equals(book.getUserId().getId(), idUser)){
             return;
         }
 

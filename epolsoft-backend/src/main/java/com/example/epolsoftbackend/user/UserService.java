@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.user;
 
+import com.example.epolsoftbackend.user.DTO.UserBookResponseDTO;
 import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
 import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,13 @@ import java.util.Optional;
 
 public interface UserService {
 
-    ResponseEntity<List<UserResponseDTO>> getAllUsers();
+    ResponseEntity<List<UserBookResponseDTO>> getAllUsers();
     Optional<User> findById(long id);
     Optional<User> findByMail(String mail);
     ResponseEntity<HttpStatus> deleteById(long id);
-    void createNewUser(UserRegistrationDTO userRegistrationDTO);
+    ResponseEntity<UserBookResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO);
     String hashPassword(String pass) throws NoSuchAlgorithmException;
+    ResponseEntity<UserResponseDTO> blockUser(long id);
+    ResponseEntity<UserResponseDTO> unblockUser(long id);
 
 }

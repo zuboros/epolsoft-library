@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
+import com.example.epolsoftbackend.user.DTO.UserBookResponseDTO;
 import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
 import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
 import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
@@ -16,10 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,8 +32,8 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return new ResponseEntity<>(userMapper.listUserToListUserResponseDTO(userRepository.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<UserBookResponseDTO>> getAllUsers() {
+        return new ResponseEntity<>(userMapper.listUserToListUserBookResponseDTO(userRepository.findAll()), HttpStatus.OK);
     }
 
     public Optional<User> findById(long id) {
@@ -55,7 +53,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void createNewUser(UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserBookResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO) {
         User newUser = new User();
         Role role = roleRepository.findByName("USER").get();
 
@@ -67,10 +65,15 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e);
         }
 
+        System.out.println(role);
+
         newUser.setBlocked(false);
+
+        System.out.println(newUser.getRoles());
+
         newUser.getRoles().add(new UserRole(newUser, role));
 
-        userRepository.save(newUser);
+        return new ResponseEntity<>(userMapper.userToUserBookResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);
     }
 
     public String hashPassword(String pass) throws NoSuchAlgorithmException {
@@ -81,6 +84,34 @@ public class UserServiceImpl implements UserService {
         BigInteger bi = new BigInteger(1, bytes);
 
         return String.format("%0" + (bytes.length << 1) + "x", bi);
+    }
+
+    public ResponseEntity<UserResponseDTO> blockUser(long id) {
+        User userNeedToBlock = userRepository.findById(id).get();
+
+        if (containsRole(userNeedToBlock.getRoles(), "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        userNeedToBlock.setBlocked(true);
+
+        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToBlock)), HttpStatus.OK);
+    }
+
+    public ResponseEntity<UserResponseDTO> unblockUser(long id) {
+        User userNeedToUnblock = userRepository.findById(id).get();
+
+        if (containsRole(userNeedToUnblock.getRoles(), "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        userNeedToUnblock.setBlocked(false);
+
+        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock)), HttpStatus.OK);
+    }
+
+    private boolean containsRole(final List<UserRole> list, final String roleName){
+        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
 }

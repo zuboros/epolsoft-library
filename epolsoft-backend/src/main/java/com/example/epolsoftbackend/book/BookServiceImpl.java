@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -47,6 +48,8 @@ public class BookServiceImpl implements BookService {
 
             return responseEntity;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -55,9 +58,13 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findById(id);
     }
 
-    public ResponseEntity<BookUpdateDTO> updateById(BookUpdateDTO bookUpdateDTO) {
+    public ResponseEntity<BookUpdateDTO> updateById(BookUpdateDTO bookUpdateDTO, Long userID) {
         try{
             Book oldBook = bookRepository.findById(bookUpdateDTO.getId()).get();
+
+            if(!Objects.equals(oldBook.getUserId().getId(), userID)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
             Topic oldTopic = topicRepository.findById(oldBook.getTopicId().getId()).get();
 
@@ -89,12 +96,19 @@ public class BookServiceImpl implements BookService {
 
             return responseEntity;
         }
-       catch (Exception e ) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+       catch (Exception e ) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    public ResponseEntity<HttpStatus> deleteById(long id) {
+    public ResponseEntity<HttpStatus> deleteById(Long id, Long userID) {
         try {
             Book book = bookRepository.findById(id).get();
+
+            if(!Objects.equals(book.getUserId().getId(), userID)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
             long topicId = book.getTopicId().getId();
 
