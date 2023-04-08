@@ -1,10 +1,7 @@
 package com.example.epolsoftbackend.file;
 
-import com.example.epolsoftbackend.book.Book;
 import com.example.epolsoftbackend.book.BookService;
-import com.example.epolsoftbackend.book.BookServiceImpl;
 import com.example.epolsoftbackend.user.UserService;
-import com.example.epolsoftbackend.user.UserServiceImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/file")
@@ -42,44 +37,27 @@ public class FileController {
 
     @PostMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@PathVariable("id") long id, @RequestParam("type") String type, Long idUser) throws IOException {
-        Optional<Book> optionalBook = bookService.findById(id);
-        Book book = optionalBook.isEmpty() ? null : optionalBook.get();
-
-        if (book == null) {
-            return;
-        }
-        else if (!Objects.equals(book.getUserId().getId(), idUser)){
-            return;
-        }
-
-        String filePath = type.equals("book") ? book.getFilePath() : book.getUserId().getAvatarPath();
-
-        fileService.deleteFile(filePath);
+    public void deleteFile(@PathVariable("id") long id,
+                           long userWhoDeleteId) throws IOException {
+        fileService.deleteFile(id, userWhoDeleteId);
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable long id, @RequestParam("type") String type,
+    public ResponseEntity<Resource> downloadFile(@PathVariable long id,
+                                                 @RequestParam("type") String type,
+                                                 long userWhoDownloadId,
                                                  HttpServletRequest request) throws MalformedURLException {
-
-        String resourcePath = type.equals("book") ?
-                bookService.findById(id).get().getFilePath() : userService.findById(id).get().getAvatarPath();
-        String resourceName = type.equals("book") ?
-                bookService.findById(id).get().getFileName() : userService.findById(id).get().getAvatarName();
-
-        if (resourcePath == null || resourceName == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
         // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(resourcePath);
+        Resource resource = fileService.loadFileAsResource(id, type, userWhoDownloadId);
+        String resourceName = fileService.receiveFileName(id, type);
+
 
         // Try to determine file's content type
         String contentType = null;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
-            //logger.info("Could not determine file type.");
+            throw new RuntimeException("Could not determine file type.");
         }
 
         // Fallback to the default content type if type could not be determined
