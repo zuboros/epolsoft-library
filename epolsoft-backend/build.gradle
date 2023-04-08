@@ -5,12 +5,12 @@ plugins {
     id "com.github.node-gradle.node" version "3.1.1"
 }
 
-node {
-    version = '18.15.0'
-    npmVersion = '9.5.0'
-    download = true
-    distBaseUrl = 'https://nodejs.org/dist'
-}
+//node {
+//    version = '18.15.0'
+//    npmVersion = '9.5.0'
+//    download = true
+//    distBaseUrl = 'https://nodejs.org/dist'
+//}
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
