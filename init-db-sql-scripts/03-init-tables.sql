@@ -14,7 +14,7 @@ ALTER TABLE public.book
 
 ALTER TABLE public.book
     ADD CONSTRAINT book_user_fkey FOREIGN KEY (user_id)
-        REFERENCES public."user" (id) MATCH SIMPLE
+        REFERENCES public.user (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
 
