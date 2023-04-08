@@ -61,5 +61,6 @@ public class CustomInterceptor implements HandlerInterceptor {
             else return false;
         }
         else return false;
+        return true;
     }
 }
