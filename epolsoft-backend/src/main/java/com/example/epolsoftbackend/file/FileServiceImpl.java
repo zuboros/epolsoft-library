@@ -110,6 +110,10 @@ public class FileServiceImpl implements FileService {
 
         return dirPath + "/" + fileUUIDName;
     }
+
+    public void deleteAvatarFile(String filePath) {
+        deleteFileByPath(convertToOsDependentFullFilePath(filePath));
+    }
     
     public String storeFile(MultipartFile file, String type, long userId) {
         if (file == null || file.isEmpty()) {
