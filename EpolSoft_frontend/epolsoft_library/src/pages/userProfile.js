@@ -31,7 +31,7 @@ const UserProfile = () => {
    return (
       <>
          <Space wrap size={16}>
-            <Avatar size={128} icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR(userInfo?.id)} />
+            <Avatar size={128} icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} />
             {userInfo && <UserDescription userInfo={userInfo} />}
          </Space>
 

@@ -1,13 +1,14 @@
-import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
-import { FileAddOutlined } from '@ant-design/icons'
+import { Button, Modal, Form, Input, AutoComplete, Upload, } from 'antd';
+import { EditOutlined, SendOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postData, postFile } from '../../../redux/reducers/bookSlice';
 import { fetchTopics, fetchAllTopics } from '../../../redux/reducers/topicSlice';
 import { noWhiteSpace } from '../../common/form/validation'
 
+const EditBook = ({ record }) => {
+   const [form] = Form.useForm();
 
-const CreateBook = () => {
    const dispatch = useDispatch();
    const { status, error } = useSelector(state => state.books)
    const topics = useSelector(state => state.topics.topics)
@@ -15,20 +16,29 @@ const CreateBook = () => {
    const [open, setOpen] = useState(false);
    const [confirmLoading, setConfirmLoading] = useState(false);
 
+   useEffect(() => {
+      form.setFieldsValue(record);
+   }, [record]);
+
    const showModal = () => {
       setOpen(true);
       dispatch(fetchTopics());
    };
 
    const handleSubmit = (values) => {
-
-      if (finish) {
-         setConfirmLoading(true);
-         postData(dispatch, values);
-         setConfirmLoading(false);
-         setOpen(false);
-         dispatch(fetchAllTopics());
+      const data = {
+         ...record,
+         ...values
       }
+      delete data.key;
+
+      console.log(data);
+
+      setConfirmLoading(true);
+      postData(dispatch, values);
+      setConfirmLoading(false);
+      setOpen(false);
+      dispatch(fetchAllTopics());
    };
    const handleCancel = () => {
       setOpen(false);
@@ -41,7 +51,7 @@ const CreateBook = () => {
    return (
       <>
          <Button onClick={showModal}>
-            <FileAddOutlined />
+            <EditOutlined />
          </Button>
          <Modal
             title="Title"
@@ -56,7 +66,7 @@ const CreateBook = () => {
                </>
             }
          >
-            <Form
+            <Form form={form}
                autoComplete="off"
                labelCol={{ span: 6 }}
                onFinish={(values => {
@@ -144,49 +154,12 @@ const CreateBook = () => {
                      autoSize={{ minRows: 3, maxRows: 4 }}
                   />
                </Form.Item>
-
-               <Form.Item name="uploadFiles" label="Your File"
-                  valuePropName='fileList'
-                  getValueFromEvent={(event) => {
-                     return event?.fileList
-                  }}
-                  rules={[{
-                     required: true,
-                     message: "Please upload the book file.",
-                  },
-                  {
-                     validator(_, fileList) {
-                        return new Promise((resolve, reject) => {
-                           if (fileList && fileList[0]?.size < 2) {
-                              reject('The file size exceeded');
-                              setFinish(false);
-                           }
-                           else {
-                              setFinish(true);
-                              resolve("Success!")
-                           }
-                        });
-                     }
-                  }]}
-               >
-                  <Upload
-                     maxCount={1}
-                     customRequest={(info) => {
-                        setFileList([info.file]);
-                     }}
-                     showUploadList={false}
-                     accept=".txt,.pdf,.azw,.azw3,.mobi,.epub"
-                  >
-                     <Button>Upload</Button>
-                     {fileList[0]?.name}
-                  </Upload>
-               </Form.Item>
                <Form.Item>
-                  <Button type="primary" htmlType='submit' loading={confirmLoading}>Submit</Button>
+                  <Button htmlType='submit' loading={confirmLoading}><SendOutlined /></Button>
                </Form.Item>
             </Form>
          </Modal>
       </>
    );
 };
-export default CreateBook;
+export default EditBook;

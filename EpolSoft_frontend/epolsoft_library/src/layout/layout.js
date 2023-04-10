@@ -1,14 +1,13 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import AppHeader from '../layout/sections/appHeader'
+import { Affix } from 'antd'
 
 export const Layout = () => {
    return (
       <>
-         <header>
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/login">Login</NavLink>
-            <NavLink to="/register">Register</NavLink>
-            <NavLink to="/profile">Profile</NavLink>
-         </header>
+         <Affix offsetTop={0} className="app__affix-header" style={{ backgroundColor: "white" }}>
+            <AppHeader />
+         </Affix>
          <Outlet />
       </>
    )

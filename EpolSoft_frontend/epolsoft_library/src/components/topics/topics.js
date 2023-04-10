@@ -11,7 +11,7 @@ const Topics = () => {
    const dispatch = useDispatch();
 
    useEffect(() => {
-      dispatch(fetchAllTopics(userToken));
+      dispatch(fetchAllTopics());
    }, [dispatch])
 
    const hiddenColumns = [

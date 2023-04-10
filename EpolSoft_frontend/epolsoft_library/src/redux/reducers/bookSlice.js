@@ -176,15 +176,10 @@ export const deleteData = async (dispatch, id, auth) =>
          actions: [removeBook, setDeleteLoading]
       }
    })
-export const extractDataByUserId = async (dispatch, userId, auth) => {
+export const extractDataByUserId = async (dispatch, userId, pageParams) => {
    await createRequest({
       preCallback: () => dispatch(setLoading(false)),
-      method: axios.GET, url: axios.PATH_GET_BOOKS_BY_USER_ID({ id: userId }),
-      body: {
-         headers: {
-            'Authorization': auth
-         }
-      },
+      method: axios.GET, url: axios.PATH_GET_BOOKS_BY_USER_ID({ id: userId }, pageParams),
       postCallback: (data) => {
          console.log(axios.GET);                      ///
          console.log(data);                   ///

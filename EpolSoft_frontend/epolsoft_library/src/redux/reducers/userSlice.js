@@ -16,16 +16,10 @@ const initialState = {
 
 export const fetchUsers = createAsyncThunk(
    `${[entities.USERS]}/fetchUsers`,
-   async (auth, { rejectWithValue, dispatch }) => {
+   async (pageParams, { rejectWithValue, dispatch }) => {
       try {
-
          await createRequest({
-            method: axios.GET, url: axios.PATH_GET_USERS,
-            body: {
-               headers: {
-                  'Authorization': auth
-               }
-            },
+            method: axios.GET, url: axios.PATH_GET_USERS(pageParams),
             postCallback: (dataAfter) => {
                const { data } = dataAfter;
                return data;
@@ -37,7 +31,6 @@ export const fetchUsers = createAsyncThunk(
          })
 
       } catch (error) {
-         // return custom error message from backend if present
          if (error.response && error.response.data.message) {
             return rejectWithValue(error.response.data.message)
          } else {
@@ -49,16 +42,13 @@ export const fetchUsers = createAsyncThunk(
 
 export const blockUser = createAsyncThunk(
    `${[entities.USERS]}/blockUser`,
-   async ({ auth, id }, { rejectWithValue, dispatch }) => {
+   async ({ id }, { rejectWithValue, dispatch }) => {
       try {
 
          await createRequest({
-            method: axios.POST, url: axios.PATH_BLOCK_USERS(id),
-            body: {},
-            axios_cfg: {
-               headers: {
-                  'Authorization': auth
-               }
+            method: axios.PUT, url: axios.PATH_BLOCK_USERS({ id }),
+            body: {
+
             },
             postCallback: () => {
                return { id };

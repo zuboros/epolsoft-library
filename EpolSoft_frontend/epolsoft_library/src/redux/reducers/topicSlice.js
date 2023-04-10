@@ -15,16 +15,11 @@ const initialState = {
 
 export const fetchTopics = createAsyncThunk(
    `${entities.TOPICS}/fetchTopics`,
-   async function (auth, { rejectWithValue, dispatch }) {
+   async function (_, { rejectWithValue, dispatch }) {
       try {
 
          await createRequest({
             method: axios.GET, url: axios.PATH_GET_AVAILABLE_TOPICS,
-            body: {
-               headers: {
-                  'Authorization': auth
-               }
-            },
             postCallback: (response) => {
                console.log(axios.GET);
                const { data } = response
@@ -43,16 +38,11 @@ export const fetchTopics = createAsyncThunk(
 
 export const fetchAllTopics = createAsyncThunk(
    `${entities.TOPICS}/fetchAllTopics`,
-   async function (auth, { rejectWithValue, dispatch }) {
+   async function (_, { rejectWithValue, dispatch }) {
       try {
 
          await createRequest({
             method: axios.GET, url: axios.PATH_GET_ALL_TOPICS,
-            body: {
-               headers: {
-                  'Authorization': auth
-               }
-            },
             postCallback: (response) => {
                console.log(axios.GET);
                const { data } = response
@@ -71,16 +61,10 @@ export const fetchAllTopics = createAsyncThunk(
 
 export const deleteTopic = createAsyncThunk(
    `${entities.TOPICS}/deleteTopic`,
-   async ({ auth, id }, { rejectWithValue, dispatch }) => {
+   async ({ id }, { rejectWithValue, dispatch }) => {
       try {
-
          await createRequest({
             method: axios.DELETE, url: axios.PATH_DELETE_TOPIC({ id: id }),
-            body: {
-               headers: {
-                  'Authorization': auth
-               }
-            },
             postCallback: (response) => {
                console.log(axios.DELETE);
                console.log(response);

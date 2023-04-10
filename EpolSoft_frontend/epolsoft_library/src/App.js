@@ -5,10 +5,12 @@ import LoginPage from './pages/loginPage'
 import RegisterPage from './pages/registerPage'
 import NotFoundPage from './pages/notFoundPage'
 import { Layout } from './layout/layout'
+import AppLayout from './layout/appLayout'
 import UserProfile from './pages/userProfile'
+{/* <Route path='/' element={<Layout />}> */ }
 
 const router = createBrowserRouter(createRoutesFromElements(
-  <Route path='/' element={<Layout />}>
+  <Route path='/' element={<AppLayout />}>
     <Route index element={<HomePage />} />
     <Route path='/login' element={<LoginPage />} />
     <Route path='/register' element={<RegisterPage />} />

@@ -13,7 +13,7 @@ function Books() {
    const privateItem = userInfo?.roles?.find(column => column === USER)
 
    const handleDelete = (value) => {
-      deleteData(dispatch, value.id, userToken)
+      deleteData(dispatch, value.id, userToken);
    }
 
    return (
