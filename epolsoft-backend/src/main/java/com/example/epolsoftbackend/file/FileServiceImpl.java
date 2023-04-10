@@ -111,8 +111,13 @@ public class FileServiceImpl implements FileService {
         return dirPath + "/" + fileUUIDName;
     }
 
-    public void deleteAvatarFile(String filePath) {
-        deleteFileByPath(convertToOsDependentFullFilePath(filePath));
+    public void deleteAvatarFile(String filePath, long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userId));
+
+        if (user.getAvatarPath() != null) {
+            deleteFileByPath(convertToOsDependentFullFilePath(filePath));
+        }
     }
     
     public String storeFile(MultipartFile file, String type, long userId) {
