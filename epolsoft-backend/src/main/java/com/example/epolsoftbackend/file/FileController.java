@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,26 +30,30 @@ public class FileController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(fileService.storeFile(file), HttpStatus.OK);
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("type") String type) throws IOException {
+        long userId = 3; //delete
+
+        return new ResponseEntity<>(fileService.storeFile(file, type, userId), HttpStatus.OK);
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@PathVariable("id") long id,
-                           long userWhoDeleteId) throws IOException {
-        fileService.deleteFile(id, userWhoDeleteId);
+    public void deleteBookFile(@PathVariable("id") long id) throws IOException {
+        long userWhoDeleteId = 3; //delete
+
+        fileService.deleteBookFile(id, userWhoDeleteId);
     }
 
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable long id,
                                                  @RequestParam("type") String type,
-                                                 long userWhoDownloadId,
                                                  HttpServletRequest request) throws MalformedURLException {
+        long userWhoDownloadId = 3;  //delete
+
         // Load file as Resource
         Resource resource = fileService.loadFileAsResource(id, type, userWhoDownloadId);
         String resourceName = fileService.receiveFileName(id, type);
-
 
         // Try to determine file's content type
         String contentType = null;

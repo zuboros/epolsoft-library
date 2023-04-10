@@ -18,11 +18,15 @@ public class BadRequestException extends RuntimeException {
     }
 
     public BadRequestException(String message) {
-        super(message);
+        this(message, null);
     }
 
     public BadRequestException(String message, Throwable cause) {
         super(message, cause);
+        setApiResponse(message);
     }
 
+    private void setApiResponse(String message) {
+        apiResponse = new ApiResponse(Boolean.FALSE, message);
+    }
 }
