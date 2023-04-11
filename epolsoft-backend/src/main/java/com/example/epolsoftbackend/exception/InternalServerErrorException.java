@@ -5,23 +5,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class BadRequestException extends RuntimeException {
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+public class InternalServerErrorException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private ApiResponse apiResponse;
 
-    public BadRequestException(ApiResponse apiResponse) {
+    public InternalServerErrorException(ApiResponse apiResponse) {
         super();
         this.apiResponse = apiResponse;
     }
 
-    public BadRequestException(String message) {
+    public InternalServerErrorException(String message) {
         this(message, null);
     }
 
-    public BadRequestException(String message, Throwable cause) {
+    public InternalServerErrorException(String message, Throwable cause) {
         super(message, cause);
         setApiResponse(message);
     }
@@ -29,4 +29,5 @@ public class BadRequestException extends RuntimeException {
     private void setApiResponse(String message) {
         apiResponse = new ApiResponse(Boolean.FALSE, message);
     }
+
 }

@@ -18,11 +18,16 @@ public class ForbiddenException extends RuntimeException {
     }
 
     public ForbiddenException(String message) {
-        super(message);
+        this(message, null);
     }
 
     public ForbiddenException(String message, Throwable cause) {
         super(message, cause);
+        setApiResponse(message);
+    }
+
+    private void setApiResponse(String message) {
+        apiResponse = new ApiResponse(Boolean.FALSE, message);
     }
 
 }
