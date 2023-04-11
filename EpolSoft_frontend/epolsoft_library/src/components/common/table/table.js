@@ -3,7 +3,7 @@ import { Table } from 'antd'
 import * as table from './tableConsts'
 import './tableStyle.css'
 
-const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, loading, arrayRender, actionRender, extractEntities }) => {
+const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable }) => {
 
    const [pageNum, setPageNum] = useState(table.INITIAL_PAGE_NUM);
    const [pageSize, setPageSize] = useState(table.INITIAL_PAGE_SIZE);
@@ -34,13 +34,15 @@ const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, 
                };
             },
          }) :
-         {}
-      );
+         null
+      ).filter(entityEntry => !!entityEntry);
+
       !!addingColumns && cols.push(addingColumns);
       cols.push({
          title: "Action",
          dataIndex: "action",
          key: "action",
+         align: "center",
          render: actionRender,
       })
       return cols;
@@ -59,6 +61,9 @@ const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, 
                setPageSize(pageSize);
                extractEntities({ pageNum: page, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder });
             }
+         }}
+         expandable={{
+            expandedRowRender: addingExpandable,
          }}
       >
       </Table>

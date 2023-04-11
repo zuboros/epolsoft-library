@@ -44,8 +44,6 @@ const UserBooks = () => {
       //dispatch(blockUser({ auth: userToken, id: record.id }));
    }
 
-
-
    const actionRender = (_, record) =>
       <Space>
          <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
@@ -57,6 +55,8 @@ const UserBooks = () => {
             <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
          </Popconfirm>
       </Space>
+
+   const addingExpandable = (record) => <p><b>Description: </b>{record.description}</p>
 
    return (
       <>
@@ -75,6 +75,7 @@ const UserBooks = () => {
                loading={loading}
                actionRender={actionRender}
                extractEntities={getBooksByUserId}
+               addingExpandable={addingExpandable}
             />}
       </>
    )

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button, Popconfirm, Avatar } from 'antd'
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import { LogoutOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons'
 import { ANONYM, USER, ADMIN } from '../../redux/entitiesConst'
 import * as axios from "../../lib/actionAxiosTypes";
 
@@ -17,7 +17,7 @@ const logout = (logoutHandler) => ({
       </Popconfirm>
 })
 const login = {
-   label: <Link to='/login'>admin panel</Link>
+   label: <Link to='/login'>Login <LoginOutlined /></Link>
 }
 
 const anonym = [
@@ -25,13 +25,11 @@ const anonym = [
 ]
 
 const user = [
-   profile,
-   logout
+   profile
 ]
 
 const admin = [
-   adminPanel,
-   logout
+   adminPanel
 ]
 
 const rolePanel = {
@@ -49,35 +47,25 @@ export const menuItem = (userInfo, logoutHandler) => {
    return (
       [{
          key: firstField,
-         icon: <Avatar icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} />,
-         label: userInfo?.userName || "Anonym",
-         children: !!userInfo ?
-
-
+         icon: !!userInfo ? <Avatar icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} /> : <Avatar style={{ backgroundColor: "#c0d1ed" }}><UserOutlined /></Avatar>,
+         label: userInfo?.userName || login.label,
+         children: !!userInfo &&
             userInfo.roles.reduce((arr, role) => {
                rolePanel[role].forEach((field, index) => {
-                  field = field instanceof Function ? field(logoutHandler) : field;
                   arr = arr.filter((ar) => ar.label !== field.label);
-                  arr.push({
+                  arr.unshift({
                      key: firstField * 100 + innerField * 10 + index,
                      ...field,
                   })
-                  /* console.log('=================');
-                  console.log(field);
-                  console.log('index: ' + index);
-                  console.log('array');
-                  console.log(arr);
-                  console.log('role: ' + role);
-                  console.log('innerField: ' + innerField); */
                });
                innerField = innerField + 1;
                return arr;
-            }, [])
-            :
-            rolePanel[ANONYM].map((field, j) => ({
-               ...field,
-               key: firstField * 100 + 10 + j,
-            }))
+            }, [
+               {
+                  key: firstField * 100 + 90,
+                  ...logout(logoutHandler)
+               }
+            ])
       }
       ]
    )
