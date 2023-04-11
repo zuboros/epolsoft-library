@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -30,6 +31,10 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleRepository = roleRepository;
+    }
+
+    private boolean containsRole(final List<UserRole> list, final String roleName) {
+        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
     public ResponseEntity<List<UserBookResponseDTO>> getAllUsers() {
@@ -110,8 +115,8 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock)), HttpStatus.OK);
     }
 
-    private boolean containsRole(final List<UserRole> list, final String roleName){
-        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
+    public boolean isExpired(LocalDateTime userPasswordUpdatedAt) {
+        return userRepository.isPasswordExpired(userPasswordUpdatedAt);
     }
 
 }
