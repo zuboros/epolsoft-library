@@ -11,14 +11,9 @@ import com.example.epolsoftbackend.user_role.UserRole;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -40,10 +35,6 @@ public class UserServiceImpl implements UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jsonWebTokenProvider = jsonWebTokenProvider;
-    }
-
-    private boolean containsRole(final List<UserRole> list, final String roleName) {
-        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
     private boolean containsRole(final List<UserRole> list, final String roleName) {
