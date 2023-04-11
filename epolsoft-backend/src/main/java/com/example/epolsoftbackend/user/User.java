@@ -67,7 +67,8 @@ public class User implements Serializable {
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     private List<UserRole> roles = new ArrayList<>();
 

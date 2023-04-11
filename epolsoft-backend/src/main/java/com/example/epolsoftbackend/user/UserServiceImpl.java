@@ -1,17 +1,19 @@
 package com.example.epolsoftbackend.user;
 
+import com.example.epolsoftbackend.exception.BadRequestException;
+import com.example.epolsoftbackend.exception.ForbiddenException;
+import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
-import com.example.epolsoftbackend.user.DTO.UserBookResponseDTO;
-import com.example.epolsoftbackend.user.DTO.UserLoginDTO;
-import com.example.epolsoftbackend.user.DTO.UserRegistrationDTO;
-import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
+import com.example.epolsoftbackend.security.JsonWebTokenProvider;
+import com.example.epolsoftbackend.user.DTO.*;
 import com.example.epolsoftbackend.user_role.UserRole;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -23,22 +25,33 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JsonWebTokenProvider jsonWebTokenProvider;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository) {
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager, JsonWebTokenProvider jsonWebTokenProvider) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jsonWebTokenProvider = jsonWebTokenProvider;
     }
 
     private boolean containsRole(final List<UserRole> list, final String roleName) {
         return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
-    public ResponseEntity<List<UserBookResponseDTO>> getAllUsers() {
-        return new ResponseEntity<>(userMapper.listUserToListUserBookResponseDTO(userRepository.findAll()), HttpStatus.OK);
+    private boolean containsRole(final List<UserRole> list, final String roleName) {
+        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
+    }
+
+    public List<UserBookResponseDTO> getAllUsers() {
+        return userMapper.listUserToListUserBookResponseDTO(userRepository.findAll());
     }
 
     public Optional<User> findById(long id) {
@@ -49,70 +62,75 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByMail(mail);
     }
 
-    public ResponseEntity<HttpStatus> deleteById(long id) {
+    public boolean deleteById(long id) {
         try {
             userRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return true;
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BadRequestException("Internal server error");
         }
     }
 
-    public ResponseEntity<UserBookResponseDTO> createNewUser(UserRegistrationDTO userRegistrationDTO) {
-        User newUser = new User();
+    public UserBookResponseDTO createNewUser(UserRegistrationDTO userRegistrationDTO) {
         Role role = roleRepository.findByName("USER").get();
+
+        User newUser = new User();
 
         newUser.setMail(userRegistrationDTO.getMail());
         newUser.setName(userRegistrationDTO.getName());
         try {
-            newUser.setPasswordHash(hashPassword(userRegistrationDTO.getPassword()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            newUser.setPasswordHash(bCryptPasswordEncoder.encode(userRegistrationDTO.getPassword()));
+            System.out.println(newUser.getPasswordHash());
+        } catch (Exception e) {
+            throw new InternalError("Error encoding password");
         }
 
-        System.out.println(role);
-
         newUser.setBlocked(false);
-
-        System.out.println(newUser.getRoles());
-
         newUser.getRoles().add(new UserRole(newUser, role));
 
-        return new ResponseEntity<>(userMapper.userToUserBookResponseDTO(userRepository.save(newUser)), HttpStatus.CREATED);
+        return userMapper.userToUserBookResponseDTO(userRepository.save(newUser));
     }
 
-    public String hashPassword(String pass) throws NoSuchAlgorithmException {
-        MessageDigest crypt = MessageDigest.getInstance("SHA-512");
-        crypt.update(pass.getBytes(StandardCharsets.UTF_8));
+    public UserLoginResponseDTO login(UserLoginDTO userLoginDTO) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getMail(), userLoginDTO.getPassword()));
+            Optional<User> optUser = userRepository.findByMail(userLoginDTO.getMail());
+            if (optUser.isEmpty()) throw new BadRequestException("not exist");
+            //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            //UserLoginResponseDTO resultUser = userMapper.userToUserLoginResponseDTO(au);
+            UserLoginResponseDTO resultUser = userMapper.userToUserLoginResponseDTO(optUser.get());
+            resultUser.setToken(jsonWebTokenProvider.generateToken(optUser.get()));
 
-        byte[] bytes = crypt.digest();
-        BigInteger bi = new BigInteger(1, bytes);
-
-        return String.format("%0" + (bytes.length << 1) + "x", bi);
+            return resultUser;
+        } catch (Exception e) {
+            throw new ForbiddenException("UNAUTHORIZED");
+        }
     }
 
-    public ResponseEntity<UserResponseDTO> blockUser(long id) {
+
+    public UserResponseDTO blockUser(long id) {
         User userNeedToBlock = userRepository.findById(id).get();
 
         if (containsRole(userNeedToBlock.getRoles(), "ADMIN")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            throw new ForbiddenException("Can't block administrator");
         }
 
         userNeedToBlock.setBlocked(true);
 
-        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToBlock)), HttpStatus.OK);
+        return userMapper.userToUserResponseDTO(userRepository.save(userNeedToBlock));
     }
 
-    public ResponseEntity<UserResponseDTO> unblockUser(long id) {
+    public UserResponseDTO unblockUser(long id) {
         User userNeedToUnblock = userRepository.findById(id).get();
 
         if (containsRole(userNeedToUnblock.getRoles(), "ADMIN")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            throw new ForbiddenException("Can't unblock administrator");
         }
 
         userNeedToUnblock.setBlocked(false);
 
-        return new ResponseEntity<>(userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock)), HttpStatus.OK);
+        return userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock));
     }
 
     public boolean isExpired(LocalDateTime userPasswordUpdatedAt) {

@@ -20,7 +20,6 @@ public interface TopicMapper {
     //TopicCreate
     public TopicCreateDTO topicToTopicCreateDTO(Topic topic);
     public Topic topicCreateDTOToTopic(TopicCreateDTO topicCreateDTO);
-    public List<TopicCreateDTO> listTopicToListTopicCreateDTO(List<Topic> topicList);
 
     //TopicUpdate
     public Topic topicUpdateDTOtoTopic(TopicUpdateDTO topicUpdateDTO);

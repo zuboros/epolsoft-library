@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.topic;
 
+import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
@@ -14,7 +15,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +29,12 @@ public class TopicServiceImpl implements TopicService {
         this.topicMapper = topicMapper;
     }
 
-    public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO){
+    public TopicResponseDTO createTopic(TopicCreateDTO topicCreateDTO){
         try {
-            return new ResponseEntity<>(topicMapper.topicToTopicResponseDTO(
-                    topicRepository.saveAndFlush(topicMapper.topicCreateDTOToTopic(topicCreateDTO))),
-                    HttpStatus.CREATED);
+            return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(topicMapper.topicCreateDTOToTopic(topicCreateDTO)));
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalError("Error with creating topic with name " + topicCreateDTO.getName());
         }
     }
 
@@ -44,48 +42,51 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findById(id);
     }
 
-    public ResponseEntity<List> getAllTopics(Pageable pageable){
-        Page page = topicRepository.findAll(pageable);
-        List result = List.of(page.getContent(), page.getTotalElements());
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public List getAllTopics(Pageable pageable){
+        Page<Topic> page = topicRepository.findAll(pageable);
+        return List.of(page.getContent(), page.getTotalElements());
     }
 
-    public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics() {
-        return new ResponseEntity<>(topicMapper.listTopicToListTopicResponseDTO(topicRepository.findAll(new Specification<Topic>() {
+    public List<TopicResponseDTO> getAllAvailableTopics() {
+        return topicMapper.listTopicToListTopicResponseDTO(topicRepository.findAll(new Specification<Topic>() {
             @Override
             public Predicate toPredicate(Root<Topic> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.and(criteriaBuilder.equal(root.get("is_active"), true));
+                return criteriaBuilder.and(criteriaBuilder.equal(root.get("isActive"), true));
             }
-        })), HttpStatus.OK);
-        }
-
-    public ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicUpdateDTO) {
-        Topic topicForUpdate = topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO);
-        Topic actualTopic = topicRepository.findById(topicForUpdate.getId()).get();
-
-        if (actualTopic.isActive()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        actualTopic.setName(topicForUpdate.getName());
-
-        return new ResponseEntity<>(topicMapper.topicToTopicResponseDTO(
-                topicRepository.saveAndFlush(actualTopic)),
-                HttpStatus.OK);
+        }));
     }
 
-    public ResponseEntity<HttpStatus> deleteById(long id) {
-        try {
-            if (!topicRepository.findById(id).get().isActive()) {
-                topicRepository.deleteById(id);
+    public TopicResponseDTO updateTopic(TopicUpdateDTO topicUpdateDTO) {
+        Optional<Topic> optTopic = topicRepository.findById(topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getId());
 
-                return new ResponseEntity<>(HttpStatus.OK);
+        if (optTopic.isPresent()) {
+            Topic actualTopic = optTopic.get();
+
+            if (actualTopic.isActive()) {
+                throw new BadRequestException("Topic: " + actualTopic + " has used and can't be changed");
+            }
+
+            actualTopic.setName(topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getName());
+
+            return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(actualTopic));
+        }
+        else throw new InternalError("Topic not exist");
+
+
+    }
+
+    public boolean deleteById(long id) {
+        try {
+            Optional<Topic> topic = topicRepository.findById(id);
+            if (topic.isPresent() && !topic.get().isActive()) {
+                topicRepository.deleteById(id);
+                return true;
             } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                throw new InternalError("Topic used or not exist");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalError("Error with find or delete topic");
         }
     }
 }
