@@ -128,9 +128,8 @@ const RegisterPage = () => {
                span: 16,
             }}
          >
-            <p>If you already have some account: <NavLink to="/login">Login</NavLink></p>
-            <Button type="primary" htmlType="submit" loading={loading}>
-               Submit
+            <Button htmlType="submit" loading={loading}>
+               SignUp
             </Button>
          </Form.Item>
       </Form>

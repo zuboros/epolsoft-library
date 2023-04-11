@@ -9,7 +9,17 @@ import EditBook from '../../books/actionComponents/editBook'
 import CreateBook from '../../books/actionComponents/createBook'
 import * as table from '../../common/table/tableConsts'
 import { PATH_EXTRACT_FILE } from '../../../lib/actionAxiosTypes'
-import { downloadFile } from '../../books/table/features/tableMethods'
+/* import { downloadFile } from '../../books/table/features/tableMethods' */
+
+const downloadFile = (url) => {
+   const fileName = url.split("/").pop();
+   const aTag = document.createElement("a");
+   aTag.href = url;
+   aTag.setAttribute("download", fileName);
+   document.body.appendChild(aTag);
+   aTag.click();
+   aTag.remove();
+}
 
 const UserBooks = () => {
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading } = useSelector(state => state[BOOKS]);

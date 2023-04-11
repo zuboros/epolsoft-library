@@ -27,7 +27,6 @@ const LoginPage = () => {
    const commonRules = {
       required: true,
       whitespace: true,
-      min: 3,
    };
 
    const noWhiteSpace = {
@@ -93,11 +92,11 @@ const LoginPage = () => {
             }}
          >
             <p>If you don't have any accounts: <NavLink to="/register">Register</NavLink></p>
-            <Button type="primary" htmlType="submit" loading={loading}>
-               Submit
+            <Button htmlType="submit" loading={loading}>
+               Login
             </Button>
          </Form.Item>
-      </Form>
+      </Form >
    )
 };
 export default LoginPage;

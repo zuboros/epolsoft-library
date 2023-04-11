@@ -8,10 +8,19 @@ import BookTable from "../common/table/table";
 import SearchBook from "./actionComponents/searchBook";
 import { USER, BOOKS, AUTH } from '../../redux/entitiesConst'
 import { extractData, deleteData } from '../../redux/reducers/bookSlice';
-import { downloadFile } from './table/features/tableMethods'
 import { PATH_EXTRACT_FILE } from '../../lib/actionAxiosTypes'
 import * as table from '../common/table/tableConsts'
+/* import { downloadFile } from './table/features/tableMethods' */
 
+const downloadFile = (url) => {
+   const fileName = url.split("/").pop();
+   const aTag = document.createElement("a");
+   aTag.href = url;
+   aTag.setAttribute("download", fileName);
+   document.body.appendChild(aTag);
+   aTag.click();
+   aTag.remove();
+}
 function Books() {
    const dispatch = useDispatch();
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading, status } = useSelector(state => state.books);

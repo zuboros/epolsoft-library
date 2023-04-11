@@ -1,7 +1,7 @@
 export const convertBooksToTable = (books) => books?.map(book => ({ key: book.id, ...book }));
 
 
-export const downloadFile = (url) => {
+const downloadFile = (url) => {
    const fileName = url.split("/").pop();
    const aTag = document.createElement("a");
    aTag.href = url;

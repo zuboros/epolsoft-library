@@ -7,6 +7,7 @@ import NotFoundPage from './pages/notFoundPage'
 import { Layout } from './layout/layout'
 import AppLayout from './layout/appLayout'
 import UserProfile from './pages/userProfile'
+import AdminPage from './pages/adminPage'
 {/* <Route path='/' element={<Layout />}> */ }
 
 const router = createBrowserRouter(createRoutesFromElements(
@@ -15,6 +16,7 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route path='/login' element={<LoginPage />} />
     <Route path='/register' element={<RegisterPage />} />
     <Route path='/profile' element={<UserProfile />} />
+    <Route path='/admin' element={<AdminPage />} />
     <Route path='*' element={<NotFoundPage />} />
   </Route>
 ));

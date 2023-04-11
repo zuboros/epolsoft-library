@@ -12,7 +12,7 @@ import UserDescription from '../components/user/userDescription'
 import * as entity from '../redux/entitiesConst'
 import * as axios from "../lib/actionAxiosTypes";
 
-const UserProfile = () => {
+const AdminPage = () => {
 
    const { loading, userInfo, error } = useSelector((state) => state.auth)
    const dispatch = useDispatch()
@@ -30,14 +30,10 @@ const UserProfile = () => {
 
    return (
       <>
-         <Space wrap size={16}>
-            <Avatar size={128} icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} />
-            {userInfo && <UserDescription userInfo={userInfo} />}
-         </Space>
-
-         {userInfo?.roles?.find((role) => role === entity.USER) && <UserBooks userInfo={userInfo} />}
+         {userInfo?.roles?.find((role) => role === entity.ADMIN) && <Topics />}
+         {userInfo?.roles?.find((role) => role === entity.ADMIN) && <Users />}
       </>
    )
 }
 
-export default UserProfile
+export default AdminPage
