@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Space, Button, Popconfirm } from 'antd'
-import { SaveOutlined, StopOutlined, DeleteOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
 import { extractDataByUserId, deleteData } from '../../../redux/reducers/bookSlice';
 import { BOOKS, AUTH } from '../../../redux/entitiesConst'
 import { useEffect } from 'react';
