@@ -17,16 +17,17 @@ public class BookController {
 
     @PostMapping()
     public ResponseEntity<BookCreateDTO> createNote(@RequestBody BookCreateDTO bookCreateDTO){
-        return bookService.create(bookCreateDTO);
+        return new ResponseEntity<>(bookService.create(bookCreateDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO, Long idUser) {
-        return bookService.updateById(bookUpdateDTO, idUser);
+    public ResponseEntity<BookUpdateDTO> updateOneBook(@RequestBody BookUpdateDTO bookUpdateDTO) {
+        return new ResponseEntity<>(bookService.updateById(bookUpdateDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteNote(@PathVariable("id") Long id, Long idUser) {
-        return bookService.deleteById(id, idUser);
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteNote(@PathVariable("id") Long id) {
+        bookService.deleteById(id);
     }
 }

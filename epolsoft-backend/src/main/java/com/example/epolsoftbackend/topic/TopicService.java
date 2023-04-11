@@ -5,7 +5,6 @@ import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +12,10 @@ import java.util.Optional;
 public interface TopicService {
 
     Optional<Topic> findById(Long id);
-    ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics();
-    ResponseEntity<List> getAllTopics(Pageable pageable);
-    ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO);
-    ResponseEntity<HttpStatus> deleteById(long id);
-    ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicCreateDTO);
+    List<TopicResponseDTO> getAllAvailableTopics();
+    List getAllTopics(Pageable pageable);
+    TopicResponseDTO createTopic(TopicCreateDTO topicCreateDTO);
+    boolean deleteById(long id);
+    TopicResponseDTO updateTopic(TopicUpdateDTO topicCreateDTO);
 
 }

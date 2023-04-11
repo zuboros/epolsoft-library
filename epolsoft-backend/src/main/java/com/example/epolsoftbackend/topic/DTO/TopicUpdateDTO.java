@@ -8,6 +8,7 @@ import lombok.Data;
 public class TopicUpdateDTO {
 
     private long id;
+
     private String name;
 
 }

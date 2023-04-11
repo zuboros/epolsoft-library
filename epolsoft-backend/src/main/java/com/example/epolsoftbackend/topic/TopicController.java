@@ -21,27 +21,28 @@ public class TopicController {
 
     @GetMapping("/get/all")
     public ResponseEntity<List> getAllTopics(Pageable pageable){
-        return topicService.getAllTopics(pageable);
+        return new ResponseEntity<>(topicService.getAllTopics(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/get/available")
     public ResponseEntity<List<TopicResponseDTO>> getAllAvailableTopics() {
-        return topicService.getAllAvailableTopics();
+        return new ResponseEntity<>(topicService.getAllAvailableTopics(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO) {
-        return topicService.createTopic(topicCreateDTO);
+        return new ResponseEntity<>(topicService.createTopic(topicCreateDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
     public ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicUpdateDTO) {
-        return topicService.updateTopic(topicUpdateDTO);
+        return new ResponseEntity<>(topicService.updateTopic(topicUpdateDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteTopic(@PathVariable("id") long id) {
-        return topicService.deleteById(id);
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTopic(@PathVariable("id") long id) {
+        topicService.deleteById(id);
     }
 }
 

@@ -1,9 +1,11 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.another.JsonWebToken;
+import com.example.epolsoftbackend.security.JsonWebTokenProvider;
 import com.example.epolsoftbackend.user.DTO.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,65 +17,46 @@ import java.security.NoSuchAlgorithmException;
 @RequestMapping("/api/authors")
 public class UserController {
 
-    final UserService userService;
-    final UserMapper userMapper;
-    final JsonWebToken jsonWebToken;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService, UserMapper userMapper, JsonWebToken jsonWebToken) {
+
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
-        this.jsonWebToken = jsonWebToken;
     }
 
     @GetMapping("/get")
     public ResponseEntity<List<UserBookResponseDTO>> getAllAuthors() {
-        return userService.getAllUsers();
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
 
     @PostMapping("/signup")
-    public ResponseEntity<UserBookResponseDTO> signUp(
-            @RequestBody UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserBookResponseDTO> signUp(@RequestBody UserRegistrationDTO userRegistrationDTO) {
 
         Optional<User> optUser = userService.findByMail(userRegistrationDTO.getMail());
-
-        if (!optUser.isEmpty()) {
+        if (optUser.isPresent()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        return userService.createNewUser(userRegistrationDTO);
+        return new ResponseEntity<>(userService.createNewUser(userRegistrationDTO),HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
     public ResponseEntity<UserLoginResponseDTO> signIn(@RequestBody UserLoginDTO userLoginDTO) throws NoSuchAlgorithmException {
-        Optional<User> optUser = userService.findByMail(userLoginDTO.getMail());
-
-        if (optUser.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        }
-
-        User user = optUser.get();
-
-        String hashedPass = userService.hashPassword(userLoginDTO.getPassword());
-
-        if (userLoginDTO.getMail().equals(user.getMail())
-                && hashedPass.equals(user.getPasswordHash()) && !user.isBlocked()) {
-            UserLoginResponseDTO resultUser= userMapper.userToUserLoginResponseDTO(user);
-            resultUser.setToken(jsonWebToken.generateToken(user));
-            return new ResponseEntity<>(resultUser, HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(userService.login(userLoginDTO), HttpStatus.OK);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @PutMapping("/block/{id}")
     public ResponseEntity<UserResponseDTO> blockUser(@PathVariable("id") long id) {
-        return userService.blockUser(id);
+        return new ResponseEntity<>(userService.blockUser(id), HttpStatus.OK);
     }
 
     @PutMapping("/unblock/{id}")
     public ResponseEntity<UserResponseDTO> unblockUser(@PathVariable("id") long id) {
-        return userService.unblockUser(id);
+        return new ResponseEntity<>(userService.unblockUser(id), HttpStatus.OK);
     }
 
 }
