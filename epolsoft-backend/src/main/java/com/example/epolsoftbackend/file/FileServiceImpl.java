@@ -7,7 +7,9 @@ import com.example.epolsoftbackend.book.BookRepository;
 import com.example.epolsoftbackend.exception.ForbiddenException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.user.User;
+import com.example.epolsoftbackend.user.UserDetailsImpl;
 import com.example.epolsoftbackend.user.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -145,11 +147,12 @@ public class FileServiceImpl implements FileService {
         }
     }
     
-    public Resource loadFileAsResource(long id, String type, long userWhoDownloadId) {
+    public Resource loadFileAsResource(long id, String type) {
         if (type.equals("book")) {
             Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
 
-            if (book.getUserId().getId() != userWhoDownloadId) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
                 throw new ForbiddenException("User cannot download not his own books");
             }
         }
@@ -195,13 +198,13 @@ public class FileServiceImpl implements FileService {
         }
     }
     
-    public void deleteBookFile(long id, long userWhoDeleteId) {
+    public void deleteBookFile(long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
 
-        if (!Objects.equals(book.getUserId().getId(), userWhoDeleteId)) {
-            throw new ForbiddenException("User cannot delete not his own books");
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
+            throw new ForbiddenException("User cannot delete not his own book file");
         }
-
         deleteFileByPath(convertToOsDependentFullFilePath(book.getFilePath()));
     }
 }

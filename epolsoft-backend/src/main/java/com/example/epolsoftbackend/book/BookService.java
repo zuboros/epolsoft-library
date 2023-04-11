@@ -2,8 +2,6 @@ package com.example.epolsoftbackend.book;
 
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
-import org.springframework.http.HttpStatus;
-
 import java.util.Optional;
 
 public interface BookService {

@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileService {
 
     String storeFile(MultipartFile file, String type, long userId);
-    Resource loadFileAsResource(long id, String type, long userWhoDownloadId);
-    void deleteBookFile(long id, long userWhoDeleteId);
+    Resource loadFileAsResource(long id, String type);
+    void deleteBookFile(long id);
     String receiveFileName(long id, String type);
 
 }
