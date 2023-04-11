@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/api/file")
@@ -29,9 +28,8 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("type") String type) throws IOException {
+                                             @RequestParam("type") String type) {
         long userId = 3; //delete
 
         return new ResponseEntity<>(fileService.storeFile(file, type, userId), HttpStatus.OK);
@@ -39,7 +37,7 @@ public class FileController {
 
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteBookFile(@PathVariable("id") long id) throws IOException {
+    public void deleteBookFile(@PathVariable("id") long id) {
         long userWhoDeleteId = 3; //delete
 
         fileService.deleteBookFile(id, userWhoDeleteId);
@@ -48,7 +46,7 @@ public class FileController {
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable long id,
                                                  @RequestParam("type") String type,
-                                                 HttpServletRequest request) throws MalformedURLException {
+                                                 HttpServletRequest request) {
         long userWhoDownloadId = 3;  //delete
 
         // Load file as Resource
