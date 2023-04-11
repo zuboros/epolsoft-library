@@ -38,19 +38,16 @@ public class FileController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteBookFile(@PathVariable("id") long id) {
-        long userWhoDeleteId = 3; //delete
-
-        fileService.deleteBookFile(id, userWhoDeleteId);
+        fileService.deleteBookFile(id);
     }
 
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable long id,
                                                  @RequestParam("type") String type,
                                                  HttpServletRequest request) {
-        long userWhoDownloadId = 3;  //delete
 
         // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(id, type, userWhoDownloadId);
+        Resource resource = fileService.loadFileAsResource(id, type);
         String resourceName = fileService.receiveFileName(id, type);
 
         // Try to determine file's content type

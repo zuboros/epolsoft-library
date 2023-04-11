@@ -11,11 +11,10 @@ import com.example.epolsoftbackend.user_role.UserRole;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -36,6 +35,10 @@ public class UserServiceImpl implements UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jsonWebTokenProvider = jsonWebTokenProvider;
+    }
+
+    private boolean containsRole(final List<UserRole> list, final String roleName) {
+        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
     public List<UserBookResponseDTO> getAllUsers() {
@@ -121,8 +124,8 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserResponseDTO(userRepository.save(userNeedToUnblock));
     }
 
-    private boolean containsRole(final List<UserRole> list, final String roleName){
-        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
+    public boolean isExpired(LocalDateTime userPasswordUpdatedAt) {
+        return userRepository.isPasswordExpired(userPasswordUpdatedAt);
     }
 
 }
