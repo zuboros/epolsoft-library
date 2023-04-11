@@ -1,5 +1,5 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload, } from 'antd';
-import { EditOutlined, SendOutlined } from '@ant-design/icons'
+import { EditOutlined, SaveOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postData, postFile } from '../../../redux/reducers/bookSlice';
@@ -155,7 +155,7 @@ const EditBook = ({ record }) => {
                   />
                </Form.Item>
                <Form.Item>
-                  <Button htmlType='submit' loading={confirmLoading}><SendOutlined /></Button>
+                  <Button htmlType='submit' loading={confirmLoading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>
          </Modal>

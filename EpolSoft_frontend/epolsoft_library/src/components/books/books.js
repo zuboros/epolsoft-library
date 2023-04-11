@@ -1,30 +1,81 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Space, Button, Popconfirm } from 'antd';
+import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
 import CreateBook from "./actionComponents/createBook";
-import { BookTable } from "./table/bookTable";
+import EditBook from './actionComponents/editBook'
+import BookTable from "../common/table/table";
 import SearchBook from "./actionComponents/searchBook";
-import { Space } from 'antd';
-import { USER } from '../../redux/entitiesConst'
-import { deleteData } from '../../redux/reducers/bookSlice';
+import { USER, BOOKS, AUTH } from '../../redux/entitiesConst'
+import { extractData, deleteData } from '../../redux/reducers/bookSlice';
+import { downloadFile } from './table/features/tableMethods'
+import { PATH_EXTRACT_FILE } from '../../lib/actionAxiosTypes'
+import * as table from '../common/table/tableConsts'
 
 function Books() {
    const dispatch = useDispatch();
-   const { status, error, loading, deleteLoading } = useSelector(state => state.books);
-   const { userInfo, userToken } = useSelector(state => state.auth);
+   const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading, status } = useSelector(state => state.books);
+   const { userInfo } = useSelector(state => state[AUTH])
    const privateItem = userInfo?.roles?.find(column => column === USER)
 
-   const handleDelete = (value) => {
-      deleteData(dispatch, value.id, userToken);
+   const getBooks = (pageParams) => {
+      extractData(dispatch, pageParams);
    }
+
+   useEffect(() => {
+      getBooks(table.pageParams);
+   }, [dispatch])
+
+   const hiddenColumns = [
+      "file",
+      "id"
+   ]
+
+   const deleteHandler = (record) => {
+      console.log('DELETE');
+      deleteData(dispatch, record.id)
+   }
+
+   const downloadHandler = (path) => {
+      console.log('DOWNLOAD');
+      console.log(path);
+
+      downloadFile(path);
+   }
+
+   const actionRender = (_, record) =>
+      <Space>
+         <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
+         <EditBook record={record} />
+         <Popconfirm
+            title="Are you sure?"
+            onConfirm={() => deleteHandler(record)}
+         >
+            <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
+         </Popconfirm>
+      </Space>
+
+   const addingExpandable = (record) => <p><b>Description: </b>{record.description}</p>
+
 
    return (
       <div className='Books'>
          <Space style={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
             <SearchBook />
-            {privateItem && <CreateBook auth={userToken} />}
+            {privateItem && <CreateBook />}
          </Space>
          {status === 'loading' && <h3>Loading...</h3>}
          {error && <h3>Server error: {error}</h3>}
-         <BookTable loading={loading} deleteLoading={deleteLoading} privateItem={privateItem} deleteButton={handleDelete} />
+         {success &&
+            <BookTable
+               entities={books}
+               totalEntities={totalBooks}
+               hiddenColumns={hiddenColumns}
+               loading={loading}
+               actionRender={actionRender}
+               extractEntities={getBooks}
+               addingExpandable={addingExpandable}
+            />}
       </div>
    );
 }

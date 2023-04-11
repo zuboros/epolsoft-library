@@ -153,7 +153,7 @@ export const extractData = async (dispatch, queryParams) => {
       },
       redux_cfg: {
          dispatch,
-         actions: [fetchLocalBooks, setLoading]
+         actions: [fetchLocalBooks, setLoading, setSuccess]
       }
    })
 }

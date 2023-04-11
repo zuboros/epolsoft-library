@@ -13,7 +13,7 @@ import { downloadFile } from '../../books/table/features/tableMethods'
 
 const UserBooks = () => {
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading } = useSelector(state => state[BOOKS]);
-   const { userToken, userInfo } = useSelector(state => state[AUTH])
+   const { userInfo } = useSelector(state => state[AUTH])
    const dispatch = useDispatch();
 
    useEffect(() => {
@@ -33,7 +33,6 @@ const UserBooks = () => {
    const deleteHandler = (record) => {
       console.log('DELETE');
       deleteData(dispatch, record.id)
-      //dispatch(blockUser({ auth: userToken, id: record.id }));
    }
 
    const downloadHandler = (path) => {
@@ -41,7 +40,6 @@ const UserBooks = () => {
       console.log(path);
 
       downloadFile(path);
-      //dispatch(blockUser({ auth: userToken, id: record.id }));
    }
 
    const actionRender = (_, record) =>
