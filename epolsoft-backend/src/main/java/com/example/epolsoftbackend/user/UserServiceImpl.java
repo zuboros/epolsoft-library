@@ -2,7 +2,6 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.exception.ForbiddenException;
-import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.security.JsonWebTokenProvider;

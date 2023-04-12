@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query(value = "SELECT * FROM isPasswordExpired(CAST(?1 AS TIMESTAMP WITHOUT TIME ZONE))", nativeQuery = true)
     boolean isPasswordExpired(LocalDateTime passwordUpdatedAt);
 
+    @Query(value = "SELECT * FROM howManyDaysNotification(CAST(?1 AS TIMESTAMP WITHOUT TIME ZONE))", nativeQuery = true)
+    int howManyDaysNotification(LocalDateTime passwordUpdatedAt);
+
 }
