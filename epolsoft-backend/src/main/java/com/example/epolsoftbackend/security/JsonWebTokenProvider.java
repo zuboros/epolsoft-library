@@ -19,7 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 @Component
-public class JsonWebTokenProvider {
+public class
+JsonWebTokenProvider {
 
     private final String secret;
     private final CustomUserDetailsService customUserDetailsService;
