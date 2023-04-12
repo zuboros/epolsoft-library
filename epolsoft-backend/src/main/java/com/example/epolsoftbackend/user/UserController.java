@@ -27,6 +27,13 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
+    //метод для возврата количества дней до истечения пароля
+
+    @GetMapping("/howManyDaysNotification")
+    public ResponseEntity<Integer> howManyDaysNotification() {
+        return new ResponseEntity<>(userService.howManyDaysNotification(), HttpStatus.OK);
+    }
+
     @GetMapping("/get")
     public ResponseEntity<List<UserBookResponseDTO>> getAllAuthors() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);

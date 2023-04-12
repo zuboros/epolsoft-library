@@ -2,6 +2,8 @@ package com.example.epolsoftbackend.security;
 
 import com.example.epolsoftbackend.user.CustomUserDetailsService;
 import com.example.epolsoftbackend.user.User;
+import com.example.epolsoftbackend.user.UserRepository;
+import com.example.epolsoftbackend.user.UserService;
 import com.example.epolsoftbackend.user_role.UserRole;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +26,13 @@ JsonWebTokenProvider {
 
     private final String secret;
     private final CustomUserDetailsService customUserDetailsService;
-    private JsonWebTokenProvider(@Value("${jwt.secret}") String secret, CustomUserDetailsService customUserDetailsService) {
+    private final UserRepository userRepository;
+
+    private JsonWebTokenProvider(@Value("${jwt.secret}") String secret,
+                                 CustomUserDetailsService customUserDetailsService, UserRepository userRepository) {
         this.secret = secret;
         this.customUserDetailsService = customUserDetailsService;
+        this.userRepository = userRepository;
     }
 
     public String generateToken(User user) {
@@ -70,7 +76,13 @@ JsonWebTokenProvider {
     public boolean validateToken(String token) {
         try {
             Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId();
+
+            User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
+            if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
+                return false;
+            }
+            //User -> findById( up ).isExpiredPassword? if false return true if true - return false
             return true;
         } catch (Exception e) {return false;}
     }

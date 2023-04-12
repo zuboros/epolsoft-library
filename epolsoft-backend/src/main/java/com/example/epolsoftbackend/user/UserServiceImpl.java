@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.exception.ForbiddenException;
+import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.security.JsonWebTokenProvider;
@@ -10,6 +11,7 @@ import com.example.epolsoftbackend.user_role.UserRole;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
 
         newUser.setBlocked(false);
         newUser.getRoles().add(new UserRole(newUser, role));
+        newUser.setPasswordUpdatedAt(LocalDateTime.now());
 
         return userMapper.userToUserBookResponseDTO(userRepository.save(newUser));
     }
@@ -125,6 +128,12 @@ public class UserServiceImpl implements UserService {
 
     public boolean isExpired(LocalDateTime userPasswordUpdatedAt) {
         return userRepository.isPasswordExpired(userPasswordUpdatedAt);
+    }
+
+    public int howManyDaysNotification() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", userDetails.getId()));
+        return userRepository.howManyDaysNotification(user.getPasswordUpdatedAt());
     }
 
 }

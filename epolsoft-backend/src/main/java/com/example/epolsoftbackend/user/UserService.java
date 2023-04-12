@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.user.DTO.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,7 @@ public interface UserService {
     UserLoginResponseDTO login(UserLoginDTO userLoginDTO);
     UserResponseDTO blockUser(long id);
     UserResponseDTO unblockUser(long id);
+    boolean isExpired(LocalDateTime userPasswordUpdatedAt);
+    int howManyDaysNotification();
 
 }

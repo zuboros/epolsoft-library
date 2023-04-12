@@ -30,7 +30,7 @@ public class TopicController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TopicResponseDTO> createTopic(TopicCreateDTO topicCreateDTO) {
+    public ResponseEntity<TopicResponseDTO> createTopic(@RequestBody TopicCreateDTO topicCreateDTO) {
         return new ResponseEntity<>(topicService.createTopic(topicCreateDTO), HttpStatus.CREATED);
     }
 

@@ -64,6 +64,9 @@ public class User implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "password_updated_at")
+    private LocalDateTime passwordUpdatedAt;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
