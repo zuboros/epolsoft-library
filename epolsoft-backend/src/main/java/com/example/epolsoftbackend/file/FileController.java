@@ -30,9 +30,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
                                              @RequestParam("type") String type) {
-        long userId = 3; //delete
-
-        return new ResponseEntity<>(fileService.storeFile(file, type, userId), HttpStatus.OK);
+        return new ResponseEntity<>(fileService.storeFile(file, type), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -45,7 +43,6 @@ public class FileController {
     public ResponseEntity<Resource> downloadFile(@PathVariable long id,
                                                  @RequestParam("type") String type,
                                                  HttpServletRequest request) {
-
         // Load file as Resource
         Resource resource = fileService.loadFileAsResource(id, type);
         String resourceName = fileService.receiveFileName(id, type);

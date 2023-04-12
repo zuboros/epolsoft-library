@@ -124,7 +124,7 @@ public class FileServiceImpl implements FileService {
         }
     }
     
-    public String storeFile(MultipartFile file, String type, long userId) {
+    public String storeFile(MultipartFile file, String type) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is empty or null");
         }
@@ -132,9 +132,11 @@ public class FileServiceImpl implements FileService {
         if (type.equals("book")) {
             return createFile(file);
         } else if (type.equals("avatar")) {
-            User user = userRepository.findById(userId).orElseThrow(
-                    () -> new ResourceNotFoundException("User", "id", userId));
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String path = createFile(file);
+
+            User user = userRepository.findById(userDetails.getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", userDetails.getId()));
 
             if (user.getAvatarPath() != null) {
                 deleteFileByPath(convertToOsDependentFullFilePath(user.getAvatarPath()));
