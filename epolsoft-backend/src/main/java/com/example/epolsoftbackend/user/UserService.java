@@ -1,6 +1,8 @@
 package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.user.DTO.*;
+import org.springframework.data.domain.Pageable;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    List<UserBookResponseDTO> getAllUsers();
+    List getAllUsers(Pageable pageable);
     Optional<User> findById(long id);
     Optional<User> findByMail(String mail);
     void deleteById(long id);

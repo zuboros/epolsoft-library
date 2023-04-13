@@ -1,21 +1,18 @@
 package com.example.epolsoftbackend.book.DTO;
 
-import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
-import com.example.epolsoftbackend.user.DTO.UserResponseDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookCreateDTO {
 
     private String name;
 
-    @JsonProperty("topic")
-    private TopicResponseDTO topicResponseDTO;
+    private long topicId;
 
-    @JsonProperty("user")
-    private UserResponseDTO userResponseDTO;
+    private long userId;
 
     private String description;
 

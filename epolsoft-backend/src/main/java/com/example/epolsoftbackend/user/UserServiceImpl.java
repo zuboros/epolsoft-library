@@ -10,6 +10,8 @@ import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.security.JsonWebTokenProvider;
 import com.example.epolsoftbackend.user.DTO.*;
 import com.example.epolsoftbackend.user_role.UserRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,8 +50,9 @@ public class UserServiceImpl implements UserService {
         return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
     }
 
-    public List<UserBookResponseDTO> getAllUsers() {
-        return userMapper.listUserToListUserBookResponseDTO(userRepository.findAll());
+    public List getAllUsers(Pageable pageable) {
+        Page page = userRepository.findAll(pageable);
+        return List.of(page.getContent(), page.getTotalElements());
     }
 
     public Optional<User> findById(long id) {

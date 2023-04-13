@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/topic")
 public class TopicController {
     final TopicService topicService;
@@ -35,7 +36,7 @@ public class TopicController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<TopicResponseDTO> updateTopic(TopicUpdateDTO topicUpdateDTO) {
+    public ResponseEntity<TopicResponseDTO> updateTopic(@RequestBody TopicUpdateDTO topicUpdateDTO) {
         return new ResponseEntity<>(topicService.updateTopic(topicUpdateDTO), HttpStatus.OK);
     }
 

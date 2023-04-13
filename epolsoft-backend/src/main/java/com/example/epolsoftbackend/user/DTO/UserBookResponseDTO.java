@@ -1,12 +1,13 @@
 package com.example.epolsoftbackend.user.DTO;
 
-import com.example.epolsoftbackend.role.Role;
 import lombok.*;
 
 import java.util.Set;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserBookResponseDTO {
 
     private long id;
