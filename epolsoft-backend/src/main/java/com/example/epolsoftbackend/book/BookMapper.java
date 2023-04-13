@@ -74,8 +74,7 @@ public interface BookMapper {
 
         return bookUpdateDTO.build();
     }
-    @Mapping(source = "userResponseDTO", target = "userId")
-    @Mapping(source = "topicResponseDTO", target = "topicId")
+
     public default Book bookUpdateDTOToBook(BookUpdateDTO bookCreateDTO){
         if ( bookCreateDTO == null ) {
             return null;
