@@ -2,8 +2,8 @@ package com.example.epolsoftbackend.book;
 
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
-import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.exception.ForbiddenException;
+import com.example.epolsoftbackend.exception.InternalServerErrorException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.topic.Topic;
 import com.example.epolsoftbackend.topic.TopicRepository;
@@ -37,23 +37,19 @@ public class BookServiceImpl implements BookService {
         try {
             Book createBook = bookMapper.bookCreateDTOToBook(bookCreateDTO);
 
-            Optional<Topic> optTopic = topicRepository.findById(createBook.getTopicId().getId());
-            if (optTopic.isPresent()) {
-                Topic topic = optTopic.get();
-                topic.setActive(true);
-                topicRepository.save(topic);
+            Topic topic = topicRepository.findById(createBook.getTopicId().getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicResponseDTO().getId()));
 
-                createBook.setTopicId(topicService.findById(createBook.getTopicId().getId()).orElse(null));
-                createBook.setUserId(userService.findById(createBook.getUserId().getId()).orElse(null));
+            topic.setActive(true);
+            topicRepository.save(topic);
 
-                return bookMapper.bookToBookCreateDTO(bookRepository.saveAndFlush(createBook));
-            }
-            else throw new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicResponseDTO().getId());
+            createBook.setTopicId(topicService.findById(createBook.getTopicId().getId()).orElse(null));
+            createBook.setUserId(userService.findById(createBook.getUserId().getId()).orElse(null));
+
+            return bookMapper.bookToBookCreateDTO(bookRepository.saveAndFlush(createBook));
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            throw new InternalError("Cant create book, name book: " + bookCreateDTO.getName());
+            throw new InternalServerErrorException("Cant create book, name book: " + bookCreateDTO.getName());
         }
     }
 
@@ -63,18 +59,21 @@ public class BookServiceImpl implements BookService {
 
     public BookUpdateDTO updateById(BookUpdateDTO bookUpdateDTO) {
         try{
-            Book oldBook = bookRepository.findById(bookUpdateDTO.getId()).get();
+            Book oldBook = bookRepository.findById(bookUpdateDTO.getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("OldBook", "id", bookUpdateDTO.getId()));
 
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if(!Objects.equals(oldBook.getUserId().getId(), userDetails.getId())) {
                 throw new ForbiddenException("Can't update not own book");
             }
 
-            Topic oldTopic = topicRepository.findById(oldBook.getTopicId().getId()).get();
+            Topic oldTopic = topicRepository.findById(oldBook.getTopicId().getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("OldTopic", "id", oldBook.getTopicId().getId()));
 
             Book updateBook = bookMapper.bookUpdateDTOToBook(bookUpdateDTO);
 
-            Topic newTopic = topicRepository.findById(updateBook.getTopicId().getId()).get();
+            Topic newTopic = topicRepository.findById(updateBook.getTopicId().getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("NewTopic", "id", updateBook.getTopicId().getId()));
 
             updateBook.setTopicId(topicService.findById(updateBook.getTopicId().getId()).orElse(null));
             updateBook.setUserId(userService.findById(updateBook.getUserId().getId()).orElse(null));
@@ -88,40 +87,32 @@ public class BookServiceImpl implements BookService {
             topicRepository.save(newTopic);
 
             return bookMapper.bookToBookUpdateDTO(bookRepository.saveAndFlush(updateBook));
-        }
-       catch (Exception e ) {
-            e.printStackTrace();
+        } catch (Exception e ) {
            throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getTopicResponseDTO().getId());
         }
     }
 
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         try {
-            Optional<Book> optBook = bookRepository.findById(id);
-            if (optBook.isPresent()) {
-                Book book = optBook.get();
+            Book book = bookRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException("Book", "id", id));
 
-                UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
-                    throw new ForbiddenException("Can't update not own book");
-                }
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
+                throw new ForbiddenException("Can't update not own book");
+            }
 
-                long topicId = book.getTopicId().getId();
+            long topicId = book.getTopicId().getId();
 
-                bookRepository.deleteById(id);
+            bookRepository.deleteById(id);
 
-                Optional<Topic> optTopic = topicRepository.findById(topicId);
+            Topic topic = topicRepository.findById(topicId).orElseThrow(
+                    () -> new ResourceNotFoundException("Topic", "id", topicId));
 
-                if (optTopic.isPresent()) {
-                    Topic topic = optTopic.get();
-                    if (topic.getBooks().size() == 0) {
-                        topic.setActive(false);
-                        topicRepository.save(topic);
-                    }
-                    return true;
-                }
-                throw new ResourceNotFoundException("Topic", "id", topicId);
-            } else throw new BadRequestException("book is not exist");
+            if (topic.getBooks().size() == 0) {
+                topic.setActive(false);
+                topicRepository.save(topic);
+            }
         } catch (Exception e) {
             throw new ResourceNotFoundException("Book", "id", id);
         }

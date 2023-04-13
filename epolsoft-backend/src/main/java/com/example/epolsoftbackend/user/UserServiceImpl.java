@@ -2,7 +2,9 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.exception.ForbiddenException;
+import com.example.epolsoftbackend.exception.InternalServerErrorException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
+import com.example.epolsoftbackend.file.FileService;
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.security.JsonWebTokenProvider;
@@ -27,15 +29,19 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JsonWebTokenProvider jsonWebTokenProvider;
+    private final FileService fileService;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager, JsonWebTokenProvider jsonWebTokenProvider) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository,
+                           PasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager,
+                           JsonWebTokenProvider jsonWebTokenProvider, FileService fileService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jsonWebTokenProvider = jsonWebTokenProvider;
+        this.fileService = fileService;
     }
 
     private boolean containsRole(final List<UserRole> list, final String roleName) {
@@ -54,27 +60,31 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByMail(mail);
     }
 
-    public boolean deleteById(long id) {
+    public void deleteById(long id) {
         try {
+            User user = userRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", id));
             userRepository.deleteById(id);
-            return true;
+            fileService.deleteAvatarFile(user.getId());
         } catch (Exception e) {
-            throw new BadRequestException("Internal server error");
+            throw new InternalServerErrorException("Exception occurred while user is deleting");
         }
     }
 
     public UserBookResponseDTO createNewUser(UserRegistrationDTO userRegistrationDTO) {
-        Role role = roleRepository.findByName("USER").get();
+        Role role = roleRepository.findByName("USER").orElseThrow(
+                () -> new ResourceNotFoundException("Role", "name", "USER"));
 
         User newUser = new User();
 
         newUser.setMail(userRegistrationDTO.getMail());
         newUser.setName(userRegistrationDTO.getName());
+
         try {
             newUser.setPasswordHash(bCryptPasswordEncoder.encode(userRegistrationDTO.getPassword()));
             System.out.println(newUser.getPasswordHash());
         } catch (Exception e) {
-            throw new InternalError("Error encoding password");
+            throw new InternalServerErrorException("Error occurred while password is encoding");
         }
 
         newUser.setBlocked(false);
@@ -87,7 +97,8 @@ public class UserServiceImpl implements UserService {
     public UserLoginResponseDTO login(UserLoginDTO userLoginDTO) {
         try {
             Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getMail(), userLoginDTO.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getMail(),
+                            userLoginDTO.getPassword()));
             Optional<User> optUser = userRepository.findByMail(userLoginDTO.getMail());
             if (optUser.isEmpty()) throw new BadRequestException("not exist");
             //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -101,9 +112,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     public UserResponseDTO blockUser(long id) {
-        User userNeedToBlock = userRepository.findById(id).get();
+        User userNeedToBlock = userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", id));
 
         if (containsRole(userNeedToBlock.getRoles(), "ADMIN")) {
             throw new ForbiddenException("Can't block administrator");
@@ -115,7 +126,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserResponseDTO unblockUser(long id) {
-        User userNeedToUnblock = userRepository.findById(id).get();
+        User userNeedToUnblock = userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", id));
 
         if (containsRole(userNeedToUnblock.getRoles(), "ADMIN")) {
             throw new ForbiddenException("Can't unblock administrator");
@@ -127,12 +139,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean isExpired(LocalDateTime userPasswordUpdatedAt) {
-        return userRepository.isPasswordExpired(userPasswordUpdatedAt);
+        UserDetailsImpl userDetails = (UserDetailsImpl)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userDetails.getId()));
+        return userRepository.isPasswordExpired(user.getPasswordUpdatedAt());
     }
 
     public int howManyDaysNotification() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", userDetails.getId()));
+        UserDetailsImpl userDetails = (UserDetailsImpl)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userDetails.getId()));
         return userRepository.howManyDaysNotification(user.getPasswordUpdatedAt());
     }
 

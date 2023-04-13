@@ -5,6 +5,7 @@ import java.io.File;
 import com.example.epolsoftbackend.book.Book;
 import com.example.epolsoftbackend.book.BookRepository;
 import com.example.epolsoftbackend.exception.ForbiddenException;
+import com.example.epolsoftbackend.exception.InternalServerErrorException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.user.UserDetailsImpl;
@@ -23,7 +24,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -65,7 +65,6 @@ public class FileServiceImpl implements FileService {
         try {
             Files.deleteIfExists(location);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("IOException occurred while file is deleting");
         }
     }
@@ -84,8 +83,7 @@ public class FileServiceImpl implements FileService {
         try {
             Files.createDirectories(dirTodayPath);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to create new directories");
+            throw new InternalServerErrorException("Failed to create new directories");
         }
 
         return dirTodayPathStr;
@@ -97,8 +95,7 @@ public class FileServiceImpl implements FileService {
                     Path.of(dirPath + File.separator + fileUUIDName),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to create a new file");
+            throw new InternalServerErrorException("Failed to create a new file");
         }
     }
 
@@ -115,12 +112,12 @@ public class FileServiceImpl implements FileService {
         return dirPath + "/" + fileUUIDName;
     }
 
-    public void deleteAvatarFile(String filePath, long userId) {
+    public void deleteAvatarFile(long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", userId));
 
         if (user.getAvatarPath() != null) {
-            deleteFileByPath(convertToOsDependentFullFilePath(filePath));
+            deleteFileByPath(convertToOsDependentFullFilePath(user.getAvatarPath()));
         }
     }
     
@@ -132,7 +129,8 @@ public class FileServiceImpl implements FileService {
         if (type.equals("book")) {
             return createFile(file);
         } else if (type.equals("avatar")) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetailsImpl userDetails = (UserDetailsImpl)
+                    SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String path = createFile(file);
 
             User user = userRepository.findById(userDetails.getId()).orElseThrow(
@@ -147,7 +145,7 @@ public class FileServiceImpl implements FileService {
 
             return path;
         } else {
-            throw new RuntimeException("Could not determine type. Please enter smth from the list: [avatar, book]");
+            throw new RuntimeException("Could not determine file type. Pls enter smth from the list: [avatar, book]");
         }
     }
     
@@ -155,14 +153,24 @@ public class FileServiceImpl implements FileService {
         if (type.equals("book")) {
             Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetailsImpl userDetails = (UserDetailsImpl)
+                    SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
                 throw new ForbiddenException("User cannot download not his own books");
             }
         }
 
-        String filePathStr = type.equals("book") ?
-                bookRepository.findById(id).get().getFilePath() : userRepository.findById(id).get().getAvatarPath();
+        String filePathStr;
+
+        if (type.equals("book")) {
+            filePathStr = bookRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException("Book", "id", id)).getFilePath();
+        } else if (type.equals("avatar")) {
+            filePathStr = userRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException("Book", "id", id)).getAvatarPath();
+        } else {
+            throw new RuntimeException("Could not determine file type. Pls enter smth from the list: [avatar, book]");
+        }
 
         if (filePathStr == null) {
             throw new ResourceNotFoundException("File", "filePathStr", null);
@@ -178,11 +186,10 @@ public class FileServiceImpl implements FileService {
         try {
             resource = new UrlResource(filePath.toUri());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Malformed file URL");
         }
 
-        if(resource.exists()) {
+        if (resource.exists()) {
             return resource;
         } else {
             throw new ResourceNotFoundException("Resource", "filePath", filePath);
@@ -198,7 +205,7 @@ public class FileServiceImpl implements FileService {
                     () -> new ResourceNotFoundException("User", "id", id));
             return user.getAvatarPath().substring(user.getAvatarPath().lastIndexOf("/") + 1);
         } else {
-            throw new RuntimeException("Could not determine type. Please enter smth from the list: [avatar, book]");
+            throw new RuntimeException("Could not determine file type. Pls enter smth from the list: [avatar, book]");
         }
     }
     

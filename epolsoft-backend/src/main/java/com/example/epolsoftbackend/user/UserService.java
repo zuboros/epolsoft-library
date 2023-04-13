@@ -11,7 +11,7 @@ public interface UserService {
     List<UserBookResponseDTO> getAllUsers();
     Optional<User> findById(long id);
     Optional<User> findByMail(String mail);
-    boolean deleteById(long id);
+    void deleteById(long id);
     UserBookResponseDTO createNewUser(UserRegistrationDTO userRegistrationDTO);
     UserLoginResponseDTO login(UserLoginDTO userLoginDTO);
     UserResponseDTO blockUser(long id);

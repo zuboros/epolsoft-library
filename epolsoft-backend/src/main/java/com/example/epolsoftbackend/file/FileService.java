@@ -9,5 +9,6 @@ public interface FileService {
     Resource loadFileAsResource(long id, String type);
     void deleteBookFile(long id);
     String receiveFileName(long id, String type);
+    void deleteAvatarFile(long userId);
 
 }

@@ -1,14 +1,10 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.security.JsonWebTokenProvider;
 import com.example.epolsoftbackend.user.DTO.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +22,6 @@ public class UserController {
         this.userService = userService;
         this.userMapper = userMapper;
     }
-
-    //метод для возврата количества дней до истечения пароля
 
     @GetMapping("/howManyDaysNotification")
     public ResponseEntity<Integer> howManyDaysNotification() {

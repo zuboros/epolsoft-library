@@ -9,6 +9,6 @@ public interface BookService {
     BookCreateDTO create(BookCreateDTO bookCreateDTO);
     Optional<Book> findById(long id);
     BookUpdateDTO updateById(BookUpdateDTO bookUpdateDTO);
-    boolean deleteById(Long id);
+    void deleteById(Long id);
 
 }
