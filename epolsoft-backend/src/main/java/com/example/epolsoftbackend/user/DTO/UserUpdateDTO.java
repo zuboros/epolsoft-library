@@ -16,7 +16,5 @@ public class UserUpdateDTO {
 
     private String password;
 
-    private String avatarName;
-
     private String avatarPath;
 }

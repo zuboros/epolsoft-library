@@ -48,10 +48,6 @@ public class User implements Serializable {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @Column(name = "avatar_name")
-    @Length(min = 0, max = 255)
-    private String avatarName;
-
     @Column(name = "avatar_path")
     @Length(min = 0, max = 255)
     private String avatarPath;
