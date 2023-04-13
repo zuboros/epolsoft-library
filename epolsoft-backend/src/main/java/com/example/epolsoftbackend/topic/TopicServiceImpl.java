@@ -1,6 +1,7 @@
 package com.example.epolsoftbackend.topic;
 
 import com.example.epolsoftbackend.exception.BadRequestException;
+import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
@@ -57,10 +58,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     public TopicResponseDTO updateTopic(TopicUpdateDTO topicUpdateDTO) {
-        Optional<Topic> optTopic = topicRepository.findById(topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getId());
-
-        if (optTopic.isPresent()) {
-            Topic actualTopic = optTopic.get();
+        Topic actualTopic = topicRepository.findById(topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Topic", "id", topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getId()));
 
             if (actualTopic.isActive()) {
                 throw new BadRequestException("Topic: " + actualTopic + " has used and can't be changed");
@@ -69,18 +68,14 @@ public class TopicServiceImpl implements TopicService {
             actualTopic.setName(topicMapper.topicUpdateDTOtoTopic(topicUpdateDTO).getName());
 
             return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(actualTopic));
-        }
-        else throw new InternalError("Topic not exist");
-
-
     }
 
-    public boolean deleteById(long id) {
+    public void deleteById(long id) {
         try {
-            Optional<Topic> topic = topicRepository.findById(id);
-            if (topic.isPresent() && !topic.get().isActive()) {
+            Topic topic = topicRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException("Topic", "id", id));
+            if (!topic.isActive()) {
                 topicRepository.deleteById(id);
-                return true;
             } else {
                 throw new InternalError("Topic used or not exist");
             }

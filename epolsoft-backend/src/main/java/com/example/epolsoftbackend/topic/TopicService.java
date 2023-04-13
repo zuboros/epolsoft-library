@@ -15,7 +15,7 @@ public interface TopicService {
     List<TopicResponseDTO> getAllAvailableTopics();
     List getAllTopics(Pageable pageable);
     TopicResponseDTO createTopic(TopicCreateDTO topicCreateDTO);
-    boolean deleteById(long id);
+    void deleteById(long id);
     TopicResponseDTO updateTopic(TopicUpdateDTO topicCreateDTO);
 
 }
