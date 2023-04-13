@@ -5,6 +5,7 @@ import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
 import com.example.epolsoftbackend.exception.ForbiddenException;
 import com.example.epolsoftbackend.exception.InternalServerErrorException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
+import com.example.epolsoftbackend.file.FileService;
 import com.example.epolsoftbackend.topic.Topic;
 import com.example.epolsoftbackend.topic.TopicRepository;
 import com.example.epolsoftbackend.topic.TopicService;
@@ -13,6 +14,7 @@ import com.example.epolsoftbackend.user.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,13 +26,16 @@ public class BookServiceImpl implements BookService {
     private final UserService userService;
     private final TopicService topicService;
     private final TopicRepository topicRepository;
+    private final FileService fileService;
 
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, UserService userService, TopicService topicService, TopicRepository topicRepository) {
+    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, UserService userService,
+                           TopicService topicService, TopicRepository topicRepository, FileService fileService) {
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
         this.userService = userService;
         this.topicService = topicService;
         this.topicRepository = topicRepository;
+        this.fileService = fileService;
     }
 
     public BookCreateDTO create(BookCreateDTO bookCreateDTO) {
@@ -66,6 +71,8 @@ public class BookServiceImpl implements BookService {
             if(!Objects.equals(oldBook.getUserId().getId(), userDetails.getId())) {
                 throw new ForbiddenException("Can't update not own book");
             }
+
+            fileService.deleteBookFile(oldBook.getId());
 
             Topic oldTopic = topicRepository.findById(oldBook.getTopicId().getId()).orElseThrow(
                     () -> new ResourceNotFoundException("OldTopic", "id", oldBook.getTopicId().getId()));

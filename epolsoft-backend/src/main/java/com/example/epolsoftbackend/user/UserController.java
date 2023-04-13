@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.user;
 
+import com.example.epolsoftbackend.topic.TopicService;
 import com.example.epolsoftbackend.user.DTO.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +38,14 @@ public class UserController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<UserBookResponseDTO> signUp(@RequestBody UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserBookResponseDTO> signUp(@RequestBody UserRegistrationDTO userRegistrationDTO) throws NoSuchFieldException {
 
         Optional<User> optUser = userService.findByMail(userRegistrationDTO.getMail());
         if (optUser.isPresent()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>(userService.createNewUser(userRegistrationDTO),HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.createNewUser(userRegistrationDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")

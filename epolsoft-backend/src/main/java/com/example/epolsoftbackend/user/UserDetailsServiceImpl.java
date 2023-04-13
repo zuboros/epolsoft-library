@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.user;
 
+import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,15 +19,15 @@ public class UserDetailsServiceImpl implements UserDetailsService, CustomUserDet
 
     @Override
     public UserDetails loadUserByUsername(String userMail) throws UsernameNotFoundException {
-        Optional<User> user = userService.findByMail(userMail);
-        if (user.isEmpty()) throw new UsernameNotFoundException("user with name: " + userMail + " is not found");
-        return UserDetailsImpl.create(user.get());
+        User user = userService.findByMail(userMail).orElseThrow(
+                () -> new ResourceNotFoundException("User", "mail", userMail));
+        return UserDetailsImpl.create(user);
     }
 
-    public UserDetails loadUserByMail(String mail) throws UsernameNotFoundException {
-        Optional<User> user = userService.findByMail(mail);
-        if (user.isEmpty()) throw new UsernameNotFoundException("user with mail: " + mail + " is not found");
-        return UserDetailsImpl.create(user.get());
+    public UserDetails loadUserByMail(String userMail) throws UsernameNotFoundException {
+        User user = userService.findByMail(userMail).orElseThrow(
+                () -> new ResourceNotFoundException("User", "mail", userMail));
+        return UserDetailsImpl.create(user);
     }
 
 }

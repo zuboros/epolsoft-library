@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.security;
 
+import com.example.epolsoftbackend.exception.UnauthorizedException;
 import com.example.epolsoftbackend.user.CustomUserDetailsService;
 import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.user.UserRepository;
@@ -80,9 +81,9 @@ JsonWebTokenProvider {
 
             User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
             if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
-                return false;
+                throw new UnauthorizedException("EXPIRED PASSWORD");
             }
-            //User -> findById( up ).isExpiredPassword? if false return true if true - return false
+
             return true;
         } catch (Exception e) {return false;}
     }

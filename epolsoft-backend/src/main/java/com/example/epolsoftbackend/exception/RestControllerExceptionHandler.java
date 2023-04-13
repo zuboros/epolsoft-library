@@ -9,6 +9,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class RestControllerExceptionHandler {
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseBody
+    public ResponseEntity<ApiResponse> resolveException(UnauthorizedException exception) {
+        exception.printStackTrace();
+
+        ApiResponse apiResponse = exception.getApiResponse();
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    @ResponseBody
+    public ResponseEntity<ApiResponse> resolveException(InternalServerErrorException exception) {
+        exception.printStackTrace();
+
+        ApiResponse apiResponse = exception.getApiResponse();
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
     public ResponseEntity<ApiResponse> resolveException(ResourceNotFoundException exception) {
