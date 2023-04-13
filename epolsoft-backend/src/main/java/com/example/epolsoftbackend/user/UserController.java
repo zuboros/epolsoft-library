@@ -1,20 +1,18 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.security.JsonWebTokenProvider;
 import com.example.epolsoftbackend.user.DTO.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import java.security.NoSuchAlgorithmException;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/authors")
 public class UserController {
 
@@ -35,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<UserBookResponseDTO>> getAllAuthors() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List> getAllAuthors(Pageable pageable) {
+        return new ResponseEntity<>(userService.getAllUsers(pageable), HttpStatus.OK);
     }
 
 

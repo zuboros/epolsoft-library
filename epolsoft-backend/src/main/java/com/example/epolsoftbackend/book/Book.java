@@ -49,14 +49,16 @@ public class Book implements Serializable {
     @ManyToOne
     @JoinColumn(
             name = "topic_id",
-            referencedColumnName = "id"
+            referencedColumnName = "id",
+            nullable = false
     )
     private Topic topicId;
 
     @ManyToOne
     @JoinColumn(
             name = "user_id",
-            referencedColumnName = "id"
+            referencedColumnName = "id",
+            nullable = false
     )
     private User userId;
 

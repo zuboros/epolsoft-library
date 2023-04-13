@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
 
                 return bookMapper.bookToBookCreateDTO(bookRepository.saveAndFlush(createBook));
             }
-            else throw new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicResponseDTO().getId());
+            else throw new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicId());
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -91,7 +91,7 @@ public class BookServiceImpl implements BookService {
         }
        catch (Exception e ) {
             e.printStackTrace();
-           throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getTopicResponseDTO().getId());
+           throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getId());
         }
     }
 

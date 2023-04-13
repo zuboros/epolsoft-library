@@ -10,7 +10,7 @@ public class LibrarySpecifications{
     }
     public static Specification<Library> booksFromUser(long id){
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("user_id"), id));
+                criteriaBuilder.equal(root.get("authorId"), id));
     }
 
 }
