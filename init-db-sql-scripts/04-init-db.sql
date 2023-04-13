@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.policy
 (
     id bigint NOT NULL,
     reg_validation VARCHAR(255) COLLATE pg_catalog."default" NOT NULL DEFAULT '',
-    password_expiration_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '5 minute',
+    password_expiration_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '30 minute',
     outdate_password_notification_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '20 minute'
 );
 
@@ -22,6 +22,8 @@ INSERT INTO public.policy (id, reg_validation, password_expiration_time)
 
 DELETE FROM public.role WHERE id = 3;
 INSERT INTO public.role (id, name) VALUES (3, 'MODERATOR');
+
+
 
 CREATE OR REPLACE FUNCTION isPasswordExpired(_passwordUpdatedAt TIMESTAMP) RETURNS BOOLEAN AS
 $$

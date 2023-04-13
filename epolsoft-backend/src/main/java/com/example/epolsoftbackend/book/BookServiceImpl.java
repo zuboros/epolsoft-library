@@ -38,7 +38,7 @@ public class BookServiceImpl implements BookService {
             Book createBook = bookMapper.bookCreateDTOToBook(bookCreateDTO);
 
             Topic topic = topicRepository.findById(createBook.getTopicId().getId()).orElseThrow(
-                    () -> new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicResponseDTO().getId()));
+                    () -> new ResourceNotFoundException("Topic", "id", bookCreateDTO.getTopicId()));
 
             topic.setActive(true);
             topicRepository.save(topic);
@@ -88,7 +88,7 @@ public class BookServiceImpl implements BookService {
 
             return bookMapper.bookToBookUpdateDTO(bookRepository.saveAndFlush(updateBook));
         } catch (Exception e ) {
-           throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getTopicResponseDTO().getId());
+           throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getId());
         }
     }
 

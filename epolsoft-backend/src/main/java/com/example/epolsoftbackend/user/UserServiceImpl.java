@@ -1,9 +1,6 @@
 package com.example.epolsoftbackend.user;
 
-import com.example.epolsoftbackend.exception.BadRequestException;
-import com.example.epolsoftbackend.exception.ForbiddenException;
-import com.example.epolsoftbackend.exception.InternalServerErrorException;
-import com.example.epolsoftbackend.exception.ResourceNotFoundException;
+import com.example.epolsoftbackend.exception.*;
 import com.example.epolsoftbackend.file.FileService;
 import com.example.epolsoftbackend.role.Role;
 import com.example.epolsoftbackend.role.RoleRepository;
@@ -102,16 +99,18 @@ public class UserServiceImpl implements UserService {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getMail(),
                             userLoginDTO.getPassword()));
-            Optional<User> optUser = userRepository.findByMail(userLoginDTO.getMail());
-            if (optUser.isEmpty()) throw new BadRequestException("not exist");
+            User user = userRepository.findByMail(userLoginDTO.getMail()).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "mail", userLoginDTO.getMail()));
+
             //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             //UserLoginResponseDTO resultUser = userMapper.userToUserLoginResponseDTO(au);
-            UserLoginResponseDTO resultUser = userMapper.userToUserLoginResponseDTO(optUser.get());
-            resultUser.setToken(jsonWebTokenProvider.generateToken(optUser.get()));
+
+            UserLoginResponseDTO resultUser = userMapper.userToUserLoginResponseDTO(user);
+            resultUser.setToken(jsonWebTokenProvider.generateToken(user));
 
             return resultUser;
         } catch (Exception e) {
-            throw new ForbiddenException("UNAUTHORIZED");
+            throw new UnauthorizedException("User does not exist or password is incorrect");
         }
     }
 
