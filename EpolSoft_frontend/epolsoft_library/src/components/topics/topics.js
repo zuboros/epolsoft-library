@@ -4,6 +4,7 @@ import { fetchAllTopics, deleteTopic } from '../../redux/reducers/topicSlice';
 import { TOPICS } from '../../redux/entitiesConst'
 import { useEffect } from 'react';
 import TopicTable from '../common/table/table'
+/* import CreateTopic from './actions/createTopic' */
 import { DeleteOutlined } from '@ant-design/icons'
 import * as table from '../common/table/tableConsts'
 
@@ -42,12 +43,16 @@ const Topics = () => {
             <h2>Topics:</h2>
             {error && <h3>{error}</h3>}
          </div>
+         {/* <div>
+            Create a new one: <CreateTopic />
+         </div> */}
          {success &&
             <TopicTable
                entities={topics}
                totalEntities={totalTopics}
                hiddenColumns={hiddenColumns}
                loading={loading}
+               actionColumn={true}
                actionRender={actionRender}
                extractEntities={getAllTopics}
             />}

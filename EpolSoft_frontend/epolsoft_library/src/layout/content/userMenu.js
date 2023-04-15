@@ -47,11 +47,11 @@ export const menuItem = (userInfo, logoutHandler) => {
    return (
       [{
          key: firstField,
-         icon: !!userInfo ? <Avatar icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} /> : <Avatar style={{ backgroundColor: "#c0d1ed" }}><UserOutlined /></Avatar>,
+         icon: !!userInfo ? <Avatar src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} style={{ backgroundColor: "#ede8e8" }} ><UserOutlined /></Avatar> : <Avatar style={{ backgroundColor: "#ede8e8" }}><UserOutlined /></Avatar>,
          label: userInfo?.userName || login.label,
          children: !!userInfo &&
             userInfo.roles.reduce((arr, role) => {
-               rolePanel[role].forEach((field, index) => {
+               rolePanel[role]?.forEach((field, index) => {
                   arr = arr.filter((ar) => ar.label !== field.label);
                   arr.unshift({
                      key: firstField * 100 + innerField * 10 + index,

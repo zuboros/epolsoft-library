@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Space, Button, Popconfirm } from 'antd'
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
-import { extractDataByUserId, deleteData } from '../../../redux/reducers/bookSlice';
+import { fetchBooksByUserId, deleteBook } from '../../../redux/reducers/bookSlice';
 import { BOOKS, AUTH } from '../../../redux/entitiesConst'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import UserBookTable from '../../common/table/table'
 import EditBook from '../../books/actionComponents/editBook'
 import CreateBook from '../../books/actionComponents/createBook'
@@ -31,18 +31,19 @@ const UserBooks = () => {
    }, [dispatch])
 
    const getBooksByUserId = (pageParams) => {
-      extractDataByUserId(dispatch, userInfo.id, pageParams);
+      dispatch(fetchBooksByUserId({ userId: userInfo.id, pageParams }));
    }
 
    const hiddenColumns = [
       "file",
-      "id"
+      "id",
+      "authorId"
    ]
 
 
-   const deleteHandler = (record) => {
-      console.log('DELETE');
-      deleteData(dispatch, record.id)
+   const deleteHandler = async (record) => {
+      await dispatch(deleteBook({ id: record.id }));
+      getBooksByUserId(table.pageParams);
    }
 
    const downloadHandler = (path) => {
@@ -55,7 +56,7 @@ const UserBooks = () => {
    const actionRender = (_, record) =>
       <Space>
          <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
-         <EditBook record={record} />
+         <EditBook record={record} getBooksByUserId={getBooksByUserId} />
          <Popconfirm
             title="Are you sure?"
             onConfirm={() => deleteHandler(record)}
@@ -81,6 +82,7 @@ const UserBooks = () => {
                totalEntities={totalBooks}
                hiddenColumns={hiddenColumns}
                loading={loading}
+               actionColumn={true}
                actionRender={actionRender}
                extractEntities={getBooksByUserId}
                addingExpandable={addingExpandable}

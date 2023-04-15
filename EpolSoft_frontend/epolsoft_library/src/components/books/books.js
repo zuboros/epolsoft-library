@@ -6,8 +6,8 @@ import CreateBook from "./actionComponents/createBook";
 import EditBook from './actionComponents/editBook'
 import BookTable from "../common/table/table";
 import SearchBook from "./actionComponents/searchBook";
-import { USER, BOOKS, AUTH } from '../../redux/entitiesConst'
-import { extractData, deleteData } from '../../redux/reducers/bookSlice';
+import { USER, BOOKS, AUTH, ADMIN } from '../../redux/entitiesConst'
+import { fetchBooks, deleteBook } from '../../redux/reducers/bookSlice';
 import { PATH_EXTRACT_FILE } from '../../lib/actionAxiosTypes'
 import * as table from '../common/table/tableConsts'
 /* import { downloadFile } from './table/features/tableMethods' */
@@ -25,10 +25,10 @@ function Books() {
    const dispatch = useDispatch();
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading, status } = useSelector(state => state.books);
    const { userInfo } = useSelector(state => state[AUTH])
-   const privateItem = userInfo?.roles?.find(column => column === USER)
+   const privateUserItem = userInfo?.roles?.find(column => column === USER || column === ADMIN)
 
    const getBooks = (pageParams) => {
-      extractData(dispatch, pageParams);
+      dispatch(fetchBooks(pageParams));
    }
 
    useEffect(() => {
@@ -37,12 +37,13 @@ function Books() {
 
    const hiddenColumns = [
       "file",
-      "id"
+      "id",
+      "authorId"
    ]
 
-   const deleteHandler = (record) => {
-      console.log('DELETE');
-      deleteData(dispatch, record.id)
+   const deleteHandler = async (record) => {
+      await dispatch(deleteBook({ id: record.id }));
+      getBooks(table.pageParams);
    }
 
    const downloadHandler = (path) => {
@@ -55,13 +56,17 @@ function Books() {
    const actionRender = (_, record) =>
       <Space>
          <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
-         <EditBook record={record} />
-         <Popconfirm
-            title="Are you sure?"
-            onConfirm={() => deleteHandler(record)}
-         >
-            <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
-         </Popconfirm>
+         {record.authorId == userInfo.id &&
+            <>
+               <EditBook record={record} />
+               <Popconfirm
+                  title="Are you sure?"
+                  onConfirm={() => deleteHandler(record)}
+               >
+                  <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
+               </Popconfirm>
+            </>
+         }
       </Space>
 
    const addingExpandable = (record) => <p><b>Description: </b>{record.description}</p>
@@ -69,10 +74,10 @@ function Books() {
 
    return (
       <div className='Books'>
-         <Space style={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
+         {/* <Space style={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
             <SearchBook />
-            {privateItem && <CreateBook />}
-         </Space>
+         </Space> */}
+         <h1>Library:</h1>
          {status === 'loading' && <h3>Loading...</h3>}
          {error && <h3>Server error: {error}</h3>}
          {success &&
@@ -81,6 +86,7 @@ function Books() {
                totalEntities={totalBooks}
                hiddenColumns={hiddenColumns}
                loading={loading}
+               actionColumn={privateUserItem}
                actionRender={actionRender}
                extractEntities={getBooks}
                addingExpandable={addingExpandable}

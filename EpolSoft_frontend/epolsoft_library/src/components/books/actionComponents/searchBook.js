@@ -2,7 +2,7 @@ import { Input, Space, Button, Form } from "antd"
 import { SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchLocalBooks } from '../../../redux/reducers/bookSlice';
+import { setBooks } from '../../../redux/reducers/bookSlice';
 
 const SearchBook = () => {
    const [bookName, setBookName] = useState("");
@@ -11,7 +11,7 @@ const SearchBook = () => {
 
    const handleSearch = () => {
       if (bookName) {
-         dispatch(fetchLocalBooks({}))
+         dispatch(setBooks({}))
       }
    }
 

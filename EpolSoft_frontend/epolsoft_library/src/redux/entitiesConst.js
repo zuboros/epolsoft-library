@@ -9,9 +9,9 @@ export const TOPICS = "topics";
 export const AUTH = "auth";
 
 //Roles
-export const ANONYM = "Anonym";
-export const USER = "User";
-export const ADMIN = "Administrator";
+export const ANONYM = "ANONYM";
+export const USER = "USER";
+export const ADMIN = "ADMIN";
 
 //Users
 export const USERS = "users"

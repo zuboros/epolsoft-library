@@ -2,7 +2,7 @@ import { Space, Button, Tag, Popover } from 'antd'
 import { StopOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers, blockUser } from '../../redux/reducers/userSlice';
-import { USERS, AUTH } from '../../redux/entitiesConst'
+import { USERS, AUTH, USER } from '../../redux/entitiesConst'
 import { useEffect } from 'react';
 import UserTable from '../common/table/table'
 import * as table from '../common/table/tableConsts'
@@ -40,8 +40,8 @@ const Users = () => {
    const arrayRender = (_, { roles }) => (
       <>
          {roles.map((role) => {
-            let color = role.length > 5 ? 'geekblue' : 'green';
-            if (role === 'User') {
+            let color = 'green';
+            if (role === USER) {
                color = 'volcano';
             }
             return (
@@ -65,6 +65,7 @@ const Users = () => {
                totalEntities={totalUsers}
                hiddenColumns={hiddenColumns}
                loading={loading}
+               actionColumn={true}
                arrayRender={arrayRender}
                actionRender={actionRender}
                extractEntities={getUsers}

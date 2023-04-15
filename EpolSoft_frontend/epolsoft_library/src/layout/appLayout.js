@@ -1,5 +1,5 @@
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Affix } from 'antd';
 import { Link } from "react-router-dom";
 import React from 'react';
 import './appLayout.css'
@@ -18,20 +18,23 @@ const elements = ['1'].map((key) => ({
 const AppLayout = () => {
 
    return (
-      <Layout>
-         <Header className="header">
-            <div className="logo" />      {/* It's here */}
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={elements} />
-         </Header>
+      <Layout style={{ minHeight: "100vh" }}>
+         <Affix>
+            <Header className="header">
+               <div className="logo" />      {/* It's here */}
+               <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={elements} />
+            </Header>
+         </Affix>
 
          <AppContent />
 
          <Footer
             style={{
                textAlign: 'center',
+               backgroundColor: '#ede8e8'
             }}
          >
-            Ant Design ©2023 Created by Boy NextDoor
+            EpolSoft ©2023 Created by Boy NextDoor, A$$ Fister, Performance Artist and other slaves
          </Footer>
       </Layout>
    );

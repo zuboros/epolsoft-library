@@ -42,6 +42,7 @@ const AppContent = () => {
       <Content
          style={{
             padding: '0 20px',
+            backgroundColor: '#ede8e8'
          }}
       >
          <Layout
@@ -69,7 +70,7 @@ const AppContent = () => {
             <Content
                style={{
                   padding: '0 24px',
-                  minHeight: 280,
+                  minHeight: "75vh",
                }}
             >
                <Outlet />

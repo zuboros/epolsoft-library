@@ -1,38 +1,41 @@
 import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
-import { FileAddOutlined } from '@ant-design/icons'
+import { FileAddOutlined, SaveOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postData, postFile } from '../../../redux/reducers/bookSlice';
+import { fetchBooksByUserId, postBook, postFile } from '../../../redux/reducers/bookSlice';
 import { fetchTopics, fetchAllTopics } from '../../../redux/reducers/topicSlice';
 import { noWhiteSpace } from '../../common/form/validation'
-
+import { pageParams } from '../../common/table/tableConsts'
 
 const CreateBook = () => {
    const dispatch = useDispatch();
-   const { status, error } = useSelector(state => state.books)
+   const { loading, error } = useSelector(state => state.books)
    const topics = useSelector(state => state.topics.topics)
+   const { userInfo } = useSelector((state) => state.auth)
 
    const [open, setOpen] = useState(false);
-   const [confirmLoading, setConfirmLoading] = useState(false);
+
 
    const showModal = () => {
       setOpen(true);
       dispatch(fetchTopics());
    };
 
-   const handleSubmit = (values) => {
+   const handleSubmit = async (values) => {
+      const newBook = {
+         ...values,
+         topicId: topics.find(topic => topic.name === values.topic).id,
+         userId: userInfo.id
+      }
 
       if (finish) {
-         setConfirmLoading(true);
-         postData(dispatch, values);
-         setConfirmLoading(false);
+         await dispatch(postBook(newBook));
          setOpen(false);
-         dispatch(fetchAllTopics());
+         dispatch(fetchBooksByUserId({ userId: userInfo.id, pageParams }));
       }
    };
    const handleCancel = () => {
       setOpen(false);
-      dispatch(fetchAllTopics());
    };
 
    const [fileList, setFileList] = useState([]);
@@ -44,14 +47,14 @@ const CreateBook = () => {
             <FileAddOutlined />
          </Button>
          <Modal
-            title="Title"
+            title="CrateBook"
             open={open}
             onOk={handleSubmit}
-            confirmLoading={confirmLoading}
+            confirmLoading={loading}
             onCancel={handleCancel}
             footer={
                <>
-                  {status === 'loading' && <h3>Loading...</h3>}
+                  {loading && <h3>Loading...</h3>}
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
@@ -70,25 +73,11 @@ const CreateBook = () => {
                         message: "Please enter your name"
                      },
                      { whitespace: true },
-                     { min: 3 },
+                     { min: 2, max: 100 },
                      noWhiteSpace,
                   ]}
                >
                   <Input placeholder="enter the book's name" />
-               </Form.Item>
-
-               <Form.Item name="author" label="Author"
-                  rules={[
-                     {
-                        required: true,
-                        message: "Please enter the author"
-                     },
-                     { whitespace: true },
-                     { min: 3 },
-                     noWhiteSpace,
-                  ]}
-               >
-                  <Input placeholder="enter the author's name" />
                </Form.Item>
 
                <Form.Item name="topic" label="Topic"
@@ -123,7 +112,7 @@ const CreateBook = () => {
                         message: "Please enter the author"
                      },
                      { whitespace: true },
-                     { min: 3 },
+                     { min: 5 },
                      { max: 45 }
                   ]}>
                   <Input placeholder='enter the description' />
@@ -136,8 +125,8 @@ const CreateBook = () => {
                         message: "Please enter the author"
                      },
                      { whitespace: true },
-                     { min: 3 },
-                     { max: 500 }
+                     { min: 20 },
+                     { max: 255 }
                   ]}
                >
                   <Input.TextArea placeholder='enter the description'
@@ -157,7 +146,7 @@ const CreateBook = () => {
                   {
                      validator(_, fileList) {
                         return new Promise((resolve, reject) => {
-                           if (fileList && fileList[0]?.size < 2) {
+                           if (fileList && fileList[0]?.size > 2000000) {
                               reject('The file size exceeded');
                               setFinish(false);
                            }
@@ -182,7 +171,7 @@ const CreateBook = () => {
                   </Upload>
                </Form.Item>
                <Form.Item>
-                  <Button type="primary" htmlType='submit' loading={confirmLoading}>Submit</Button>
+                  <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>
          </Modal>

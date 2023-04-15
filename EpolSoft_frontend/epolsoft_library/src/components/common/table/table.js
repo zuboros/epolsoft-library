@@ -3,7 +3,7 @@ import { Table } from 'antd'
 import * as table from './tableConsts'
 import './tableStyle.css'
 
-const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable }) => {
+const EntitiesTable = ({ entities, totalEntities, addingColumns, actionColumn, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable }) => {
 
    const [pageNum, setPageNum] = useState(table.INITIAL_PAGE_NUM);
    const [pageSize, setPageSize] = useState(table.INITIAL_PAGE_SIZE);
@@ -38,7 +38,7 @@ const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, 
       ).filter(entityEntry => !!entityEntry);
 
       !!addingColumns && cols.push(addingColumns);
-      cols.push({
+      !!actionColumn && cols.push({
          title: "Action",
          dataIndex: "action",
          key: "action",
@@ -50,7 +50,7 @@ const EntitiesTable = ({ entities, totalEntities, addingColumns, hiddenColumns, 
 
    return (
       <Table dataSource={dataSource}
-         columns={!!entities && columns(Object.entries(entities[0]))}
+         columns={!!entities && entities?.length != 0 && columns(Object.entries(entities[0]))}
          loading={loading}
          bordered
          pagination={{

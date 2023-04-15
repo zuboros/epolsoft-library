@@ -2,19 +2,20 @@ import { Button, Modal, Form, Input, AutoComplete, Upload, } from 'antd';
 import { EditOutlined, SaveOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postData, postFile } from '../../../redux/reducers/bookSlice';
-import { fetchTopics, fetchAllTopics } from '../../../redux/reducers/topicSlice';
+import { putBook, postFile, fetchBooksByUserId } from '../../../redux/reducers/bookSlice';
+import { fetchTopics } from '../../../redux/reducers/topicSlice';
 import { noWhiteSpace } from '../../common/form/validation'
+import { pageParams } from '../../common/table/tableConsts'
 
-const EditBook = ({ record }) => {
+const EditBook = ({ record, getBooksByUserId }) => {
    const [form] = Form.useForm();
 
    const dispatch = useDispatch();
-   const { status, error } = useSelector(state => state.books)
+   const { status, error, loading } = useSelector(state => state.books)
    const topics = useSelector(state => state.topics.topics)
+   const { userInfo } = useSelector((state) => state.auth)
 
    const [open, setOpen] = useState(false);
-   const [confirmLoading, setConfirmLoading] = useState(false);
 
    useEffect(() => {
       form.setFieldsValue(record);
@@ -25,24 +26,22 @@ const EditBook = ({ record }) => {
       dispatch(fetchTopics());
    };
 
-   const handleSubmit = (values) => {
+   const handleSubmit = async (values) => {
       const data = {
          ...record,
-         ...values
+         ...values,
+         topicId: topics.find(topic => topic.name === values.topic).id,
+         userId: userInfo.id,
       }
       delete data.key;
-
-      console.log(data);
-
-      setConfirmLoading(true);
-      postData(dispatch, values);
-      setConfirmLoading(false);
-      setOpen(false);
-      dispatch(fetchAllTopics());
+      if (finish) {
+         await dispatch(putBook(data));
+         setOpen(false);
+         getBooksByUserId(pageParams);
+      }
    };
    const handleCancel = () => {
       setOpen(false);
-      dispatch(fetchAllTopics());
    };
 
    const [fileList, setFileList] = useState([]);
@@ -54,10 +53,10 @@ const EditBook = ({ record }) => {
             <EditOutlined />
          </Button>
          <Modal
-            title="Title"
+            title="EditBook"
             open={open}
             onOk={handleSubmit}
-            confirmLoading={confirmLoading}
+            confirmLoading={loading}
             onCancel={handleCancel}
             footer={
                <>
@@ -80,25 +79,11 @@ const EditBook = ({ record }) => {
                         message: "Please enter your name"
                      },
                      { whitespace: true },
-                     { min: 3 },
-                     noWhiteSpace,
+                     { min: 5 },
+                     { max: 45 },
                   ]}
                >
                   <Input placeholder="enter the book's name" />
-               </Form.Item>
-
-               <Form.Item name="author" label="Author"
-                  rules={[
-                     {
-                        required: true,
-                        message: "Please enter the author"
-                     },
-                     { whitespace: true },
-                     { min: 3 },
-                     noWhiteSpace,
-                  ]}
-               >
-                  <Input placeholder="enter the author's name" />
                </Form.Item>
 
                <Form.Item name="topic" label="Topic"
@@ -146,16 +131,50 @@ const EditBook = ({ record }) => {
                         message: "Please enter the author"
                      },
                      { whitespace: true },
-                     { min: 3 },
-                     { max: 500 }
+                     { min: 20 },
+                     { max: 255 },
                   ]}
                >
                   <Input.TextArea placeholder='enter the description'
                      autoSize={{ minRows: 3, maxRows: 4 }}
                   />
                </Form.Item>
+               <Form.Item name="uploadFiles" label="Your File"
+                  valuePropName='fileList'
+                  getValueFromEvent={(event) => {
+                     return event?.fileList
+                  }}
+                  rules={[
+                     {
+                        validator(_, fileList) {
+                           return new Promise((resolve, reject) => {
+                              if (fileList && fileList[0]?.size > 2000000) {
+                                 reject('The file size exceeded');
+                                 setFinish(false);
+                              }
+                              else {
+                                 setFinish(true);
+                                 resolve("Success!")
+                              }
+                           });
+                        }
+                     }]}
+               >
+                  <Upload
+                     maxCount={1}
+                     customRequest={(info) => {
+                        setFileList([info.file]);
+                     }}
+                     showUploadList={false}
+                     accept=".txt,.pdf,.azw,.azw3,.mobi,.epub"
+                  >
+                     <Button>Upload</Button>
+                     {fileList[0]?.name}
+                  </Upload>
+               </Form.Item>
+
                <Form.Item>
-                  <Button htmlType='submit' loading={confirmLoading}><SaveOutlined /></Button>
+                  <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>
          </Modal>

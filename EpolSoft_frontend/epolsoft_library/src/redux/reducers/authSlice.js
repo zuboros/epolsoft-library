@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { createRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
-
+import { authRegistDto, authLoginDto, authDto } from '../../services/authDto'
 
 const userToken = localStorage.getItem('userToken')
    ? localStorage.getItem('userToken')
@@ -17,7 +17,7 @@ const setLocalStoreToken = ({ userInfo, userToken }) => {
    if (!userInfo && !userToken)
       return;
    localStorage.setItem(`userInfo`, JSON.stringify(userInfo));
-   localStorage.setItem(`userToken`, userToken);
+   localStorage.setItem(`userToken`, `Bearer_${userToken}`);
 }
 
 const removeLocalStoreToken = () => {
@@ -37,21 +37,14 @@ const initialState = {
 
 export const registerUser = createAsyncThunk(
    `${entities.AUTH}/registerUser`,
-   async ({ userName, email, password }, { rejectWithValue, dispatch }) => {
+   async ({ userName, email, password }, { rejectWithValue }) => {
       try {
          console.log('data: ' + userName, email, password);
 
          await createRequest({
             method: axios.POST, url: axios.PATH_USER_REGISTER,
             body: {
-               userName,
-               email,
-               password,
-            },
-            postCallback: (dataAfter) => {
-               console.log(axios.POST);
-               console.log(dataAfter);
-               return dataAfter;
+               ...authRegistDto({ userName, email, password }),
             }
          })
 
@@ -74,12 +67,11 @@ export const userLogin = createAsyncThunk(
          await createRequest({
             method: axios.POST, url: axios.PATH_USER_LOGIN,
             body: {
-               email,
-               password,
+               ...authLoginDto({ email, password }),
             },
             postCallback: (dataAfter) => {
                const { data } = dataAfter;
-               return data;
+               return authDto(data);
             },
             redux_cfg: {
                dispatch,

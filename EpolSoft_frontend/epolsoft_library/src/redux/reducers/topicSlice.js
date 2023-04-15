@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
-
+import { topicsFetchAllDto } from '../../services/topicDto'
 
 const initialState = {
    loading: false,
@@ -38,11 +38,11 @@ export const fetchTopics = createAsyncThunk(
 
 export const fetchAllTopics = createAsyncThunk(
    `${entities.TOPICS}/fetchAllTopics`,
-   async function (_, { rejectWithValue, dispatch }) {
+   async function (pageParams, { rejectWithValue, dispatch }) {
       try {
-
+         console.log('query address: ' + axios.PATH_GET_ALL_TOPICS(pageParams));
          await createRequest({
-            method: axios.GET, url: axios.PATH_GET_ALL_TOPICS,
+            method: axios.GET, url: axios.PATH_GET_ALL_TOPICS(pageParams),
             postCallback: (response) => {
                console.log(axios.GET);
                const { data } = response
@@ -61,18 +61,35 @@ export const fetchAllTopics = createAsyncThunk(
 
 export const deleteTopic = createAsyncThunk(
    `${entities.TOPICS}/deleteTopic`,
-   async ({ id }, { rejectWithValue, dispatch }) => {
+   async ({ id }, { rejectWithValue }) => {
       try {
          await createRequest({
-            method: axios.DELETE, url: axios.PATH_DELETE_TOPIC({ id: id }),
+            method: axios.DELETE, url: axios.PATH_DELETE_TOPIC({ id }),
             postCallback: (response) => {
                console.log(axios.DELETE);
                console.log(response);
-               return { id };
-            },
-            redux_cfg: {
-               dispatch,
-               actions: [removeTopic]
+            }
+         })
+
+      } catch (error) {
+         if (error.response && error.response.data.message) {
+            return rejectWithValue(error.response.data.message)
+         } else {
+            return rejectWithValue(error.message)
+         }
+      }
+   }
+)
+
+const postTopic = createAsyncThunk(
+   `${entities.TOPICS}/postTopic`,
+   async (data, { rejectWithValue, dispatch }) => {
+      try {
+         await createRequest({
+            method: axios.POST, url: axios.PATH_DELETE_TOPIC(),
+            postCallback: (response) => {
+               console.log(axios.POST);
+               console.log(response);
             }
          })
 
@@ -94,14 +111,11 @@ const topicSlice = createSlice({
          state.topics = payload;
       },
       setAllTopics(state, { payload }) {
-         state.topics = payload[0];
+         state.topics = topicsFetchAllDto(payload[0]);
       },
       setTotalTopics(state, { payload }) {
          state.totalTopics = payload[1];
       },
-      removeTopic(state, { payload }) {
-         state.topics = state.topics.filter(topic => topic.id !== payload.id);
-      }
    },
    extraReducers: {
       [fetchTopics.pending]: (state) => {
@@ -128,10 +142,34 @@ const topicSlice = createSlice({
          state.loading = false
          state.error = payload
       },
+      [deleteTopic.pending]: (state) => {
+         state.status = true;
+         state.error = null;
+      },
+      [deleteTopic.fulfilled]: (state, action) => {
+         state.status = false;
+         state.success = true;
+      },
+      [deleteTopic.rejected]: (state, { payload }) => {
+         state.loading = false
+         state.error = payload
+      },
+      [postTopic.pending]: (state) => {
+         state.status = true;
+         state.error = null;
+      },
+      [postTopic.fulfilled]: (state, action) => {
+         state.status = false;
+         state.success = true;
+      },
+      [postTopic.rejected]: (state, { payload }) => {
+         state.loading = false
+         state.error = payload
+      },
    }
 });
 
 
-export const { removeTopic, setTopics, setAllTopics, setTotalTopics } = topicSlice.actions;
+export const { setTopics, setAllTopics, setTotalTopics } = topicSlice.actions;
 
 export default topicSlice.reducer;

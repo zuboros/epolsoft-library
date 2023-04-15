@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { createRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
-
+import { usersFetchAllDto } from '../../services/userDto'
 
 const initialState = {
    loading: false,
@@ -75,7 +75,7 @@ const userSlice = createSlice({
    initialState,
    reducers: {
       setUsers(state, { payload }) {
-         state[entities.USERS] = payload[0];
+         state[entities.USERS] = usersFetchAllDto(payload[0]);
       },
       setTotalUsers(state, { payload }) {
          state.totalUsers = payload[1];
