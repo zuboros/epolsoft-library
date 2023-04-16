@@ -36,5 +36,5 @@ export const PATH_BLOCK_USERS = ({ id }) => `/api/author/block/${id}`;
 //File/Avatar
 export const PATH_UPLOAD_FILE = "/api/file/upload?type=book";
 export const PATH_DELETE_FILE = ({ id }) => `/api/file/delete/${id}`;
-export const PATH_EXTRACT_FILE = ({ id }) => `${serverURL}/api/file/download/${id}?type=book`;
+export const PATH_EXTRACT_FILE = ({ id }) => `/api/file/download/${id}?type=book`;
 export const PATH_EXTRACT_AVATAR = ({ id }) => `${serverURL}/api/file/download/${id}?type=avatar`;

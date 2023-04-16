@@ -7,7 +7,7 @@ import EditBook from './actionComponents/editBook'
 import BookTable from "../common/table/table";
 import SearchBook from "./actionComponents/searchBook";
 import { USER, BOOKS, AUTH, ADMIN } from '../../redux/entitiesConst'
-import { fetchBooks, deleteBook } from '../../redux/reducers/bookSlice';
+import { fetchBooks, deleteBook, fileDownload } from '../../redux/reducers/bookSlice';
 import { PATH_EXTRACT_FILE } from '../../lib/actionAxiosTypes'
 import * as table from '../common/table/tableConsts'
 /* import { downloadFile } from './table/features/tableMethods' */
@@ -47,17 +47,14 @@ function Books() {
       getBooks(table.pageParams);
    }
 
-   const downloadHandler = (path) => {
-      console.log('DOWNLOAD');
-      console.log(path);
-
-      downloadFile(path);
+   const downloadHandler = async (id) => {
+      await dispatch(fileDownload(id));
    }
 
    const actionRender = (_, record) =>
       <Space size={0}>
          <div style={{ width: "50px" }}>
-            <Button style={{ marginRight: "10px", color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
+            <Button style={{ marginRight: "10px", color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler({ id: record.id }) }}><DownloadOutlined /></Button>
          </div>
          <div style={{ width: "100px" }}>
             {record.authorId == userInfo.id &&

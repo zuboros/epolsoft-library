@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createRequest } from '../../common/requestGenerator';
+import { createRequest, createDownloadRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
 import { postBookDto, putBookDto } from '../../services/bookDto'
@@ -166,6 +166,46 @@ export const putBook = createAsyncThunk(
                return data;
             }
          })
+
+      } catch (error) {
+         return rejectWithValue(error.message);
+      }
+   }
+);
+
+export const fileDownload = createAsyncThunk(
+   `${entities.BOOKS}/fileDownload`,
+   async function ({ id }, { rejectWithValue }) {
+      try {
+
+         createDownloadRequest({ url: axios.PATH_EXTRACT_FILE({ id }) })
+
+         /* const data = await createRequest({
+            method: axios.GET, url: axios.PATH_EXTRACT_FILE({ id }),
+            body: {
+               'Content-type': 'application/octet-stream',
+            },
+            postCallback: (dataAfter) => {
+               const dataBlob = dataAfter.blob();
+               return dataBlob;
+            }
+         })
+
+
+
+         let url = URL.createObjectURL(data);
+         console.log('url');
+         console.log(url);
+
+         let anchor = document.createElement('a');
+         anchor.href = url;
+         anchor.download = 'document.txt';
+         document.body.append(anchor);
+         anchor.style = "display: none";
+         anchor.click();
+         anchor.remove();
+
+         URL.revokeObjectURL(url); */
 
       } catch (error) {
          return rejectWithValue(error.message);

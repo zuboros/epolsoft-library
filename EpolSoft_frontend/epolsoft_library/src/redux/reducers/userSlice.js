@@ -50,13 +50,6 @@ export const blockUser = createAsyncThunk(
             body: {
 
             },
-            postCallback: () => {
-               return { id };
-            },
-            redux_cfg: {
-               dispatch,
-               actions: [updateBlockUser]
-            }
          })
 
       } catch (error) {
@@ -70,6 +63,8 @@ export const blockUser = createAsyncThunk(
    }
 )
 
+
+
 const userSlice = createSlice({
    name: entities.USERS,
    initialState,
@@ -79,9 +74,6 @@ const userSlice = createSlice({
       },
       setTotalUsers(state, { payload }) {
          state.totalUsers = payload[1];
-      },
-      updateBlockUser(state, { payload }) {
-         state[entities.USERS] = state[entities.USERS].map(user => user.id !== payload.id ? user : { ...user, isBlocked: !user.isBlocked });
       }
    },
    extraReducers: {
@@ -101,6 +93,6 @@ const userSlice = createSlice({
    },
 })
 
-export const { setUsers, setTotalUsers, updateBlockUser } = userSlice.actions;
+export const { setUsers, setTotalUsers } = userSlice.actions;
 
 export default userSlice.reducer
