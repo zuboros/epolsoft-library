@@ -1,7 +1,7 @@
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import Error from '../components/common/error'
-import { registerUser } from '../redux/reducers/authSlice'
+import { registerUser, setSuccess } from '../redux/reducers/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -29,7 +29,7 @@ const RegisterPage = () => {
 
    useEffect(() => {
 
-      if (success) navigate('/login')
+      if (success) { navigate('/login'); dispatch(setSuccess(false)); }
 
       //if (userInfo) navigate('/user-profile')
    }, [navigate, userInfo, success])
@@ -41,98 +41,99 @@ const RegisterPage = () => {
    };
 
    return (
-      <Form
-         labelCol={{
-            span: 8,
-         }}
-         wrapperCol={{
-            span: 16,
-         }}
-         style={{
-            maxWidth: 600,
-         }}
-         initialValues={{
-            remember: true,
-         }}
-         onFinish={onFinish}
-         autoComplete="off"
-      >
-         {error && <Error>{error}</Error>}
-         <Form.Item
-            label="Username"
-            name="userName"
-            rules={[
-               {
-                  message: 'Please input your username!',
-               },
-               commonRules,
-               noWhiteSpace,
-            ]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-               {
-                  message: 'Please input your email!',
-                  type: "email",
-               },
-               commonRules,
-               noWhiteSpace,
-            ]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-               {
-                  message: 'Please input your password!',
-               },
-               commonRules,
-               noWhiteSpace,
-            ]}
-         >
-            <Input.Password />
-         </Form.Item>
-         <Form.Item
-            label="Confirm Password"
-            name="confirmPassword"
-            rules={[
-               {
-                  message: 'Confirm your password',
-               },
-               commonRules,
-               noWhiteSpace,
-               ({ getFieldValue }) => ({
-                  validator(_, value) {
-                     if (!value || getFieldValue('password') === value) {
-                        return Promise.resolve();
-                     }
-                     return Promise.reject('The two passwords that you entered do not match!');
-                  },
-               })
-            ]}
-         >
-            <Input.Password />
-         </Form.Item>
-
-         <Form.Item
+      <Space style={{ justifyContent: "center", alignItems: "center" }}>
+         <Form
+            labelCol={{
+               span: 8,
+            }}
             wrapperCol={{
-               offset: 8,
                span: 16,
             }}
+            style={{
+               minWidth: 600,
+               paddingRight: 120,
+               paddingTop: 150,
+            }}
+            onFinish={onFinish}
+            autoComplete="off"
          >
-            <Button htmlType="submit" loading={loading}>
-               SignUp
-            </Button>
-         </Form.Item>
-      </Form>
+            {error && <Error>{error}</Error>}
+            <Form.Item
+               label="Username"
+               name="userName"
+               rules={[
+                  {
+                     message: 'Please input your username!',
+                  },
+                  commonRules,
+                  noWhiteSpace,
+               ]}
+            >
+               <Input />
+            </Form.Item>
+
+            <Form.Item
+               label="Email"
+               name="email"
+               rules={[
+                  {
+                     message: 'Please input your email!',
+                     type: "email",
+                  },
+                  commonRules,
+                  noWhiteSpace,
+               ]}
+            >
+               <Input />
+            </Form.Item>
+
+            <Form.Item
+               label="Password"
+               name="password"
+               rules={[
+                  {
+                     message: 'Please input your password!',
+                  },
+                  commonRules,
+                  noWhiteSpace,
+               ]}
+            >
+               <Input.Password />
+            </Form.Item>
+            <Form.Item
+               label="Confirm Password"
+               name="confirmPassword"
+               rules={[
+                  {
+                     message: 'Confirm your password',
+                  },
+                  commonRules,
+                  noWhiteSpace,
+                  ({ getFieldValue }) => ({
+                     validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                           return Promise.resolve();
+                        }
+                        return Promise.reject('The two passwords that you entered do not match!');
+                     },
+                  })
+               ]}
+            >
+               <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+               wrapperCol={{
+                  offset: 8,
+                  span: 16,
+               }}
+            >
+               <Button htmlType="submit" loading={loading}>
+                  SignUp
+               </Button>
+            </Form.Item>
+         </Form>
+      </Space>
    )
 };
 export default RegisterPage;

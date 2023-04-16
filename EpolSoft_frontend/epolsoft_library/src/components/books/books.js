@@ -11,6 +11,7 @@ import { fetchBooks, deleteBook } from '../../redux/reducers/bookSlice';
 import { PATH_EXTRACT_FILE } from '../../lib/actionAxiosTypes'
 import * as table from '../common/table/tableConsts'
 /* import { downloadFile } from './table/features/tableMethods' */
+import { NIGHT_COLOR } from '../../common/designConst'
 
 const downloadFile = (url) => {
    const fileName = url.split("/").pop();
@@ -54,19 +55,24 @@ function Books() {
    }
 
    const actionRender = (_, record) =>
-      <Space>
-         <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
-         {record.authorId == userInfo.id &&
-            <>
-               <EditBook record={record} />
-               <Popconfirm
-                  title="Are you sure?"
-                  onConfirm={() => deleteHandler(record)}
-               >
-                  <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
-               </Popconfirm>
-            </>
-         }
+      <Space size={0}>
+         <div style={{ width: "50px" }}>
+            <Button style={{ marginRight: "10px", color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
+         </div>
+         <div style={{ width: "100px" }}>
+            {record.authorId == userInfo.id &&
+               <>
+                  <EditBook record={record.name.props.entity} getBooks={getBooks} />
+                  <Popconfirm
+                     title="Are you sure?"
+                     onConfirm={() => deleteHandler(record)}
+                  >
+                     <Button danger type='link' loading={deleteLoading}><DeleteOutlined /></Button>
+                  </Popconfirm>
+               </>
+            }
+         </div>
+
       </Space>
 
    const addingExpandable = (record) => <p><b>Description: </b>{record.description}</p>
@@ -85,6 +91,7 @@ function Books() {
                entities={books}
                totalEntities={totalBooks}
                hiddenColumns={hiddenColumns}
+               nameRefColumn={true}
                loading={loading}
                actionColumn={privateUserItem}
                actionRender={actionRender}

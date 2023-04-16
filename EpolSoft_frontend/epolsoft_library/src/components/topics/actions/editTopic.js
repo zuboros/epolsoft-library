@@ -1,53 +1,64 @@
-import { Button, Modal, Form, Input, AutoComplete, Upload } from 'antd';
-import { FileAddOutlined, SaveOutlined } from '@ant-design/icons'
+import { Button, Modal, Form, Input, AutoComplete, Upload, } from 'antd';
+import { EditOutlined, SaveOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllTopics, postTopic } from '../../../redux/reducers/topicSlice';
+import { putTopic } from '../../../redux/reducers/topicSlice';
+import { fetchTopics } from '../../../redux/reducers/topicSlice';
 import { noWhiteSpace } from '../../common/form/validation'
 import { pageParams } from '../../common/table/tableConsts'
 
-const CreateTopic = () => {
+const EditTopic = ({ record, getTopics }) => {
+   const [form] = Form.useForm();
+
    const dispatch = useDispatch();
-   const { topics, loading, error } = useSelector(state => state.topics.topics)
+   const { error, loading } = useSelector(state => state.topics)
 
    const [open, setOpen] = useState(false);
+
+   useEffect(() => {
+      form.setFieldsValue(record);
+      console.log('record');
+      console.log(record);
+
+
+   }, [record]);
 
    const showModal = () => {
       setOpen(true);
    };
 
    const handleSubmit = async (values) => {
-      const newTopic = {
-         ...values,
+      const data = {
+         id: record.id,
+         name: values.name,
       }
-
-      await dispatch(postTopic(newTopic));
-      dispatch(fetchAllTopics(pageParams));
+      await dispatch(putTopic(data));
       setOpen(false);
+      getTopics(pageParams);
    };
    const handleCancel = () => {
       setOpen(false);
    };
 
+
    return (
       <>
-         <Button onClick={showModal}>
-            <FileAddOutlined /> create a new topic
+         <Button type='link' onClick={showModal}>
+            <EditOutlined />
          </Button>
          <Modal
-            title="CreateTopic"
+            title="EditBook"
             open={open}
             onOk={handleSubmit}
             confirmLoading={loading}
             onCancel={handleCancel}
             footer={
                <>
-                  {loading && <h3>Loading...</h3>}
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
          >
-            <Form
+            <Form form={form}
                autoComplete="off"
                labelCol={{ span: 6 }}
                onFinish={(values => {
@@ -58,14 +69,16 @@ const CreateTopic = () => {
                   rules={[
                      {
                         required: true,
-                        message: "Please enter topic name"
+                        message: "Please enter your name"
                      },
                      { whitespace: true },
-                     { min: 2, max: 100 },
+                     { min: 5 },
+                     { max: 45 },
                   ]}
                >
-                  <Input placeholder="enter the topic's name" />
+                  <Input placeholder="enter the topic name" />
                </Form.Item>
+
                <Form.Item>
                   <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
@@ -74,4 +87,4 @@ const CreateTopic = () => {
       </>
    );
 };
-export default CreateTopic;
+export default EditTopic;

@@ -10,6 +10,7 @@ import CreateBook from '../../books/actionComponents/createBook'
 import * as table from '../../common/table/tableConsts'
 import { PATH_EXTRACT_FILE } from '../../../lib/actionAxiosTypes'
 /* import { downloadFile } from '../../books/table/features/tableMethods' */
+import { NIGHT_COLOR } from '../../../common/designConst'
 
 const downloadFile = (url) => {
    const fileName = url.split("/").pop();
@@ -54,15 +55,19 @@ const UserBooks = () => {
    }
 
    const actionRender = (_, record) =>
-      <Space>
-         <Button onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
-         <EditBook record={record} getBooksByUserId={getBooksByUserId} />
-         <Popconfirm
-            title="Are you sure?"
-            onConfirm={() => deleteHandler(record)}
-         >
-            <Button danger loading={deleteLoading}><DeleteOutlined /></Button>
-         </Popconfirm>
+      <Space size={0}>
+         <div style={{ width: "50px" }}>
+            <Button style={{ color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
+         </div>
+         <div style={{ width: "100px" }}>
+            <EditBook record={record.name.props.entity} getBooks={getBooksByUserId} />
+            <Popconfirm
+               title="Are you sure?"
+               onConfirm={() => deleteHandler(record)}
+            >
+               <Button danger type='link' loading={deleteLoading}><DeleteOutlined /></Button>
+            </Popconfirm>
+         </div>
       </Space>
 
    const addingExpandable = (record) => <p><b>Description: </b>{record.description}</p>
@@ -73,8 +78,8 @@ const UserBooks = () => {
             <h2>My books:</h2>
             {error && <h3>{error}</h3>}
          </div>
-         <div>
-            Create a new one: <CreateBook />
+         <div style={{ marginBottom: 10 }}>
+            <CreateBook />
          </div>
          {success &&
             <UserBookTable
@@ -82,6 +87,7 @@ const UserBooks = () => {
                totalEntities={totalBooks}
                hiddenColumns={hiddenColumns}
                loading={loading}
+               nameRefColumn={true}
                actionColumn={true}
                actionRender={actionRender}
                extractEntities={getBooksByUserId}

@@ -25,6 +25,10 @@ const Users = () => {
       "id"
    ]
 
+   const unsortedColumns = [
+      "roles",
+   ]
+
    const blockHandler = (record) => {
       dispatch(blockUser({ id: record.id }));
    }
@@ -32,8 +36,8 @@ const Users = () => {
    const actionRender = (_, record) =>
       <Space>
          {!record?.isBlocked ?
-            <Popover title="Block the user" trigger="hover"><Button danger onClick={() => blockHandler(record)} ><StopOutlined /></Button> </Popover> :
-            <Popover title="Unlock the user" trigger="hover"><Button onClick={() => blockHandler(record)}><ClockCircleOutlined /></Button></Popover>
+            <Popover title="Block the user" trigger="hover"><Button danger type='link' onClick={() => blockHandler(record)} ><StopOutlined /></Button> </Popover> :
+            <Popover title="Unlock the user" trigger="hover"><Button type='link' onClick={() => blockHandler(record)}><ClockCircleOutlined /></Button></Popover>
          }
       </Space>
 
@@ -64,6 +68,7 @@ const Users = () => {
                entities={users}
                totalEntities={totalUsers}
                hiddenColumns={hiddenColumns}
+               unsortedColumns={unsortedColumns}
                loading={loading}
                actionColumn={true}
                arrayRender={arrayRender}

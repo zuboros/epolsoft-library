@@ -7,7 +7,7 @@ import { fetchTopics } from '../../../redux/reducers/topicSlice';
 import { noWhiteSpace } from '../../common/form/validation'
 import { pageParams } from '../../common/table/tableConsts'
 
-const EditBook = ({ record, getBooksByUserId }) => {
+const EditBook = ({ record, getBooks }) => {
    const [form] = Form.useForm();
 
    const dispatch = useDispatch();
@@ -33,11 +33,11 @@ const EditBook = ({ record, getBooksByUserId }) => {
          topicId: topics.find(topic => topic.name === values.topic).id,
          userId: userInfo.id,
       }
-      delete data.key;
+
       if (finish) {
          await dispatch(putBook(data));
          setOpen(false);
-         getBooksByUserId(pageParams);
+         getBooks(pageParams);
       }
    };
    const handleCancel = () => {
@@ -49,7 +49,7 @@ const EditBook = ({ record, getBooksByUserId }) => {
 
    return (
       <>
-         <Button onClick={showModal}>
+         <Button type='link' onClick={showModal}>
             <EditOutlined />
          </Button>
          <Modal
@@ -60,7 +60,6 @@ const EditBook = ({ record, getBooksByUserId }) => {
             onCancel={handleCancel}
             footer={
                <>
-                  {status === 'loading' && <h3>Loading...</h3>}
                   {error && <h3>Server error: {error}</h3>}
                </>
             }

@@ -25,7 +25,8 @@ const CreateBook = () => {
       const newBook = {
          ...values,
          topicId: topics.find(topic => topic.name === values.topic).id,
-         userId: userInfo.id
+         userId: userInfo.id,
+         fileList: fileList,
       }
 
       if (finish) {
@@ -44,7 +45,7 @@ const CreateBook = () => {
    return (
       <>
          <Button onClick={showModal}>
-            <FileAddOutlined />
+            <FileAddOutlined /> create a new book
          </Button>
          <Modal
             title="CrateBook"

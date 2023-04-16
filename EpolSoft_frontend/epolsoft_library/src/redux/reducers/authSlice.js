@@ -124,6 +124,9 @@ const authSlice = createSlice({
       removeUserToken(state, { payload }) {
          state.userToken = payload;
          removeLocalStoreToken();
+      },
+      setSuccess(state, { payload }) {
+         state.success = payload;
       }
    },
    extraReducers: {
@@ -157,6 +160,6 @@ const authSlice = createSlice({
    },
 })
 
-export const { setUserInfo, setUserToken, removeUserInfo, removeUserToken } = authSlice.actions;
+export const { setUserInfo, setUserToken, removeUserInfo, removeUserToken, setSuccess } = authSlice.actions;
 
 export default authSlice.reducer

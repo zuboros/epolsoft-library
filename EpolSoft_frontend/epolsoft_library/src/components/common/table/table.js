@@ -1,43 +1,53 @@
 import { useState } from 'react'
 import { Table } from 'antd'
+import { Link } from 'react-router-dom'
 import * as table from './tableConsts'
 import './tableStyle.css'
 
-const EntitiesTable = ({ entities, totalEntities, addingColumns, actionColumn, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable }) => {
+const EntitiesTable = ({ entities, totalEntities, nameRefColumn = false, actionColumn, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable, unsortedColumns }) => {
 
    const [pageNum, setPageNum] = useState(table.INITIAL_PAGE_NUM);
    const [pageSize, setPageSize] = useState(table.INITIAL_PAGE_SIZE);
    const [sortField, setSortField] = useState(table.INITIAL_ORDER_FIELD);
    const [sortOrder, setSortOrder] = useState(table.ASC_ORDER);
 
-   const dataSource = entities.map(entity => ({
-      key: entity.id,
-      ...entity,
-   }));
+   const dataSource = entities.map(entity => nameRefColumn ?
+      ({
+         key: entity.id,
+         ...entity,
+         name: <Link to={`/book/${entity.id}`} entity={entity} style={{ color: "black" }}> {entity.name}</Link >
+      })
+      :
+      ({
+         key: entity.id,
+         ...entity,
+      }));
 
    const columns = (entityEntries) => {
       const cols = entityEntries.map(entityEntry => !hiddenColumns.find(column => column === entityEntry[0]) ?
          ({
-            title: <div className='headerCell'> {entityEntry[0].charAt(0).toUpperCase() + entityEntry[0].slice(1)} </div>,
+            title: <div className={!unsortedColumns?.find(column => column === entityEntry[0]) && 'headerCell'}>{entityEntry[0].charAt(0).toUpperCase() + entityEntry[0].slice(1)}</div>,
             dataIndex: entityEntry[0],
             key: entityEntry[0],
             align: "center",
             render: Array.isArray(entityEntry[1]) && arrayRender,
-            onHeaderCell: (column) => {
-               return {
-                  onClick: () => {
-                     console.log(column);
-                     setSortField(column.dataIndex);
-                     setSortOrder(sortOrder === table.ASC_ORDER ? table.DESC_ORDER : table.ASC_ORDER);
-                     extractEntities({ pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === table.ASC_ORDER ? table.DESC_ORDER : table.ASC_ORDER });
-                  }
-               };
-            },
+            onHeaderCell: unsortedColumns?.find(column => column === entityEntry[0]) ?
+               null
+               :
+               (column) => {
+                  return {
+                     onClick: () => {
+                        console.log(column);
+                        setSortField(column.dataIndex);
+                        setSortOrder(sortOrder === table.ASC_ORDER ? table.DESC_ORDER : table.ASC_ORDER);
+                        extractEntities({ pageNum: pageNum, pageSize: pageSize, sortField: column.dataIndex, sortOrder: sortOrder === table.ASC_ORDER ? table.DESC_ORDER : table.ASC_ORDER });
+                     }
+                  };
+               },
          }) :
          null
       ).filter(entityEntry => !!entityEntry);
 
-      !!addingColumns && cols.push(addingColumns);
       !!actionColumn && cols.push({
          title: "Action",
          dataIndex: "action",
@@ -49,7 +59,8 @@ const EntitiesTable = ({ entities, totalEntities, addingColumns, actionColumn, h
    }
 
    return (
-      <Table dataSource={dataSource}
+      <Table
+         dataSource={dataSource}
          columns={!!entities && entities?.length != 0 && columns(Object.entries(entities[0]))}
          loading={loading}
          bordered

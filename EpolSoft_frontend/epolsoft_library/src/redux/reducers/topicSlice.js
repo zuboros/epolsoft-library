@@ -10,6 +10,7 @@ const initialState = {
    error: null,
    success: false,
    totalTopics: null,
+   deleteLoading: false,
 }
 
 
@@ -81,12 +82,41 @@ export const deleteTopic = createAsyncThunk(
    }
 )
 
-const postTopic = createAsyncThunk(
+export const postTopic = createAsyncThunk(
    `${entities.TOPICS}/postTopic`,
-   async (data, { rejectWithValue, dispatch }) => {
+   async (data, { rejectWithValue }) => {
       try {
          await createRequest({
-            method: axios.POST, url: axios.PATH_DELETE_TOPIC(),
+            method: axios.POST, url: axios.PATH_POST_TOPIC,
+            body: {
+               name: data.name,
+            },
+            postCallback: (response) => {
+               console.log(axios.POST);
+               console.log(response);
+            }
+         })
+
+      } catch (error) {
+         if (error.response && error.response.data.message) {
+            return rejectWithValue(error.response.data.message)
+         } else {
+            return rejectWithValue(error.message)
+         }
+      }
+   }
+)
+
+export const putTopic = createAsyncThunk(
+   `${entities.TOPICS}/putTopic`,
+   async (data, { rejectWithValue }) => {
+      try {
+         await createRequest({
+            method: axios.PUT, url: axios.PATH_PUT_TOPIC,
+            body: {
+               id: data.id,
+               name: data.name,
+            },
             postCallback: (response) => {
                console.log(axios.POST);
                console.log(response);
@@ -122,7 +152,7 @@ const topicSlice = createSlice({
          state.status = true;
          state.error = null;
       },
-      [fetchTopics.fulfilled]: (state, action) => {
+      [fetchTopics.fulfilled]: (state, { payload }) => {
          state.status = false;
          state.success = true;
       },
@@ -134,7 +164,7 @@ const topicSlice = createSlice({
          state.status = true;
          state.error = null;
       },
-      [fetchAllTopics.fulfilled]: (state, action) => {
+      [fetchAllTopics.fulfilled]: (state, { payload }) => {
          state.status = false;
          state.success = true;
       },
@@ -145,20 +175,23 @@ const topicSlice = createSlice({
       [deleteTopic.pending]: (state) => {
          state.status = true;
          state.error = null;
+         state.deleteLoading = true;
       },
-      [deleteTopic.fulfilled]: (state, action) => {
+      [deleteTopic.fulfilled]: (state, { payload }) => {
          state.status = false;
          state.success = true;
+         state.deleteLoading = false;
       },
       [deleteTopic.rejected]: (state, { payload }) => {
-         state.loading = false
-         state.error = payload
+         state.loading = false;
+         state.error = payload;
+         state.deleteLoading = false;
       },
       [postTopic.pending]: (state) => {
          state.status = true;
          state.error = null;
       },
-      [postTopic.fulfilled]: (state, action) => {
+      [postTopic.fulfilled]: (state, { payload }) => {
          state.status = false;
          state.success = true;
       },

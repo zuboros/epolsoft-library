@@ -1,4 +1,4 @@
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Space } from 'antd';
 import { NavLink } from 'react-router-dom'
 import { userLogin } from '../redux/reducers/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -37,66 +37,67 @@ const LoginPage = () => {
    }
 
    return (
-      <Form
-         name="basic"
-         labelCol={{
-            span: 8,
-         }}
-         wrapperCol={{
-            span: 16,
-         }}
-         style={{
-            maxWidth: 600,
-         }}
-         initialValues={{
-            remember: true,
-         }}
-         onFinish={onFinish}
-         autoComplete="off"
-      >
-         {error && <Error>{error}</Error>}
-
-         <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-               {
-                  message: 'Please input your email!',
-                  type: "email",
-               },
-               commonRules,
-               noWhiteSpace,
-            ]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-               {
-                  message: 'Please input your password!',
-               },
-               commonRules,
-               noWhiteSpace,
-            ]}
-         >
-            <Input.Password />
-         </Form.Item>
-
-         <Form.Item
+      <Space style={{ justifyContent: "center", alignItems: "center" }}>
+         <Form
+            name="login"
+            labelCol={{
+               span: 8,
+            }}
             wrapperCol={{
-               offset: 8,
                span: 16,
             }}
+            style={{
+               minWidth: 600,
+               paddingRight: 120,
+               paddingTop: 150,
+            }}
+            onFinish={onFinish}
+            autoComplete="off"
          >
-            <p>If you don't have any accounts: <NavLink to="/register">Register</NavLink></p>
-            <Button htmlType="submit" loading={loading}>
-               Login
-            </Button>
-         </Form.Item>
-      </Form >
+            {error && <Error>{error}</Error>}
+
+            <Form.Item
+               label="Email"
+               name="email"
+               rules={[
+                  {
+                     message: 'Please input your email!',
+                     type: "email",
+                  },
+                  commonRules,
+                  noWhiteSpace,
+               ]}
+            >
+               <Input />
+            </Form.Item>
+
+            <Form.Item
+               label="Password"
+               name="password"
+               rules={[
+                  {
+                     message: 'Please input your password!',
+                  },
+                  commonRules,
+                  noWhiteSpace,
+               ]}
+            >
+               <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+               wrapperCol={{
+                  offset: 8,
+                  span: 16,
+               }}
+            >
+               <p>If you don't have any accounts: <NavLink to="/register">Register</NavLink></p>
+               <Button htmlType="submit" loading={loading}>
+                  Login
+               </Button>
+            </Form.Item>
+         </Form >
+      </Space>
    )
 };
 export default LoginPage;
