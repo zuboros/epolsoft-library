@@ -85,17 +85,10 @@ export const postBook = createAsyncThunk(
    `${entities.BOOKS}/postBook`,
    async function (data, { rejectWithValue }) {
       try {
-         const sendData = {
-            file: data.uploadFiles[0],
-            data
-         }
-         console.log(sendData);
-         delete sendData.data['uploadFiles'];
 
          const formData = new FormData();
-         formData.append("file", data.uploadFiles[0]);
+         formData.append("file", data.fileList[0]);
 
-         //const responseData = "2023/04/13/fa0a74a9-3003-415b-8089-e4d434c1d8cc.pdf";
          const responseData = await createRequest({
             method: axios.POST, url: axios.PATH_UPLOAD_FILE,
             body: formData,
@@ -113,7 +106,7 @@ export const postBook = createAsyncThunk(
          await createRequest({
             method: axios.POST, url: axios.PATH_POST_BOOK,
             body: {
-               ...postBookDto(data, { name: sendData.file.name, path: responseData }),
+               ...postBookDto(data, { name: data.fileList[0].name, path: responseData }),
             },
             postCallback: (dataAfter) => {
                console.log(axios.POST);                                           ///

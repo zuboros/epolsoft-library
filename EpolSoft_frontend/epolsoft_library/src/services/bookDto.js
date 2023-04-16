@@ -1,13 +1,13 @@
-export const postBookDto = (book, file) => {
+export const postBookDto = (book, file) => ({
+   name: book.name,
+   shortDescription: book.shortDescription,
+   description: book.description,
+   fileName: file.name,
+   filePath: file.path,
+   topicId: book.topicId,
+   userId: book.userId
+})
 
-   delete book['topic'];
-
-   return ({
-      ...book,
-      fileName: file.name,
-      filePath: file.path
-   })
-}
 
 export const putBookDto = (book, file, isExist) => {
    console.log('book');
