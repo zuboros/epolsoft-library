@@ -1,14 +1,14 @@
 import { Space, Button, Tag, Popover } from 'antd'
 import { StopOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, blockUser } from '../../redux/reducers/userSlice';
+import { fetchUsers, blockUser, unblockUser } from '../../redux/reducers/userSlice';
 import { USERS, AUTH, USER } from '../../redux/entitiesConst'
 import { useEffect } from 'react';
 import UserTable from '../common/table/table'
 import * as table from '../common/table/tableConsts'
 
 const Users = () => {
-   const { error, loading, [USERS]: users, success, totalUsers } = useSelector(state => state[USERS]);
+   const { error, loading, [USERS]: users, success, totalUsers, blockLoading } = useSelector(state => state[USERS]);
 
    const dispatch = useDispatch();
 
@@ -29,15 +29,21 @@ const Users = () => {
       "roles",
    ]
 
-   const blockHandler = (record) => {
-      dispatch(blockUser({ id: record.id }));
+   const blockHandler = async (record) => {
+      await dispatch(blockUser({ id: record.id }));
+      getUsers(table.pageParams);
+   }
+
+   const unblockHandler = async (record) => {
+      await dispatch(unblockUser({ id: record.id }));
+      getUsers(table.pageParams);
    }
 
    const actionRender = (_, record) =>
       <Space>
          {!record?.isBlocked ?
-            <Popover title="Block the user" trigger="hover"><Button danger type='link' onClick={() => blockHandler(record)} ><StopOutlined /></Button> </Popover> :
-            <Popover title="Unlock the user" trigger="hover"><Button type='link' onClick={() => blockHandler(record)}><ClockCircleOutlined /></Button></Popover>
+            <Popover title="Block the user" trigger="hover"><Button danger type='link' loading={blockLoading} onClick={() => blockHandler(record)} ><StopOutlined /></Button> </Popover> :
+            <Popover title="Unlock the user" trigger="hover"><Button type='link' loading={blockLoading} onClick={() => unblockHandler(record)}><ClockCircleOutlined /></Button></Popover>
          }
       </Space>
 

@@ -18,11 +18,10 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
       let exp_axios_cfg;
       if (method === GET || method === DELETE) {
          const headers = {
-            'Authorization': userToken,
-            ...body, //////////////////////////////////////////////////////////////////////
+            'Authorization': userToken
          }
          exp_body = {
-            headers,
+            headers, body,
          }
          exp_axios_cfg = axios_cfg;
          return [exp_body, exp_axios_cfg]

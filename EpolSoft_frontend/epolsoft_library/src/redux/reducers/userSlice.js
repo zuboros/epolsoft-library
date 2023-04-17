@@ -10,6 +10,7 @@ const initialState = {
    error: null,
    success: false,
    totalUsers: null,
+   blockLoading: false,
 }
 
 
@@ -42,14 +43,11 @@ export const fetchUsers = createAsyncThunk(
 
 export const blockUser = createAsyncThunk(
    `${[entities.USERS]}/blockUser`,
-   async ({ id }, { rejectWithValue, dispatch }) => {
+   async ({ id }, { rejectWithValue }) => {
       try {
 
          await createRequest({
             method: axios.PUT, url: axios.PATH_BLOCK_USERS({ id }),
-            body: {
-
-            },
          })
 
       } catch (error) {
@@ -63,7 +61,25 @@ export const blockUser = createAsyncThunk(
    }
 )
 
+export const unblockUser = createAsyncThunk(
+   `${[entities.USERS]}/unblockUser`,
+   async ({ id }, { rejectWithValue }) => {
+      try {
 
+         await createRequest({
+            method: axios.PUT, url: axios.PATH_UNBLOCK_USERS({ id }),
+         })
+
+      } catch (error) {
+         // return custom error message from backend if present
+         if (error.response && error.response.data.message) {
+            return rejectWithValue(error.response.data.message)
+         } else {
+            return rejectWithValue(error.message)
+         }
+      }
+   }
+)
 
 const userSlice = createSlice({
    name: entities.USERS,
@@ -82,12 +98,36 @@ const userSlice = createSlice({
          state.loading = true
          state.error = null
       },
-      [fetchUsers.fulfilled]: (state, { payload }) => {
+      [fetchUsers.fulfilled]: (state) => {
          state.loading = false
          state.success = true
       },
       [fetchUsers.rejected]: (state, { payload }) => {
          state.loading = false
+         state.error = payload
+      },
+      [blockUser.pending]: (state) => {
+         state.blockLoading = true
+         state.error = null
+      },
+      [blockUser.fulfilled]: (state) => {
+         state.blockLoading = false
+         state.success = true
+      },
+      [blockUser.rejected]: (state, { payload }) => {
+         state.blockLoading = false
+         state.error = payload
+      },
+      [unblockUser.pending]: (state) => {
+         state.blockLoading = true
+         state.error = null
+      },
+      [unblockUser.fulfilled]: (state) => {
+         state.blockLoading = false
+         state.success = true
+      },
+      [unblockUser.rejected]: (state, { payload }) => {
+         state.blockLoading = false
          state.error = payload
       },
    },

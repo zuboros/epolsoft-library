@@ -8,6 +8,7 @@ import { userLogout } from '../redux/reducers/authSlice'
 import AppContent from './content/appContent'
 import { menuItem } from './content/userMenu'
 import { DARK_COLOR, LIGHT_COLOR, NIGHT_COLOR } from '../common/designConst';
+import logo from '../assets/book.svg'
 
 const { Header, Footer } = Layout;
 
@@ -42,9 +43,9 @@ const AppLayout = () => {
          <Affix>
             <Header className="header" style={{ backgroundColor: NIGHT_COLOR, }}>
                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                     <Link to="/" style={{ color: LIGHT_COLOR, }}>
-                        Home
+                  <div className="pulsating-circle" >
+                     <Link to="/" style={{ padding: 0, margin: 0, height: 0, width: 0 }}>
+                        <img src={logo} alt='logo' />
                      </Link>
                   </div>
                   <Menu
@@ -52,6 +53,7 @@ const AppLayout = () => {
                         verticalAlign: 'middle',
                         color: LIGHT_COLOR,
                         backgroundColor: NIGHT_COLOR,
+                        marginBottom: 35
                      }}
                      selectable={false}
                      mode="vertical"

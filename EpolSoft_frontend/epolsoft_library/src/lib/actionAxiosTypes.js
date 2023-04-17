@@ -31,7 +31,8 @@ export const PATH_USER_LOGIN = `/api/authors/signin`;
 
 //Users
 export const PATH_GET_USERS = ({ pageNum, pageSize, sortField, sortOrder }) => `/api/authors/get?page=${(pageNum - 1) || "0"}&size=${pageSize || "0"}&sort=${sortField || "id"},${sortOrder || "ASC"}`;
-export const PATH_BLOCK_USERS = ({ id }) => `/api/author/block/${id}`;
+export const PATH_BLOCK_USERS = ({ id }) => `/api/authors/block/${id}`;
+export const PATH_UNBLOCK_USERS = ({ id }) => `/api/authors/unblock/${id}`;
 
 //File/Avatar
 export const PATH_UPLOAD_FILE = "/api/file/upload?type=book";
