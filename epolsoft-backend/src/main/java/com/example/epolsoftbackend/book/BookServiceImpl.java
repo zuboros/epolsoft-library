@@ -1,7 +1,9 @@
 package com.example.epolsoftbackend.book;
 
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
+import com.example.epolsoftbackend.book.DTO.BookDetailedDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
+import com.example.epolsoftbackend.exception.BadRequestException;
 import com.example.epolsoftbackend.exception.ForbiddenException;
 import com.example.epolsoftbackend.exception.InternalServerErrorException;
 import com.example.epolsoftbackend.exception.ResourceNotFoundException;
@@ -11,14 +13,16 @@ import com.example.epolsoftbackend.topic.TopicRepository;
 import com.example.epolsoftbackend.topic.TopicService;
 import com.example.epolsoftbackend.user.UserDetailsImpl;
 import com.example.epolsoftbackend.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -27,16 +31,6 @@ public class BookServiceImpl implements BookService {
     private final TopicService topicService;
     private final TopicRepository topicRepository;
     private final FileService fileService;
-
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, UserService userService,
-                           TopicService topicService, TopicRepository topicRepository, FileService fileService) {
-        this.bookRepository = bookRepository;
-        this.bookMapper = bookMapper;
-        this.userService = userService;
-        this.topicService = topicService;
-        this.topicRepository = topicRepository;
-        this.fileService = fileService;
-    }
 
     public BookCreateDTO create(BookCreateDTO bookCreateDTO) {
         try {
@@ -48,6 +42,7 @@ public class BookServiceImpl implements BookService {
             topic.setActive(true);
             topicRepository.save(topic);
 
+            createBook.setStatus("CREATED");
             createBook.setTopicId(topicService.findById(createBook.getTopicId().getId()).orElse(null));
             createBook.setUserId(userService.findById(createBook.getUserId().getId()).orElse(null));
 
@@ -63,13 +58,12 @@ public class BookServiceImpl implements BookService {
     }
 
     public BookUpdateDTO updateById(BookUpdateDTO bookUpdateDTO) {
-        try{
             Book oldBook = bookRepository.findById(bookUpdateDTO.getId()).orElseThrow(
                     () -> new ResourceNotFoundException("OldBook", "id", bookUpdateDTO.getId()));
 
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(!Objects.equals(oldBook.getUserId().getId(), userDetails.getId())) {
-                throw new ForbiddenException("Can't update not own book");
+            if(!Objects.equals(oldBook.getUserId().getId(), userDetails.getId()) || oldBook.getStatus().equals("ARCHIVED")) {
+                throw new ForbiddenException("Can't update not own book or archived book");
             }
 
             fileService.deleteBookFile(oldBook.getId());
@@ -84,6 +78,13 @@ public class BookServiceImpl implements BookService {
 
             updateBook.setTopicId(topicService.findById(updateBook.getTopicId().getId()).orElse(null));
             updateBook.setUserId(userService.findById(updateBook.getUserId().getId()).orElse(null));
+            updateBook.setCreatedAt(oldBook.getCreatedAt());
+            updateBook.setStatus("WAIT_APPROVING");
+
+            if(updateBook.getFileName() == null && updateBook.getFileName() == null) {
+                updateBook.setFileName(oldBook.getFileName());
+                updateBook.setFilePath(oldBook.getFilePath());
+            }
 
             oldTopic.setActive(oldTopic.getBooks().size() != 0);
 
@@ -94,13 +95,56 @@ public class BookServiceImpl implements BookService {
             topicRepository.save(newTopic);
 
             return bookMapper.bookToBookUpdateDTO(bookRepository.saveAndFlush(updateBook));
-        } catch (Exception e ) {
-           throw new ResourceNotFoundException("Book", "id", bookUpdateDTO.getId());
+
+    }
+
+    public BookUpdateDTO setStatus(long id, String status){
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("OldBook", "id", id));
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        switch(status) {
+            case "WAIT_APPROVING":
+                if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
+                    throw new ForbiddenException("Can't update status not own book");
+                }
+
+                if(Objects.equals(book.getStatus(), "CREATED")) {
+                    book.setStatus(status);
+                    return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
+                }
+                else throw new InternalServerErrorException("Saving entity ending with fail");
+            case "ARCHIVED":
+                if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
+                    throw new ForbiddenException("Can't update status not own book");
+                }
+
+                if(Objects.equals(book.getStatus(), "ACTIVED")) {
+                    book.setStatus(status);
+                    return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
+                }
+                else throw new InternalServerErrorException("Saving entity ending with fail");
+
+            case "BLOCKED":
+            case "ACTIVED":
+                if((userDetails.getAuthorities().stream().anyMatch(
+                        grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MODERATOR")) )) {
+                    throw new ForbiddenException("Can't update status without Moderator role");
+                }
+
+                if(Objects.equals(book.getStatus(), "WAIT_APPROVING")) {
+                    book.setStatus(status);
+                    return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
+                }
+                else throw new InternalServerErrorException("Saving entity ending with fail");
+
+            default:
+                throw new BadRequestException("Error in status");
         }
     }
 
     public void deleteById(Long id) {
-        try {
             Book book = bookRepository.findById(id).orElseThrow(
                     () -> new ResourceNotFoundException("Book", "id", id));
 
@@ -120,8 +164,12 @@ public class BookServiceImpl implements BookService {
                 topic.setActive(false);
                 topicRepository.save(topic);
             }
-        } catch (Exception e) {
-            throw new ResourceNotFoundException("Book", "id", id);
-        }
     }
+
+    public BookDetailedDTO selectBook(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Book", "id", id));
+        return bookMapper.bookToBookDetailedDTO(book);
+    }
+
 }

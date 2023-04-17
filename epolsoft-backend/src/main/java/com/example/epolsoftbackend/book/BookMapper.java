@@ -1,6 +1,7 @@
 package com.example.epolsoftbackend.book;
 
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
+import com.example.epolsoftbackend.book.DTO.BookDetailedDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
 import com.example.epolsoftbackend.topic.Topic;
 import com.example.epolsoftbackend.user.User;
@@ -10,11 +11,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
+
 @Mapper(uses = {UserMapper.class, TopicMapper.class}, componentModel = "spring")
 public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
-    public default BookCreateDTO bookToBookCreateDTO(Book book){
+     default BookCreateDTO bookToBookCreateDTO(Book book){
         if ( book == null ) {
             return null;
         }
@@ -32,7 +35,7 @@ public interface BookMapper {
         return bookCreateDTO.build();
     }
 
-    public default Book bookCreateDTOToBook(BookCreateDTO bookCreateDTO) {
+    default Book bookCreateDTOToBook(BookCreateDTO bookCreateDTO) {
         if ( bookCreateDTO == null ) {
             return null;
         }
@@ -56,10 +59,10 @@ public interface BookMapper {
         return book.build();
     }
 
-    public default BookUpdateDTO bookToBookUpdateDTO(Book book) {
+    default BookUpdateDTO bookToBookUpdateDTO(Book book) {
         if ( book == null ) {
         return null;
-    }
+        }
 
         BookUpdateDTO.BookUpdateDTOBuilder bookUpdateDTO = BookUpdateDTO.builder();
 
@@ -75,7 +78,7 @@ public interface BookMapper {
         return bookUpdateDTO.build();
     }
 
-    public default Book bookUpdateDTOToBook(BookUpdateDTO bookCreateDTO){
+    default Book bookUpdateDTOToBook(BookUpdateDTO bookCreateDTO){
         if ( bookCreateDTO == null ) {
             return null;
         }
@@ -100,5 +103,24 @@ public interface BookMapper {
         book.filePath( bookCreateDTO.getFilePath() );
 
         return book.build();
+    }
+
+    default BookDetailedDTO bookToBookDetailedDTO(Book book) {
+         if ( book == null ) {
+             return null;
+         }
+
+         BookDetailedDTO.BookDetailedDTOBuilder bookDetailedDTOBuilder = BookDetailedDTO.builder();
+
+         bookDetailedDTOBuilder.user( book.getUserId().getName() );
+         bookDetailedDTOBuilder.name( book.getName() );
+         bookDetailedDTOBuilder.id( book.getId() );
+         bookDetailedDTOBuilder.topic( book.getTopicId().getName() );
+         bookDetailedDTOBuilder.description( book.getDescription() );
+         bookDetailedDTOBuilder.shortDescription( book.getShortDescription() );
+         bookDetailedDTOBuilder.createdAt( book.getCreatedAt() );
+         bookDetailedDTOBuilder.updatedAt( book.getUpdatedAt() );
+
+         return bookDetailedDTOBuilder.build();
     }
 }

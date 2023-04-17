@@ -38,6 +38,9 @@ public class Book implements Serializable {
     @Length(min = 20, max = 255)
     private String description;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @Column(name = "file_name")
     @Length(min = 0, max = 255)
     private String fileName;
