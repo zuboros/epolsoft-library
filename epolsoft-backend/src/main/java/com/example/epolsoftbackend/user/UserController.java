@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +63,16 @@ public class UserController {
     @PutMapping("/unblock/{id}")
     public ResponseEntity<UserResponseDTO> unblockUser(@PathVariable("id") long id) {
         return new ResponseEntity<>(userService.unblockUser(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
+        return new ResponseEntity<>(userService.updateUser(userUpdateDTO), HttpStatus.OK);
+    }
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity<UserResponseDTO> updateUserPassword(@RequestBody @Valid UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        return new ResponseEntity<>(userService.updateUserPassword(userUpdatePasswordDTO), HttpStatus.OK);
     }
 
 }

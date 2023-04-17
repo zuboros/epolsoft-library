@@ -12,9 +12,6 @@ public class UserUpdateDTO {
 
     private String name;
 
-    private String mail;
-
-    private String password;
-
     private String avatarPath;
+
 }

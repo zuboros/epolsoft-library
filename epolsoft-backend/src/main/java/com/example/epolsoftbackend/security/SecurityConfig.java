@@ -61,9 +61,9 @@ public class SecurityConfig {
                         "/api/topic/get/all",
                         "/api/topic/create",
                         "/api/topic/delete",
-                        "api/authors/block",
-                        "api/authors/unblock").hasRole("ADMIN")
-                .antMatchers("api/authors/howManyDaysNotification").authenticated()
+                        "/api/authors/block",
+                        "/api/authors/unblock").hasRole("ADMIN")
+                .antMatchers("api/authors/howManyDaysNotification", "/api/authors/update", "/api/authors/updatePassword").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JsonWebTokenConfigurer(jsonWebTokenProvider));

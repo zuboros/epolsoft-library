@@ -20,5 +20,7 @@ public interface UserService {
     UserResponseDTO unblockUser(long id);
     boolean isExpired(LocalDateTime userPasswordUpdatedAt);
     int howManyDaysNotification();
+    UserResponseDTO updateUser(UserUpdateDTO userUpdateDTO);
+    UserResponseDTO updateUserPassword(UserUpdatePasswordDTO userUpdatePasswordDTO);
 
 }

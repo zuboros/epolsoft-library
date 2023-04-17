@@ -30,7 +30,8 @@ import java.util.UUID;
 import org.springframework.util.StringUtils;
 
 @Service
-public class FileServiceImpl implements FileService {
+public class
+FileServiceImpl implements FileService {
 
     private final Path fileStorageLocation = Path.of(
             System.getProperty("user.dir") + File.separator + "fileStorage");

@@ -16,6 +16,7 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     //UserRequest
+    @Mapping(source = "blocked", target = "isBlocked")
     UserResponseDTO userToUserResponseDTO(User user);
     User userResponseDTOToUser(UserResponseDTO userResponseDTO);
 
@@ -82,5 +83,4 @@ public interface UserMapper {
 
     @Mapping(source = "user.roles", target = "roles")
     List<UserLoginResponseDTO> listUserToListUserLoginResponseDTO(List<User> userList);
-
 }

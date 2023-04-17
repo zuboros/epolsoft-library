@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.author
 (
     id bigint NOT NULL,
-    name VARCHAR(255) COLLATE pg_catalog."default" NOT NULL,
+    name VARCHAR(255) COLLATE pg_catalog."default" NOT NULL UNIQUE,
     CONSTRAINT author_pkey PRIMARY KEY (id)
 );
 

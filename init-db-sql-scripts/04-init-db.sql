@@ -12,7 +12,12 @@ ALTER TABLE public.users
 CREATE TABLE IF NOT EXISTS public.policy
 (
     id bigint NOT NULL,
-    reg_validation VARCHAR(255) COLLATE pg_catalog."default" NOT NULL DEFAULT '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$',
+    min_char_number INTEGER NOT NULL DEFAULT 8,
+    max_char_number INTEGER NOT NULL DEFAULT 16,
+    min_uppercase_letter_number INTEGER NOT NULL DEFAULT 1,
+    min_lowercase_letter_number INTEGER NOT NULL DEFAULT 1,
+    min_digit_number INTEGER NOT NULL DEFAULT 1,
+    min_spec_symbol_number INTEGER NOT NULL DEFAULT 1,
     password_expiration_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '7 day',
     outdate_password_notification_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '20 minute'
 );
