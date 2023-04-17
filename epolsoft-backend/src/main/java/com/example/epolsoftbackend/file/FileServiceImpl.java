@@ -150,15 +150,6 @@ public class FileServiceImpl implements FileService {
     }
     
     public Resource loadFileAsResource(long id, String type) {
-        if (type.equals("book")) {
-            Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
-
-            UserDetailsImpl userDetails = (UserDetailsImpl)
-                    SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
-                throw new ForbiddenException("User cannot download not his own books");
-            }
-        }
 
         String filePathStr;
 

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LibraryServiceImpl implements LibraryService {
@@ -16,8 +17,14 @@ public class LibraryServiceImpl implements LibraryService {
         this.libraryRepository = libraryRepository;
     }
 
-    public List findByCriteria(Pageable pageable) {
-        Page page = libraryRepository.findAll(pageable);
+    public List findByCriteria(Pageable pageable, LibrarySearchModel searchModel) {
+        Page page;
+        if(!Objects.equals(searchModel.getFieldValue(), "") && !Objects.equals(searchModel.getFieldName(), "") &&
+        !Objects.equals(searchModel.getFieldName(),"id")) {
+            page = libraryRepository.findAll(Specification.where(LibrarySpecifications
+                    .fieldLike(searchModel.getFieldName(), searchModel.getFieldValue())), pageable);
+        }
+        else page = libraryRepository.findAll(pageable);
         return List.of(page.getContent(), page.getTotalElements());
     }
 

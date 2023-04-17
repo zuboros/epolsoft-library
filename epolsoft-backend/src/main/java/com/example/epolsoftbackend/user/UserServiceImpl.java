@@ -48,8 +48,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public List getAllUsers(Pageable pageable) {
-        Page page = userRepository.findAll(pageable);
-        return List.of(page.getContent(), page.getTotalElements());
+
+        Page<User> page = userRepository.findAll(pageable);
+        List<User> users = page.getContent();
+        return List.of(userMapper.listUserToListUserBookResponseDTO(users), page.getTotalElements());
     }
 
     public Optional<User> findById(long id) {
@@ -86,6 +88,7 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while password is encoding");
         }
+        newUser.setPasswordUpdatedAt(LocalDateTime.now());
 
         newUser.setBlocked(false);
         newUser.getRoles().add(new UserRole(newUser, role));
@@ -93,6 +96,8 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.userToUserBookResponseDTO(userRepository.save(newUser));
     }
+
+    //public boolean
 
     public UserLoginResponseDTO login(UserLoginDTO userLoginDTO) {
         try {

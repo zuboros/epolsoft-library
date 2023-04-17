@@ -13,15 +13,14 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    public UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     //UserRequest
-    public UserResponseDTO userToUserResponseDTO(User user);
-    public User userResponseDTOToUser(UserResponseDTO userResponseDTO);
+    UserResponseDTO userToUserResponseDTO(User user);
+    User userResponseDTOToUser(UserResponseDTO userResponseDTO);
 
     //UserRequest
-    @Mapping(source = "user.roles", target = "roles")
-    public default UserBookResponseDTO userToUserBookResponseDTO(User user){
+    default UserBookResponseDTO userToUserBookResponseDTO(User user){
             if ( user == null ) {
                 return null;
             }
@@ -44,7 +43,7 @@ public interface UserMapper {
     }
 
     @Mapping(source = "user.roles", target = "roles")
-    public default List<UserBookResponseDTO> listUserToListUserBookResponseDTO(List<User> userList){
+    default List<UserBookResponseDTO> listUserToListUserBookResponseDTO(List<User> userList){
         if ( userList == null ) {
             return null;
         }
@@ -59,7 +58,7 @@ public interface UserMapper {
 
     //UserRequest
     @Mapping(source = "user.roles", target = "roles")
-    public default UserLoginResponseDTO userToUserLoginResponseDTO(User user) {
+    default UserLoginResponseDTO userToUserLoginResponseDTO(User user) {
         if ( user == null ) {
             return null;
         }
@@ -82,6 +81,6 @@ public interface UserMapper {
     }
 
     @Mapping(source = "user.roles", target = "roles")
-    public List<UserLoginResponseDTO> listUserToListUserLoginResponseDTO(List<User> userList);
+    List<UserLoginResponseDTO> listUserToListUserLoginResponseDTO(List<User> userList);
 
 }

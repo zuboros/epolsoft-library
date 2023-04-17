@@ -20,8 +20,8 @@ public class LibraryController {
     }
 
     @GetMapping()
-    public ResponseEntity<List> getBooks(Pageable pageable){
-        return new ResponseEntity<>(libraryService.findByCriteria(pageable), HttpStatus.OK);
+    public ResponseEntity<List> getBooks(Pageable pageable, LibrarySearchModel librarySearchModel){
+        return new ResponseEntity<>(libraryService.findByCriteria(pageable, librarySearchModel), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/books")
