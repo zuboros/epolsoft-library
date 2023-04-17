@@ -73,6 +73,33 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public UserResponseDTO updateUser(UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(userUpdateDTO.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userUpdateDTO.getId()));
+
+        if (!user.getAvatarPath().equals(userUpdateDTO.getAvatarPath())) {
+            user.setAvatarPath(userUpdateDTO.getAvatarPath());
+            fileService.deleteAvatarFile(userUpdateDTO.getId());
+        }
+
+        user.setName(userUpdateDTO.getName());
+
+        return userMapper.userToUserResponseDTO(userRepository.save(user));
+    }
+
+    public UserResponseDTO updateUserPassword(UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        User user = userRepository.findById(userUpdatePasswordDTO.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userUpdatePasswordDTO.getId()));
+
+        if (!bCryptPasswordEncoder.matches(userUpdatePasswordDTO.getOldPassword(), user.getPasswordHash())) {
+            throw new ForbiddenException("Password mismatch");
+        }
+
+        user.setPasswordHash(bCryptPasswordEncoder.encode(userUpdatePasswordDTO.getNewPassword()));
+
+        return userMapper.userToUserResponseDTO(userRepository.save(user));
+    }
+
     public UserBookResponseDTO createNewUser(UserRegistrationDTO userRegistrationDTO) {
         Role role = roleRepository.findByName("USER").orElseThrow(
                 () -> new ResourceNotFoundException("Role", "name", "USER"));
