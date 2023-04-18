@@ -78,17 +78,17 @@ JsonWebTokenProvider {
     }
 
     public boolean validateToken(String token) {
+        Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
         try {
-            Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-
-            User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
-            if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
-                throw new IAmTeapotException("I AM A TEAPOT!!!");
-            }
-
-            return true;
         } catch (Exception e) {return false;}
+
+        User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
+        if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
+            throw new IAmTeapotException("I AM A TEAPOT!!!");
+        }
+
+        return true;
     }
 
     public String resolveToken(HttpServletRequest servletRequest){
