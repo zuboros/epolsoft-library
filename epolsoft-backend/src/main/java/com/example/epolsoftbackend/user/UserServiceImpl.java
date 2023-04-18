@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public List getAllUsers(Pageable pageable) {
-
         Page<User> page = userRepository.findAll(pageable);
         List<User> users = page.getContent();
         return List.of(userMapper.listUserToListUserBookResponseDTO(users), page.getTotalElements());
@@ -77,12 +76,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userUpdateDTO.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", userUpdateDTO.getId()));
 
-        if (!user.getAvatarPath().equals(userUpdateDTO.getAvatarPath())) {
+        if (userUpdateDTO.getAvatarPath() != null && !user.getAvatarPath().equals(userUpdateDTO.getAvatarPath())) {
             user.setAvatarPath(userUpdateDTO.getAvatarPath());
             fileService.deleteAvatarFile(userUpdateDTO.getId());
         }
 
-        user.setName(userUpdateDTO.getName());
+        if (userUpdateDTO.getName() != null) {
+            user.setName(userUpdateDTO.getName());
+        }
 
         return userMapper.userToUserResponseDTO(userRepository.save(user));
     }
