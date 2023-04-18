@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean containsRole(final List<UserRole> list, final String roleName) {
-        return list.stream().filter(o -> o.getRole().getName().equals(roleName)).findFirst().isPresent();
+        return list.stream().anyMatch(o -> o.getRole().getName().equals(roleName));
     }
 
     public List getAllUsers(Pageable pageable) {

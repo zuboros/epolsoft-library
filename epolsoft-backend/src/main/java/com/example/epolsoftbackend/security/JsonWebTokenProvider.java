@@ -4,7 +4,6 @@ import com.example.epolsoftbackend.exception.UnauthorizedException;
 import com.example.epolsoftbackend.user.CustomUserDetailsService;
 import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.user.UserRepository;
-import com.example.epolsoftbackend.user.UserService;
 import com.example.epolsoftbackend.user_role.UserRole;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,13 +37,15 @@ JsonWebTokenProvider {
 
     public String generateToken(User user) {
 
-        boolean haveUserRole = false, haveAdminRole = false;
+        boolean haveUserRole = false, haveAdminRole = false, haveModeratorRole = false;
         for (UserRole userRole: user.getRoles()) {
             switch (userRole.getRole().getName()){
                 case "USER":
                     haveUserRole = true;
                 case "ADMIN":
                     haveAdminRole = true;
+                case "MODERATOR":
+                    haveModeratorRole = true;
             }
         }
 
@@ -54,6 +55,7 @@ JsonWebTokenProvider {
                 .claim("Mail", user.getMail())
                 .claim("ADMIN", haveAdminRole)
                 .claim("USER", haveUserRole)
+                .claim("MODERATOR", haveModeratorRole)
                 .setSubject(user.getName())
                 .setId(user.getId().toString())
                 .setIssuedAt(Date.from(Instant.now()))
@@ -77,7 +79,7 @@ JsonWebTokenProvider {
     public boolean validateToken(String token) {
         try {
             Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId();
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
 
             User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
             if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
