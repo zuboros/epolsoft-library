@@ -1,9 +1,9 @@
 import { Breadcrumb, Layout, Menu, theme, Affix } from 'antd';
 import { Link } from "react-router-dom";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import './appLayout.css'
-import { userLogout } from '../redux/reducers/authSlice'
+import { userLogout, avatarDownload } from '../redux/reducers/authSlice'
 
 import AppContent from './content/appContent'
 import { menuItem } from './content/userMenu'
@@ -15,29 +15,15 @@ const { Header, Footer } = Layout;
 const AppLayout = () => {
    const { userInfo } = useSelector((state) => state.auth)
    const dispatch = useDispatch();
+   const [avatar, setAvatar] = useState(null);
+
+   useEffect(() => {
+      userInfo && dispatch(avatarDownload({ id: userInfo.id, setAvatar }));
+   }, [userInfo]);
 
    const logoutHandler = () => {
       dispatch(userLogout());
    }
-   const elements = [{
-      key: 1,
-      label: <Link to="/">
-         Home
-      </Link>,
-   },
-   {
-      key: 2,
-      label: <Menu
-         theme="dark"
-         selectable={false}
-         mode="vertical"
-         items={menuItem(userInfo, logoutHandler)}
-      />
-   }
-   ];
-
-
-
    return (
       <Layout style={{ minHeight: "100vh" }}>
          <Affix>
@@ -57,7 +43,7 @@ const AppLayout = () => {
                      }}
                      selectable={false}
                      mode="vertical"
-                     items={menuItem(userInfo, logoutHandler)}
+                     items={menuItem(userInfo, logoutHandler, avatar)}
                   />
                </div>
             </Header>
@@ -72,7 +58,7 @@ const AppLayout = () => {
                color: NIGHT_COLOR,
             }}
          >
-            EpolSoft ©2023 Created by Boy NextDoor, A$$ Fister, Performance Artist and other slaves
+            <Link to="https://www.epolsoft.com/en/home/">EpolSoft</Link> ©2023 Created by <Link to="https://t.me/boyofthisgym">Boy NextDoor</Link>, <Link to="https://t.me/deitykuybi">Performance Artist</Link>, <Link to="https://t.me/olegzs">Olegsei Darkholme</Link> and other slaves
          </Footer>
       </Layout>
    );

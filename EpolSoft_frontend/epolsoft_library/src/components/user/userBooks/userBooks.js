@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Space, Button, Popconfirm } from 'antd'
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
-import { fetchBooksByUserId, deleteBook } from '../../../redux/reducers/bookSlice';
+import { fetchBooksByUserId, deleteBook, fileDownload } from '../../../redux/reducers/bookSlice';
 import { BOOKS, AUTH } from '../../../redux/entitiesConst'
 import { useEffect, useState } from 'react';
 import UserBookTable from '../../common/table/table'
@@ -12,15 +12,6 @@ import { PATH_EXTRACT_FILE } from '../../../lib/actionAxiosTypes'
 /* import { downloadFile } from '../../books/table/features/tableMethods' */
 import { NIGHT_COLOR } from '../../../common/designConst'
 
-const downloadFile = (url) => {
-   const fileName = url.split("/").pop();
-   const aTag = document.createElement("a");
-   aTag.href = url;
-   aTag.setAttribute("download", fileName);
-   document.body.appendChild(aTag);
-   aTag.click();
-   aTag.remove();
-}
 
 const UserBooks = () => {
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading } = useSelector(state => state[BOOKS]);
@@ -47,17 +38,14 @@ const UserBooks = () => {
       getBooksByUserId(table.pageParams);
    }
 
-   const downloadHandler = (path) => {
-      console.log('DOWNLOAD');
-      console.log(path);
-
-      downloadFile(path);
+   const downloadHandler = async (id) => {
+      await dispatch(fileDownload(id));
    }
 
    const actionRender = (_, record) =>
       <Space size={0}>
          <div style={{ width: "50px" }}>
-            <Button style={{ color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler(PATH_EXTRACT_FILE({ id: record.id })) }}><DownloadOutlined /></Button>
+            <Button style={{ color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler({ id: record.id }) }}><DownloadOutlined /></Button>
          </div>
          <div style={{ width: "100px" }}>
             <EditBook record={record.name.props.entity} getBooks={getBooksByUserId} />

@@ -39,3 +39,4 @@ export const PATH_UPLOAD_FILE = "/api/file/upload?type=book";
 export const PATH_DELETE_FILE = ({ id }) => `/api/file/delete/${id}`;
 export const PATH_EXTRACT_FILE = ({ id }) => `/api/file/download/${id}?type=book`;
 export const PATH_EXTRACT_AVATAR = ({ id }) => `${serverURL}/api/file/download/${id}?type=avatar`;
+export const PATH_UPLOAD_AVATAR = "/api/file/upload?type=avatar";

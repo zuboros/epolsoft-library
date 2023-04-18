@@ -68,6 +68,9 @@ export const deleteBook = createAsyncThunk(
    async ({ id }, { rejectWithValue }) => {
       try {
          await createRequest({
+            method: axios.DELETE, url: axios.PATH_DELETE_FILE({ id }),
+         })
+         await createRequest({
             method: axios.DELETE, url: axios.PATH_DELETE_BOOK({ id }),
          })
 
@@ -85,7 +88,6 @@ export const postBook = createAsyncThunk(
    `${entities.BOOKS}/postBook`,
    async function (data, { rejectWithValue }) {
       try {
-
          const formData = new FormData();
          formData.append("file", data.fileList[0]);
 
@@ -96,8 +98,6 @@ export const postBook = createAsyncThunk(
                "Content-Type": "multipart/form-data"
             },
             postCallback: (dataAfter) => {
-               console.log('UpdateFile');
-               console.log(dataAfter);
                const { data } = dataAfter;
                return data;
             }
@@ -126,38 +126,28 @@ export const putBook = createAsyncThunk(
    `${entities.BOOKS}/putBook`,
    async function (data, { rejectWithValue }) {
       try {
-         let isExist = !!data.uploadFiles;
-         let sendData, responseData;
-         if (isExist) {
-            sendData = {
-               file: data.uploadFiles[0],
-               data
+         let isExist = data.fileList.length;
+         const formData = new FormData();
+         formData.append("file", data.fileList[0]);
+
+         const responseData = isExist ? await createRequest({
+            method: axios.POST, url: axios.PATH_UPLOAD_FILE,
+            body: formData,
+            axios_cfg: {
+               "Content-Type": "multipart/form-data"
+            },
+            postCallback: (dataAfter) => {
+               const { data } = dataAfter;
+               return data;
             }
-            console.log(sendData);
-            delete sendData.data['uploadFiles'];
+         })
+            :
+            null;
 
-            const formData = new FormData();
-            formData.append("file", sendData.file);
-
-            responseData = "2023/04/13/fa0a74a9-3003-415b-8089-e4d434c1d8cc.pdf";
-            /* const responseData = await createRequest({
-               method: axios.POST, url: axios.PATH_UPLOAD_FILE,
-               body: formData,
-               axios_cfg: {
-                  "Content-Type": "multipart/form-data"
-               },
-               postCallback: (dataAfter) => {
-                  console.log('UpdateFile');
-                  console.log(dataAfter);
-                  const {data} = dataAfter;
-                  return data;
-               }
-            }) */
-         }
          await createRequest({
             method: axios.PUT, url: axios.PATH_PUT_BOOK,
             body: {
-               ...putBookDto(data, { name: sendData?.file?.name, path: responseData }, isExist),
+               ...putBookDto(data, { name: data?.fileList[0]?.name, path: responseData }, isExist),
             },
             postCallback: (dataAfter) => {
                console.log(axios.POST);                                           ///
@@ -178,34 +168,36 @@ export const fileDownload = createAsyncThunk(
    async function ({ id }, { rejectWithValue }) {
       try {
 
-         createDownloadRequest({ url: axios.PATH_EXTRACT_FILE({ id }) })
+         createDownloadRequest({
+            url: axios.PATH_EXTRACT_FILE({ id }),
+            postCallback: (response => {
+               const href = URL.createObjectURL(response.data);
+               console.log('response');
+               console.log(response);
+               console.log(response.data.type.split('/'));
 
-         /* const data = await createRequest({
-            method: axios.GET, url: axios.PATH_EXTRACT_FILE({ id }),
-            body: {
-               'Content-type': 'application/octet-stream',
-            },
-            postCallback: (dataAfter) => {
-               const dataBlob = dataAfter.blob();
-               return dataBlob;
-            }
+               let type;
+               switch (response.data.type.split('/')[1]) {
+                  case "pdf":
+                     type = "pdf";
+                     break;
+                  default:
+                     type = "txt";
+                     break;
+               }
+
+               // create "a" HTML element with href to file & click
+               const link = document.createElement('a');
+               link.href = href;
+               link.setAttribute('download', `file.${type}`); //or any other extension
+               document.body.appendChild(link);
+               link.click();
+
+               // clean up "a" element & remove ObjectURL
+               document.body.removeChild(link);
+               URL.revokeObjectURL(href);
+            })
          })
-
-
-
-         let url = URL.createObjectURL(data);
-         console.log('url');
-         console.log(url);
-
-         let anchor = document.createElement('a');
-         anchor.href = url;
-         anchor.download = 'document.txt';
-         document.body.append(anchor);
-         anchor.style = "display: none";
-         anchor.click();
-         anchor.remove();
-
-         URL.revokeObjectURL(url); */
 
       } catch (error) {
          return rejectWithValue(error.message);

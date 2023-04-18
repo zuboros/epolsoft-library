@@ -1,6 +1,13 @@
-import { Descriptions, Tag, Button } from 'antd';
+import { Descriptions, Tag, Button, Form, Space, Input, Avatar, Upload } from 'antd';
 import { USER } from '../../redux/entitiesConst'
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, StopOutlined, SaveOutlined, UserOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { DARK_COLOR } from '../../common/designConst'
+import * as axios from "../../lib/actionAxiosTypes";
+import { useDispatch } from 'react-redux';
+import { avatarDownload, putUser } from '../../redux/reducers/authSlice'
+import UploadAvatar from './actions/uploadAvatar'
+import { Link } from 'react-router-dom';
 
 const hiddenFields = [
    'id',
@@ -16,7 +23,7 @@ const arrayRender = (roles) => (
             color = 'volcano';
          }
          return (
-            <Tag color={color} key={role}>
+            <Tag color={color} key={role} style={{ display: "inline" }}>
                {role.toUpperCase()}
             </Tag>
          );
@@ -24,22 +31,134 @@ const arrayRender = (roles) => (
    </>
 )
 
-const customLabel = (field) => {
-   const labelsToChange = ["userName"];
-   switch (field) {
-      case labelsToChange[0]:
-         return "Name"
-      default:
-         return field.charAt(0).toUpperCase() + field.slice(1);
+
+const UserDescription = ({ userInfo }) => {
+   const [editable, setEditable] = useState(false);
+   const [avatar, setAvatar] = useState(null);
+   const [newAvatar, setNewAvatar] = useState(null);
+   const dispatch = useDispatch();
+   const [form] = Form.useForm();
+
+   const getAvatar = () => {
+      dispatch(avatarDownload({ id: userInfo.id, setAvatar }));
    }
-}
 
-const mapDescription = (info) =>
-   <Descriptions title="My info:" extra={<Button ><EditOutlined /> edit profile</Button>} style={{ width: "25%" }}>
-      {info?.filter(field => !hiddenFields.find(hiddenField => hiddenField === field[0])).map(field =>
-         <Descriptions.Item style={{ display: "block" }} key={field[0]} label={customLabel(field[0])}>{Array.isArray(field[1]) ? arrayRender(field[1]) : field[1]}</Descriptions.Item>
-      ).reverse()}
-   </Descriptions>
+   useEffect(() => {
+      getAvatar();
+   }, [userInfo]);
 
-const UserDescription = ({ userInfo }) => mapDescription(Object.entries(userInfo));
+   useEffect(() => {
+      editable && form.setFieldsValue(userInfo);
+   }, [editable]);
+
+   const info = Object.entries(userInfo);
+
+   const customLabel = (field) => {
+      const labelsToChange = ["userName"];
+      switch (field) {
+         case labelsToChange[0]:
+            return "Name:"
+         default:
+            return field.charAt(0).toUpperCase() + field.slice(1);
+      }
+   }
+
+   const handleSubmit = async (values) => {
+      const newUserInfo = {
+         id: userInfo.id,
+         name: values.userName,
+         mail: values.mail,
+      }
+
+      await dispatch(putUser({ user: newUserInfo, avatar: newAvatar }));
+      getAvatar();
+   };
+
+   const commonRules = {
+      required: true,
+      whitespace: true,
+      min: 3,
+   };
+
+   const noWhiteSpace = {
+      validator: (_, value) =>
+         !value.includes(" ")
+            ? Promise.resolve()
+            : Promise.reject(new Error("No spaces allowed"))
+   }
+
+   const getRules = (field) => {
+      switch (field) {
+         case "userName":
+            return ([
+               {
+                  message: 'Please input your username!',
+               },
+               commonRules,
+               noWhiteSpace,
+            ]);
+         case "mail":
+            return ([
+               {
+                  message: 'Please input your email!',
+                  type: "email",
+               },
+               commonRules,
+               noWhiteSpace,
+            ]);
+         default:
+            return ([]);
+      }
+   }
+
+   return (
+      <Space size={50}>
+         <div className='avatar' style={{ width: 228, height: 228 }}>
+            {editable ?
+               <UploadAvatar setAvatar={setNewAvatar} />
+               :
+               <Avatar size={228} icon={<UserOutlined />} src={avatar} style={{ backgroundColor: DARK_COLOR }} />}
+         </div>
+         <Form form={form}
+            style={{ width: "25%", marginTop: 30 }}
+            labelCol={{ span: 20 }}
+            autoComplete="off"
+            onFinish={(values => {
+               handleSubmit(values);
+            })}
+         >
+            {info?.filter(field => !hiddenFields.find(hiddenField => hiddenField === field[0])).map(field =>
+               <Form.Item
+                  key={field[0]}
+                  name={field[0]}
+                  label={customLabel(field[0])}
+                  style={{ margin: 0 }}
+
+               >
+                  <span style={{ marginLeft: 20, padding: 0 }}>
+                     {editable && !Array.isArray(field[1]) ?
+                        <Input defaultValue={field[1]} style={{ width: 150 }} />
+                        :
+                        Array.isArray(field[1]) ? arrayRender(field[1]) : field[1]}
+                  </span>
+               </Form.Item>
+            ).reverse()}
+            <Form.Item style={{ marginTop: 20 }}>
+               {editable &&
+                  <Space>
+                     <Button htmlType='submit'><SaveOutlined /> save changes</Button>
+                     <Button onClick={() => { setEditable(false); setNewAvatar(null) }}><StopOutlined /> cancel</Button>
+                  </Space>
+               }
+            </Form.Item>
+            {!editable &&
+               <Space>
+                  <Button onClick={() => setEditable(true)}><EditOutlined /> edit profile</Button>
+                  <Link to="/password"><EditOutlined /> renew password</Link>
+               </Space>
+            }
+         </Form>
+      </Space>
+   )
+};
 export default UserDescription;

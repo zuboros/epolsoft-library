@@ -14,23 +14,25 @@ export const putBookDto = (book, file, isExist) => {
 
 
    const bookDto = isExist ? {
-      ...book,
+      id: book.id,
+      name: book.name,
+      shortDescription: book.shortDescription,
+      description: book.description,
       userId: book.authorId,
       fileName: file.name,
       filePath: file.path,
+      topicId: book.topicId,
+      userId: book.userId
    } : {
-      ...book,
+      id: book.id,
+      name: book.name,
+      shortDescription: book.shortDescription,
+      description: book.description,
       fileName: null,
       filePath: null,
+      topicId: book.topicId,
+      userId: book.userId
    }
-
-   delete bookDto['topic'];
-   delete bookDto['author'];
-   delete bookDto['authorId'];
-   delete bookDto['uploadFiles'];
-   delete bookDto['createdAt'];
-   delete bookDto['updatedAt'];
-
    console.log(bookDto);
    return bookDto;
 }

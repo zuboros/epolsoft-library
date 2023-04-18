@@ -12,8 +12,6 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
 
    const addToken = (method, body, axios_cfg) => {
 
-
-
       let exp_body;
       let exp_axios_cfg;
       if (method === GET || method === DELETE) {
@@ -64,27 +62,14 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
    }
 }
 
-export const createDownloadRequest = ({ url }) => {
+export const createDownloadRequest = ({ url, postCallback }) => {
    const userToken = localStorage.getItem('userToken')
       ? localStorage.getItem('userToken')
       : null
 
    try {
 
-      axios.get(url, { responseType: 'blob', headers: { 'Authorization': userToken, } }).then(response => {
-         const href = URL.createObjectURL(response.data);
-
-         // create "a" HTML element with href to file & click
-         const link = document.createElement('a');
-         link.href = href;
-         link.setAttribute('download', 'file.pdf'); //or any other extension
-         document.body.appendChild(link);
-         link.click();
-
-         // clean up "a" element & remove ObjectURL
-         document.body.removeChild(link);
-         URL.revokeObjectURL(href);
-      });
+      axios.get(url, { responseType: 'blob', headers: { 'Authorization': userToken, } }).then(response => postCallback(response))
 
    } catch (error) {
       throw new Error("requestGenerator: " + error.message)

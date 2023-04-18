@@ -32,6 +32,7 @@ const EditBook = ({ record, getBooks }) => {
          ...values,
          topicId: topics.find(topic => topic.name === values.topic).id,
          userId: userInfo.id,
+         fileList: fileList,
       }
 
       if (finish) {
@@ -165,7 +166,7 @@ const EditBook = ({ record, getBooks }) => {
                         setFileList([info.file]);
                      }}
                      showUploadList={false}
-                     accept=".txt,.pdf,.azw,.azw3,.mobi,.epub"
+                     accept=".txt,.pdf"
                   >
                      <Button>Upload</Button>
                      {fileList[0]?.name}

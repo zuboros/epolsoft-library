@@ -13,15 +13,7 @@ import * as table from '../common/table/tableConsts'
 /* import { downloadFile } from './table/features/tableMethods' */
 import { NIGHT_COLOR } from '../../common/designConst'
 
-const downloadFile = (url) => {
-   const fileName = url.split("/").pop();
-   const aTag = document.createElement("a");
-   aTag.href = url;
-   aTag.setAttribute("download", fileName);
-   document.body.appendChild(aTag);
-   aTag.click();
-   aTag.remove();
-}
+
 function Books() {
    const dispatch = useDispatch();
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading, status } = useSelector(state => state.books);

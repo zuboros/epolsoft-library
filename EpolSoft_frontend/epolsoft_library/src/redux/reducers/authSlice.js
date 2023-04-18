@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { createRequest } from '../../common/requestGenerator';
+import { createRequest, createDownloadRequest } from '../../common/requestGenerator';
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
 import { authRegistDto, authLoginDto, authDto } from '../../services/authDto'
@@ -106,6 +106,81 @@ export const userLogout = createAsyncThunk(
       }
    }
 )
+
+export const avatarDownload = createAsyncThunk(
+   `${entities.AUTH}/avatarDownload`,
+   async function ({ id, setAvatar }, { rejectWithValue }) {
+      try {
+
+         createDownloadRequest({
+            url: axios.PATH_EXTRACT_AVATAR({ id }),
+            postCallback: (response => {
+               const file = URL.createObjectURL(response.data);
+               setAvatar(file);
+            })
+         })
+
+      } catch (error) {
+         return rejectWithValue(error.message);
+      }
+   }
+);
+
+export const putUser = createAsyncThunk(
+   `${entities.AUTH}/putUser`,
+   async function ({ user, avatar }, { rejectWithValue }) {
+      try {
+         if (avatar) {
+            const formData = new FormData();
+            formData.append("file", avatar);
+
+            await createRequest({
+               method: axios.POST, url: axios.PATH_UPLOAD_AVATAR,
+               body: formData,
+               axios_cfg: {
+                  "Content-Type": "multipart/form-data"
+               }
+            })
+         }
+
+
+
+         /* let isExist = avatar.length;
+         const formData = new FormData();
+         formData.append("file", data.fileList[0]);
+
+         const responseData = isExist ? await createRequest({
+            method: axios.POST, url: axios.PATH_UPLOAD_FILE,
+            body: formData,
+            axios_cfg: {
+               "Content-Type": "multipart/form-data"
+            },
+            postCallback: (dataAfter) => {
+               const { data } = dataAfter;
+               return data;
+            }
+         })
+            :
+            null;
+
+         await createRequest({
+            method: axios.PUT, url: axios.PATH_PUT_BOOK,
+            body: {
+               ...putBookDto(data, { name: data?.fileList[0]?.name, path: responseData }, isExist),
+            },
+            postCallback: (dataAfter) => {
+               console.log(axios.POST);                                           ///
+               const { data } = dataAfter;
+               console.log(data);                    ///
+               return data;
+            }
+         }) */
+
+      } catch (error) {
+         return rejectWithValue(error.message);
+      }
+   }
+);
 
 const authSlice = createSlice({
    name: entities.AUTH,

@@ -14,21 +14,17 @@ import * as axios from "../lib/actionAxiosTypes";
 const UserProfile = () => {
 
    const { loading, userInfo, error } = useSelector((state) => state.auth)
-   const dispatch = useDispatch()
+
    const navigate = useNavigate()
 
    useEffect(() => {
-      console.log(userInfo);
       if (!userInfo)
          navigate('/login')
    }, [navigate, userInfo])
 
    return (
       <>
-         {userInfo && <Space size={30}>
-            <Avatar size={128} icon={<UserOutlined />} src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} style={{ backgroundColor: DARK_COLOR }} />
-            <UserDescription userInfo={userInfo} />
-         </Space>}
+         {userInfo && <UserDescription userInfo={userInfo} />}
          {userInfo?.roles?.find((role) => role === entity.USER) && <UserBooks userInfo={userInfo} />}
       </>
    )

@@ -55,7 +55,6 @@ const CreateBook = () => {
             onCancel={handleCancel}
             footer={
                <>
-                  {loading && <h3>Loading...</h3>}
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
@@ -165,7 +164,7 @@ const CreateBook = () => {
                         setFileList([info.file]);
                      }}
                      showUploadList={false}
-                     accept=".txt,.pdf,.azw,.azw3,.mobi,.epub"
+                     accept=".txt,.pdf"
                   >
                      <Button>Upload</Button>
                      {fileList[0]?.name}

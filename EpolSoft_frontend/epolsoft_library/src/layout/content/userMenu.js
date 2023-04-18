@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button, Popconfirm, Avatar } from 'antd'
 import { LogoutOutlined, LoginOutlined, UserOutlined, UserAddOutlined } from '@ant-design/icons'
-import { ANONYM, USER, ADMIN } from '../../redux/entitiesConst'
+import { ANONYM, USER, ADMIN, MODER } from '../../redux/entitiesConst'
 import { DARK_COLOR } from '../../common/designConst'
 import * as axios from "../../lib/actionAxiosTypes";
 
@@ -10,6 +10,9 @@ const profile = {
 }
 const adminPanel = {
    label: <Link to='/admin' ><UserAddOutlined />  admin panel</Link>
+}
+const moderPanel = {
+   label: <Link to='/moder' ><UserAddOutlined />  admin panel</Link>
 }
 const logout = (logoutHandler) => ({
    key: "logout",
@@ -35,20 +38,25 @@ const admin = [
    adminPanel
 ]
 
+const moder = [
+   moderPanel
+]
+
 const rolePanel = {
    [ANONYM]: anonym,
    [USER]: user,
    [ADMIN]: admin,
+   [MODER]: moder,
 }
 
 
-export const menuItem = (userInfo, logoutHandler) => {
+export const menuItem = (userInfo, logoutHandler, avatar) => {
 
    const firstField = 1
    let innerField = 1;
 
    const labelItems = (userName) => userName ?
-      <><Avatar src={axios.PATH_EXTRACT_AVATAR({ id: userInfo?.id })} style={{ backgroundColor: DARK_COLOR }} ><UserOutlined /></Avatar><span style={{ marginLeft: "10px" }}>{userInfo?.userName}</span></> :
+      <><Avatar src={avatar} style={{ backgroundColor: DARK_COLOR }} ><UserOutlined /></Avatar><span style={{ marginLeft: "10px" }}>{userInfo?.userName}</span></> :
       <><Avatar style={{ backgroundColor: DARK_COLOR }}><UserOutlined /></Avatar><span style={{ marginLeft: "10px" }}>{login.label}</span></>
 
    return (
