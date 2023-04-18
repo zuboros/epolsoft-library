@@ -24,6 +24,11 @@ public class LibraryController {
         return new ResponseEntity<>(libraryService.findByCriteria(pageable, librarySearchModel), HttpStatus.OK);
     }
 
+    @GetMapping("/on_approving")
+    public ResponseEntity<List> getBooksForModerator(Pageable pageable){
+        return new ResponseEntity<>(libraryService.getBooksForModerator(pageable), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}/books")
     public ResponseEntity<List> getBooksUser(@PathVariable("id") long id, Pageable pageable) {
         return new ResponseEntity<>(libraryService.getBooksUser(id, pageable), HttpStatus.OK);

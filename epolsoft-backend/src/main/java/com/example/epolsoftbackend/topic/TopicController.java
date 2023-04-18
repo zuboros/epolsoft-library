@@ -40,6 +40,16 @@ public class TopicController {
         return new ResponseEntity<>(topicService.updateTopic(topicUpdateDTO), HttpStatus.OK);
     }
 
+    @PostMapping("/disable/{id}")
+    public ResponseEntity<TopicResponseDTO> disableTopic(@PathVariable Long id){
+        return new ResponseEntity<>(topicService.disableTopic(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/enable/{id}")
+    public ResponseEntity<TopicResponseDTO> enableTopic(@PathVariable Long id){
+        return new ResponseEntity<>(topicService.enableTopic(id), HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTopic(@PathVariable("id") long id) {

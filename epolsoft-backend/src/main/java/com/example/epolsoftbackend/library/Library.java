@@ -19,6 +19,9 @@ public class Library {
     @Column(name = "topic_name")
     private String topic;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "user_name")
     private String author;
 

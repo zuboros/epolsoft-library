@@ -17,5 +17,8 @@ public interface TopicService {
     TopicResponseDTO createTopic(TopicCreateDTO topicCreateDTO);
     void deleteById(long id);
     TopicResponseDTO updateTopic(TopicUpdateDTO topicCreateDTO);
+    TopicResponseDTO disableTopic(Long id);
+    TopicResponseDTO enableTopic(Long id);
+
 
 }

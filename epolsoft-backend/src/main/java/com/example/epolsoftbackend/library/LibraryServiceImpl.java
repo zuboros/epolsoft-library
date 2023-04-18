@@ -21,10 +21,16 @@ public class LibraryServiceImpl implements LibraryService {
         Page page;
         if(!Objects.equals(searchModel.getFieldValue(), "") && !Objects.equals(searchModel.getFieldName(), "") &&
         !Objects.equals(searchModel.getFieldName(),"id")) {
-            page = libraryRepository.findAll(Specification.where(LibrarySpecifications
-                    .fieldLike(searchModel.getFieldName(), searchModel.getFieldValue())), pageable);
+            page = libraryRepository.findAll(Specification.where(
+                    LibrarySpecifications.fieldLike(searchModel.getFieldName(), searchModel.getFieldValue())
+                    .and(LibrarySpecifications.getAvailable())), pageable);
         }
-        else page = libraryRepository.findAll(pageable);
+        else page = libraryRepository.findAll(Specification.where(LibrarySpecifications.getAvailable()), pageable);
+        return List.of(page.getContent(), page.getTotalElements());
+    }
+
+    public List getBooksForModerator (Pageable pageable) {
+        Page page = libraryRepository.findAll(Specification.where(LibrarySpecifications.onApproving()), pageable);
         return List.of(page.getContent(), page.getTotalElements());
     }
 

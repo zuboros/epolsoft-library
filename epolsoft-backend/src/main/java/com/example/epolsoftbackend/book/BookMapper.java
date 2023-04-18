@@ -8,10 +8,7 @@ import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.user.UserMapper;
 import com.example.epolsoftbackend.topic.TopicMapper;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.time.LocalDateTime;
 
 @Mapper(uses = {UserMapper.class, TopicMapper.class}, componentModel = "spring")
 public interface BookMapper {

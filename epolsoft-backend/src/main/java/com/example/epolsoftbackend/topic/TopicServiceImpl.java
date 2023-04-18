@@ -70,6 +70,20 @@ public class TopicServiceImpl implements TopicService {
             return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(actualTopic));
     }
 
+    public TopicResponseDTO disableTopic(Long id) {
+        Topic topic = topicRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Topic", "id", id));
+        topic.setActive(false);
+        return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(topic));
+    }
+
+    public TopicResponseDTO enableTopic(Long id) {
+        Topic topic = topicRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Topic", "id", id));
+        topic.setActive(true);
+        return topicMapper.topicToTopicResponseDTO(topicRepository.saveAndFlush(topic));
+    }
+
     public void deleteById(long id) {
         try {
             Topic topic = topicRepository.findById(id).orElseThrow(
