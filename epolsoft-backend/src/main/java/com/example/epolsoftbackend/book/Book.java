@@ -4,13 +4,39 @@ import java.io.Serializable;
 
 import com.example.epolsoftbackend.user.User;
 import com.example.epolsoftbackend.topic.Topic;
+import org.hibernate.HibernateException;
+import org.hibernate.annotations.Type;
+//import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.type.EnumType;
 
 import javax.persistence.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDateTime;
+
+class PostgreSQLEnumType extends EnumType {
+
+    @Override
+    public void nullSafeSet(PreparedStatement ps, Object obj, int index,
+                            SharedSessionContractImplementor session) throws HibernateException, SQLException {
+        if (obj == null) {
+            ps.setNull(index, Types.OTHER);
+        } else {
+            ps.setObject(index, obj.toString(), Types.OTHER);
+        }
+    }
+}
+
+enum BookStatus {
+    CREATED, WAIT_APPROVING, ACTIVED, BLOCKED, ARCHIVED
+}
 
 @Getter
 @Setter

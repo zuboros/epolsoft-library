@@ -3,6 +3,7 @@ package com.example.epolsoftbackend.library;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class LibraryController {
         return new ResponseEntity<>(libraryService.findByCriteria(pageable, librarySearchModel), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @GetMapping("/on_approving")
     public ResponseEntity<List> getBooksForModerator(Pageable pageable){
         return new ResponseEntity<>(libraryService.getBooksForModerator(pageable), HttpStatus.OK);

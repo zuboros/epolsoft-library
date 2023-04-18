@@ -3,6 +3,8 @@ package com.example.epolsoftbackend.policy;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.time.Duration;
+
 @Mapper(componentModel = "spring")
 public interface PolicyMapper {
     PolicyMapper INSTANCE = Mappers.getMapper(PolicyMapper.class);
@@ -20,8 +22,8 @@ public interface PolicyMapper {
         policy.minLowercaseLetterNumber(policyDTO.getMinLowercaseLetterNumber());
         policy.minUppercaseLetterNumber(policyDTO.getMinUppercaseLetterNumber());
         policy.minSpecSymbolNumber(policyDTO.getMinSpecSymbolNumber());
-        policy.outdatePasswordNotificationTime(policyDTO.getOutdatePasswordNotificationTime() + " day");
-        policy.passwordExpirationTime(policyDTO.getPasswordExpirationTime() + " day");
+        policy.outdatePasswordNotificationTime(Duration.ofDays(policyDTO.getOutdatePasswordNotificationTime()));
+        policy.passwordExpirationTime(Duration.ofDays(policyDTO.getPasswordExpirationTime()));
 
         return policy.build();
     }
@@ -39,8 +41,8 @@ public interface PolicyMapper {
         policyDTO.minLowercaseLetterNumber(policy.getMinLowercaseLetterNumber());
         policyDTO.minUppercaseLetterNumber(policy.getMinUppercaseLetterNumber());
         policyDTO.minSpecSymbolNumber(policy.getMinSpecSymbolNumber());
-        policyDTO.outdatePasswordNotificationTime(Integer.parseInt(policy.getOutdatePasswordNotificationTime().split(" ")[0]));
-        policyDTO.passwordExpirationTime(Integer.parseInt(policy.getPasswordExpirationTime().split(" ")[0]));
+        policyDTO.outdatePasswordNotificationTime(policy.getOutdatePasswordNotificationTime().toDays());
+        policyDTO.passwordExpirationTime(policy.getPasswordExpirationTime().toDays());
 
         return policyDTO.build();
     }

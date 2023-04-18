@@ -12,6 +12,6 @@ public interface BookService {
     BookUpdateDTO updateById(BookUpdateDTO bookUpdateDTO);
     void deleteById(Long id);
     BookDetailedDTO selectBook(Long id);
-    BookUpdateDTO setStatus(long id, String status);
+    BookUpdateDTO setStatus(long id, BookStatus status);
 
 }

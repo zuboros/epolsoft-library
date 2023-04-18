@@ -6,6 +6,7 @@ import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.create(bookCreateDTO), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
     public ResponseEntity<BookDetailedDTO> selectBook(@PathVariable Long id) {
         return new ResponseEntity<>(bookService.selectBook(id), HttpStatus.OK);
@@ -36,8 +38,9 @@ public class BookController {
         bookService.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('MODERATOR') || hasRole('USER')")
     @PostMapping("/{id}")
     public ResponseEntity<BookUpdateDTO> setStatus(@PathVariable Long id,@RequestParam String status) {
-        return new ResponseEntity<>(bookService.setStatus(id, status), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.setStatus(id, BookStatus.valueOf(status)), HttpStatus.OK);
     }
 }

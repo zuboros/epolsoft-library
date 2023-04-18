@@ -23,8 +23,8 @@ public class PolicyDTO {
 
     private int minSpecSymbolNumber;
 
-    private int passwordExpirationTime;
+    private long passwordExpirationTime;
 
-    private int outdatePasswordNotificationTime;
+    private long outdatePasswordNotificationTime;
 
 }

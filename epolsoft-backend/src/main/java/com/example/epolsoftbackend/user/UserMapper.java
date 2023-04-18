@@ -43,6 +43,7 @@ public interface UserMapper {
             return userBookResponseDTO.build();
     }
 
+    @Mapping(source = "blocked", target = "isBlocked")
     @Mapping(source = "user.roles", target = "roles")
     default List<UserBookResponseDTO> listUserToListUserBookResponseDTO(List<User> userList){
         if ( userList == null ) {
@@ -58,6 +59,7 @@ public interface UserMapper {
     }
 
     //UserRequest
+    @Mapping(source = "blocked", target = "isBlocked")
     @Mapping(source = "user.roles", target = "roles")
     default UserLoginResponseDTO userToUserLoginResponseDTO(User user) {
         if ( user == null ) {
@@ -81,6 +83,7 @@ public interface UserMapper {
         return userLoginResponseDTO.build();
     }
 
+    @Mapping(source = "blocked", target = "isBlocked")
     @Mapping(source = "user.roles", target = "roles")
     List<UserLoginResponseDTO> listUserToListUserLoginResponseDTO(List<User> userList);
 }

@@ -49,7 +49,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/library/**", "/api/authors/signup", "/api/authors/signin", "/swagger-ui.html").permitAll()
+                .antMatchers("/api/library/**",
+                        "/api/authors/signup",
+                        "/api/authors/signin",
+                        "/swagger-ui.html").permitAll()
                 .antMatchers("/api/file/download/",
                         "/api/topic/get/available",
                         "/api/book",

@@ -40,7 +40,8 @@ public class BookServiceImpl implements BookService {
             topic.setActive(true);
             topicRepository.save(topic);
 
-            createBook.setStatus("CREATED");
+            //createBook.setStatus("CREATED");
+            createBook.setStatus(BookStatus.CREATED.toString());
             createBook.setTopicId(topicService.findById(createBook.getTopicId().getId()).orElse(null));
             createBook.setUserId(userService.findById(createBook.getUserId().getId()).orElse(null));
 
@@ -77,7 +78,8 @@ public class BookServiceImpl implements BookService {
             updateBook.setTopicId(topicService.findById(updateBook.getTopicId().getId()).orElse(null));
             updateBook.setUserId(userService.findById(updateBook.getUserId().getId()).orElse(null));
             updateBook.setCreatedAt(oldBook.getCreatedAt());
-            updateBook.setStatus("WAIT_APPROVING");
+            //updateBook.setStatus("WAIT_APPROVING");
+            updateBook.setStatus(BookStatus.WAIT_APPROVING.toString());
 
             if(updateBook.getFileName() == null && updateBook.getFileName() == null) {
                 updateBook.setFileName(oldBook.getFileName());
@@ -96,43 +98,44 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    public BookUpdateDTO setStatus(long id, String status){
+    //public BookUpdateDTO setStatus(long id, String status){
+    public BookUpdateDTO setStatus(long id, BookStatus status){
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("OldBook", "id", id));
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         switch(status) {
-            case "WAIT_APPROVING":
+            case WAIT_APPROVING:
                 if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
                     throw new ForbiddenException("Can't update status not own book");
                 }
 
-                if(Objects.equals(book.getStatus(), "CREATED")) {
-                    book.setStatus(status);
+                if(Objects.equals(book.getStatus(), BookStatus.CREATED)) {
+                    book.setStatus(status.toString());
                     return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
                 }
                 else throw new InternalServerErrorException("Saving entity ending with fail");
-            case "ARCHIVED":
+            case ARCHIVED:
                 if(!Objects.equals(book.getUserId().getId(), userDetails.getId())) {
                     throw new ForbiddenException("Can't update status not own book");
                 }
 
-                if(Objects.equals(book.getStatus(), "ACTIVED")) {
-                    book.setStatus(status);
+                if(Objects.equals(book.getStatus(), BookStatus.ACTIVED)) {
+                    book.setStatus(status.toString());
                     return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
                 }
                 else throw new InternalServerErrorException("Saving entity ending with fail");
 
-            case "BLOCKED":
-            case "ACTIVED":
+            case BLOCKED:
+            case ACTIVED:
                 if((userDetails.getAuthorities().stream().anyMatch(
                         grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MODERATOR")) )) {
                     throw new ForbiddenException("Can't update status without Moderator role");
                 }
 
-                if(Objects.equals(book.getStatus(), "WAIT_APPROVING")) {
-                    book.setStatus(status);
+                if(Objects.equals(book.getStatus(), BookStatus.WAIT_APPROVING)) {
+                    book.setStatus(status.toString());
                     return bookMapper.bookToBookUpdateDTO(bookRepository.save(book));
                 }
                 else throw new InternalServerErrorException("Saving entity ending with fail");

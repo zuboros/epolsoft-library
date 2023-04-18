@@ -1,7 +1,7 @@
-CREATE TYPE bookStatus AS ENUM ('CREATED', 'WAIT_APPROVING', 'ACTIVED', 'BLOCKED', 'ARCHIVED');
+CREATE TYPE BookStatus AS ENUM ('CREATED', 'WAIT_APPROVING', 'ACTIVED', 'BLOCKED', 'ARCHIVED');
 
 ALTER TABLE public.book
-    ADD COLUMN IF NOT EXISTS status bookStatus NOT NULL DEFAULT 'CREATED';
+    ADD COLUMN IF NOT EXISTS status VARCHAR(255) NOT NULL DEFAULT 'CREATED';
 
 ALTER TABLE public.users
     ADD COLUMN IF NOT EXISTS password_updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CAST(now() AS TIMESTAMP WITHOUT TIME ZONE);
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.policy
     min_digit_number INTEGER NOT NULL DEFAULT 1,
     min_spec_symbol_number INTEGER NOT NULL DEFAULT 1,
     password_expiration_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '7 day',
-    outdate_password_notification_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '20 minute'
+    outdate_password_notification_time INTERVAL DAY TO MINUTE NOT NULL DEFAULT '3 day'
 );
 
 INSERT INTO public.policy (id)
@@ -40,6 +40,24 @@ INSERT INTO public.users (id, name, mail, password_hash, updated_at, created_at,
 INSERT INTO public.user_role (role_id, user_id)
     VALUES (1, 1),
            (2, 1);
+
+DROP VIEW IF EXISTS public.library;
+
+CREATE OR REPLACE VIEW public.library
+AS
+SELECT b.id,
+       b.name,
+       b.description,
+       b.short_description,
+       b.updated_at,
+       b.created_at,
+       b.status,
+       t.name AS topic_name,
+       u.id AS user_id,
+       u.name AS user_name
+FROM book b
+         JOIN public.topic t ON b.topic_id = t.id
+         JOIN public.users u ON b.user_id = u.id;
 
 CREATE OR REPLACE FUNCTION isPasswordExpired(_passwordUpdatedAt TIMESTAMP) RETURNS BOOLEAN AS
 $$
