@@ -26,4 +26,5 @@ public class PolicyDTO {
     private String passwordExpirationTime;
 
     private String outdatePasswordNotificationTime;
+
 }

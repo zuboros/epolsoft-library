@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.security;
 
+import com.example.epolsoftbackend.exception.IAmTeapotException;
 import com.example.epolsoftbackend.exception.UnauthorizedException;
 import com.example.epolsoftbackend.user.CustomUserDetailsService;
 import com.example.epolsoftbackend.user.User;
@@ -83,7 +84,7 @@ JsonWebTokenProvider {
 
             User user = userRepository.findById(Long.parseLong(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getId())).get();
             if (userRepository.isPasswordExpired(user.getPasswordUpdatedAt())) {
-                throw new UnauthorizedException("EXPIRED PASSWORD");
+                throw new IAmTeapotException("I AM A TEAPOT!!!");
             }
 
             return true;

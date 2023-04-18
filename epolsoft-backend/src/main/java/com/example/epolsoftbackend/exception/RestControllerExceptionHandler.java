@@ -59,6 +59,16 @@ public class RestControllerExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(IAmTeapotException.class)
+    @ResponseBody
+    public ResponseEntity<ApiResponse> resolveException(IAmTeapotException exception) {
+        exception.printStackTrace();
+
+        ApiResponse apiResponse = exception.getApiResponse();
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.I_AM_A_TEAPOT);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public ResponseEntity<ApiResponse> resolveAllUncaughtException(RuntimeException exception) {
