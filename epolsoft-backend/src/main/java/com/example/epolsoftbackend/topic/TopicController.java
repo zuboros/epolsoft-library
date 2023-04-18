@@ -3,6 +3,7 @@ package com.example.epolsoftbackend.topic;
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,9 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/topic")
+@RequiredArgsConstructor
 public class TopicController {
     final TopicService topicService;
-
-    public TopicController(TopicService topicService) {
-        this.topicService = topicService;
-    }
 
     @GetMapping("/get/all")
     public ResponseEntity<List> getAllTopics(Pageable pageable){

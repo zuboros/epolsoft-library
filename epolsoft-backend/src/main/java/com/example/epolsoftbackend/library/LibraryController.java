@@ -1,5 +1,6 @@
 package com.example.epolsoftbackend.library;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +12,9 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/library")
+@RequiredArgsConstructor
 public class LibraryController {
-
     final LibraryService libraryService;
-
-    public LibraryController(LibraryService libraryService) {
-        this.libraryService = libraryService;
-    }
 
     @GetMapping()
     public ResponseEntity<List> getBooks(Pageable pageable, LibrarySearchModel librarySearchModel){

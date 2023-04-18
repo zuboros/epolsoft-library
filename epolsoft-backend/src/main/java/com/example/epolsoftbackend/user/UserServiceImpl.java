@@ -7,6 +7,7 @@ import com.example.epolsoftbackend.role.RoleRepository;
 import com.example.epolsoftbackend.security.JsonWebTokenProvider;
 import com.example.epolsoftbackend.user.DTO.*;
 import com.example.epolsoftbackend.user_role.UserRole;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
@@ -29,19 +31,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JsonWebTokenProvider jsonWebTokenProvider;
     private final FileService fileService;
-
-
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository,
-                           PasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager,
-                           JsonWebTokenProvider jsonWebTokenProvider, FileService fileService) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jsonWebTokenProvider = jsonWebTokenProvider;
-        this.fileService = fileService;
-    }
 
     private boolean containsRole(final List<UserRole> list, final String roleName) {
         return list.stream().anyMatch(o -> o.getRole().getName().equals(roleName));

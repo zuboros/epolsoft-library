@@ -16,8 +16,6 @@ import com.example.epolsoftbackend.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import java.util.Objects;
 import java.util.Optional;
 

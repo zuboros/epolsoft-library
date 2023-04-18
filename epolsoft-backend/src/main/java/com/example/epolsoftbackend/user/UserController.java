@@ -2,6 +2,7 @@ package com.example.epolsoftbackend.user;
 
 import com.example.epolsoftbackend.topic.TopicService;
 import com.example.epolsoftbackend.user.DTO.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Pageable;
@@ -16,16 +17,10 @@ import java.security.NoSuchAlgorithmException;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/authors")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
-
-
-    public UserController(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
 
     @GetMapping("/howManyDaysNotification")
     public ResponseEntity<Integer> howManyDaysNotification() {

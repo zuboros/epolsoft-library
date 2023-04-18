@@ -3,6 +3,7 @@ package com.example.epolsoftbackend.book;
 import com.example.epolsoftbackend.book.DTO.BookCreateDTO;
 import com.example.epolsoftbackend.book.DTO.BookDetailedDTO;
 import com.example.epolsoftbackend.book.DTO.BookUpdateDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,12 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/book")
 @CrossOrigin
+@RequiredArgsConstructor
 public class BookController {
     final BookService bookService;
-
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
 
     @PostMapping()
     public ResponseEntity<BookCreateDTO> createNote(@RequestBody BookCreateDTO bookCreateDTO){

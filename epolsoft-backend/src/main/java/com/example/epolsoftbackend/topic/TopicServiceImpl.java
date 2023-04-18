@@ -5,6 +5,7 @@ import com.example.epolsoftbackend.exception.ResourceNotFoundException;
 import com.example.epolsoftbackend.topic.DTO.TopicCreateDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicResponseDTO;
 import com.example.epolsoftbackend.topic.DTO.TopicUpdateDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,15 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TopicServiceImpl implements TopicService {
-
     private final TopicRepository topicRepository;
     private final TopicMapper topicMapper;
-
-    public TopicServiceImpl(TopicRepository topicRepository, TopicMapper topicMapper) {
-        this.topicRepository = topicRepository;
-        this.topicMapper = topicMapper;
-    }
 
     public TopicResponseDTO createTopic(TopicCreateDTO topicCreateDTO){
         try {
