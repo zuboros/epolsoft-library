@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Space, Button, Popconfirm } from 'antd'
-import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
-import { fetchBooksByUserId, deleteBook, fileDownload } from '../../../redux/reducers/bookSlice';
+import { DeleteOutlined, DownloadOutlined, FieldTimeOutlined, SendOutlined } from '@ant-design/icons'
+import { fetchBooksByUserId, deleteBook, fileDownload, approveBook } from '../../../redux/reducers/bookSlice';
 import { BOOKS, AUTH } from '../../../redux/entitiesConst'
 import { useEffect, useState } from 'react';
 import UserBookTable from '../../common/table/table'
@@ -11,7 +11,7 @@ import * as table from '../../common/table/tableConsts'
 import { PATH_EXTRACT_FILE } from '../../../lib/actionAxiosTypes'
 /* import { downloadFile } from '../../books/table/features/tableMethods' */
 import { NIGHT_COLOR } from '../../../common/designConst'
-
+import { WAIT_APPROVING, ARCHIVED, ACTIVED, BLOCKED, CREATED } from '../../../lib/actionAxiosTypes'
 
 const UserBooks = () => {
    const { error, loading, [BOOKS]: books, totalBooks, success, deleteLoading } = useSelector(state => state[BOOKS]);
@@ -29,7 +29,8 @@ const UserBooks = () => {
    const hiddenColumns = [
       "file",
       "id",
-      "authorId"
+      "authorId",
+      "description",
    ]
 
 
@@ -42,10 +43,33 @@ const UserBooks = () => {
       await dispatch(fileDownload(id));
    }
 
+   const sendToApproveHandler = async ({ id }) => {
+      await dispatch(approveBook({ id }));
+      getBooksByUserId(table.pageParams);
+   }
+
+   const activeButton = (record) => {
+      switch (record.status) {
+         case CREATED:
+            return (
+               <Button style={{ color: NIGHT_COLOR }} type='link' onClick={() => { sendToApproveHandler({ id: record.id }) }}><SendOutlined /></Button>
+            )
+         case WAIT_APPROVING:
+            return (
+               <Button style={{ color: NIGHT_COLOR }} type='link' ><FieldTimeOutlined /></Button>
+            )
+         default:
+            return (<></>)
+      }
+   }
+
    const actionRender = (_, record) =>
       <Space size={0}>
          <div style={{ width: "50px" }}>
             <Button style={{ color: NIGHT_COLOR }} type='link' onClick={() => { downloadHandler({ id: record.id }) }}><DownloadOutlined /></Button>
+         </div>
+         <div style={{ width: "50px" }}>
+            {activeButton(record)}
          </div>
          <div style={{ width: "100px" }}>
             <EditBook record={record.name.props.entity} getBooks={getBooksByUserId} />
@@ -53,7 +77,7 @@ const UserBooks = () => {
                title="Are you sure?"
                onConfirm={() => deleteHandler(record)}
             >
-               <Button danger type='link' loading={deleteLoading}><DeleteOutlined /></Button>
+               <Button danger type='link' loading={deleteLoading} style={{ paddingLeft: 0 }}><DeleteOutlined /></Button>
             </Popconfirm>
          </div>
       </Space>

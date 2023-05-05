@@ -29,7 +29,6 @@ const UploadAvatar = ({ setAvatar }) => {
    const handleChange = (info) => {
       if (info.file.status === 'uploading') {
          setLoading(true);
-         return;
       }
 
       // Get this url from response in real world.
@@ -59,9 +58,7 @@ const UploadAvatar = ({ setAvatar }) => {
             beforeUpload={beforeUpload}
             onChange={handleChange}
             accept=".png,.jpg,.jpeg"
-         /* customRequest={(info) => {
-            setAvatar([info.file]);
-         }} */
+            customRequest={handleChange}
          >
             {imageUrl ? (
                <Avatar

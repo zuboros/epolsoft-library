@@ -3,7 +3,7 @@ import { createRequest, createDownloadRequest } from '../../common/requestGenera
 import * as axios from "../../lib/actionAxiosTypes";
 import * as entities from "../entitiesConst"
 import { postBookDto, putBookDto } from '../../services/bookDto'
-
+import myBooks from '../../data/books'
 
 const initialState = {
    [entities.BOOKS]: [],
@@ -26,7 +26,7 @@ export const fetchBooks = createAsyncThunk(
             method: axios.GET, url: axios.PATH_GET_BOOKS_WITH_PARAMS(pageParams),
             postCallback: (dataAfter) => {
                const { data } = dataAfter;
-               return data;
+               return myBooks;
             },
             redux_cfg: {
                dispatch,
@@ -197,6 +197,20 @@ export const fileDownload = createAsyncThunk(
                document.body.removeChild(link);
                URL.revokeObjectURL(href);
             })
+         })
+
+      } catch (error) {
+         return rejectWithValue(error.message);
+      }
+   }
+);
+
+export const approveBook = createAsyncThunk(
+   `${entities.BOOKS}/approveBook`,
+   async function ({ id }, { rejectWithValue }) {
+      try {
+         await createRequest({
+            method: axios.POST, url: axios.PATH_SET_STATUS_WAIT_APPROVING({ id }),
          })
 
       } catch (error) {

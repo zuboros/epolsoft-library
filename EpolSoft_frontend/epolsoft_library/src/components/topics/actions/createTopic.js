@@ -46,6 +46,7 @@ const CreateTopic = () => {
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
+            maskClosable={false}
          >
             <Form
                autoComplete="off"
@@ -66,7 +67,7 @@ const CreateTopic = () => {
                >
                   <Input placeholder="enter the topic's name" />
                </Form.Item>
-               <Form.Item>
+               <Form.Item style={{ display: "flex", justifyContent: "right" }}>
                   <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>

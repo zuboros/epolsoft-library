@@ -4,7 +4,6 @@ import Error from '../components/common/error'
 import { registerUser, setSuccess } from '../redux/reducers/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
 
 const RegisterPage = () => {
    const dispatch = useDispatch()

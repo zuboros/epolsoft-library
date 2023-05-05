@@ -58,6 +58,7 @@ const CreateBook = () => {
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
+            maskClosable={false}
          >
             <Form
                autoComplete="off"
@@ -170,8 +171,8 @@ const CreateBook = () => {
                      {fileList[0]?.name}
                   </Upload>
                </Form.Item>
-               <Form.Item>
-                  <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
+               <Form.Item style={{ display: "flex", justifyContent: "right" }}>
+                  <Button htmlType='submit' loading={loading}><SaveOutlined /> save book</Button>
                </Form.Item>
             </Form>
          </Modal>

@@ -31,6 +31,7 @@ const initialState = {
    userToken,
    error: null,
    success: false,
+   avatar: null,
 }
 
 
@@ -109,15 +110,17 @@ export const userLogout = createAsyncThunk(
 
 export const avatarDownload = createAsyncThunk(
    `${entities.AUTH}/avatarDownload`,
-   async function ({ id, setAvatar }, { rejectWithValue }) {
+   async function ({ id }, { rejectWithValue, dispatch }) {
       try {
-
          createDownloadRequest({
             url: axios.PATH_EXTRACT_AVATAR({ id }),
-            postCallback: (response => {
-               const file = URL.createObjectURL(response.data);
-               setAvatar(file);
-            })
+            postCallback: (response => ({
+               avatar: URL.createObjectURL(response.data),
+            })),
+            redux_cfg: {
+               dispatch,
+               actions: [setAvatar]
+            }
          })
 
       } catch (error) {
@@ -142,7 +145,6 @@ export const putUser = createAsyncThunk(
                }
             })
          }
-
 
 
          /* let isExist = avatar.length;
@@ -202,6 +204,9 @@ const authSlice = createSlice({
       },
       setSuccess(state, { payload }) {
          state.success = payload;
+      },
+      setAvatar(state, { payload }) {
+         state.avatar = payload.avatar;
       }
    },
    extraReducers: {
@@ -235,6 +240,6 @@ const authSlice = createSlice({
    },
 })
 
-export const { setUserInfo, setUserToken, removeUserInfo, removeUserToken, setSuccess } = authSlice.actions;
+export const { setUserInfo, setUserToken, removeUserInfo, removeUserToken, setSuccess, setAvatar } = authSlice.actions;
 
 export default authSlice.reducer

@@ -6,7 +6,7 @@ import Topics from '../components/topics/topics'
 import { userLogout } from '../redux/reducers/authSlice'
 import * as entity from '../redux/entitiesConst'
 
-const ModerPage = () => {
+const ModeratorPage = () => {
 
    const { loading, userInfo, error } = useSelector((state) => state.auth)
    const navigate = useNavigate()
@@ -23,4 +23,4 @@ const ModerPage = () => {
    )
 }
 
-export default ModerPage
+export default ModeratorPage

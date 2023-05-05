@@ -31,7 +31,8 @@ function Books() {
    const hiddenColumns = [
       "file",
       "id",
-      "authorId"
+      "authorId",
+      "description",
    ]
 
    const deleteHandler = async (record) => {

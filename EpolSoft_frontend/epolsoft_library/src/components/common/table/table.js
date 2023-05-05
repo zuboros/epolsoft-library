@@ -4,7 +4,18 @@ import { Link } from 'react-router-dom'
 import * as table from './tableConsts'
 import './tableStyle.css'
 
-const EntitiesTable = ({ entities, totalEntities, nameRefColumn = false, actionColumn, hiddenColumns, loading, arrayRender, actionRender, extractEntities, addingExpandable, unsortedColumns }) => {
+const EntitiesTable = ({ 
+   entities, 
+   totalEntities, 
+   nameRefColumn = false, 
+   actionColumn, 
+   hiddenColumns, 
+   loading, 
+   arrayRender, 
+   actionRender, 
+   extractEntities, 
+   addingExpandable, 
+   unsortedColumns }) => {
 
    const [pageNum, setPageNum] = useState(table.INITIAL_PAGE_NUM);
    const [pageSize, setPageSize] = useState(table.INITIAL_PAGE_SIZE);

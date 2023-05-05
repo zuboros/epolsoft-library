@@ -1,9 +1,8 @@
-import { Descriptions, Tag, Button, Form, Space, Input, Avatar, Upload } from 'antd';
+import { Descriptions, Tag, Button, Form, Space, Input, Avatar } from 'antd';
 import { USER } from '../../redux/entitiesConst'
 import { EditOutlined, StopOutlined, SaveOutlined, UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { DARK_COLOR } from '../../common/designConst'
-import * as axios from "../../lib/actionAxiosTypes";
 import { useDispatch } from 'react-redux';
 import { avatarDownload, putUser } from '../../redux/reducers/authSlice'
 import UploadAvatar from './actions/uploadAvatar'
@@ -32,20 +31,11 @@ const arrayRender = (roles) => (
 )
 
 
-const UserDescription = ({ userInfo }) => {
+const UserDescription = ({ userInfo, avatar }) => {
    const [editable, setEditable] = useState(false);
-   const [avatar, setAvatar] = useState(null);
    const [newAvatar, setNewAvatar] = useState(null);
    const dispatch = useDispatch();
    const [form] = Form.useForm();
-
-   const getAvatar = () => {
-      dispatch(avatarDownload({ id: userInfo.id, setAvatar }));
-   }
-
-   useEffect(() => {
-      getAvatar();
-   }, [userInfo]);
 
    useEffect(() => {
       editable && form.setFieldsValue(userInfo);
@@ -71,7 +61,8 @@ const UserDescription = ({ userInfo }) => {
       }
 
       await dispatch(putUser({ user: newUserInfo, avatar: newAvatar }));
-      getAvatar();
+      dispatch(avatarDownload({ id: userInfo.id }));
+      setEditable(false);
    };
 
    const commonRules = {
@@ -97,23 +88,17 @@ const UserDescription = ({ userInfo }) => {
                commonRules,
                noWhiteSpace,
             ]);
-         case "mail":
-            return ([
-               {
-                  message: 'Please input your email!',
-                  type: "email",
-               },
-               commonRules,
-               noWhiteSpace,
-            ]);
          default:
             return ([]);
       }
    }
 
+   const notEditableFields = ["mail"];
+   const editableField = (field) => !notEditableFields.find(hiddenField => hiddenField === field);
+
    return (
       <Space size={50}>
-         <div className='avatar' style={{ width: 228, height: 228 }}>
+         <div className='avatar' style={{ width: 230, height: 230, display: "flex", justifyContent: "center", alignItems: "center" }}>
             {editable ?
                <UploadAvatar setAvatar={setNewAvatar} />
                :
@@ -133,10 +118,10 @@ const UserDescription = ({ userInfo }) => {
                   name={field[0]}
                   label={customLabel(field[0])}
                   style={{ margin: 0 }}
-
+                  rules={getRules(field[0])}
                >
                   <span style={{ marginLeft: 20, padding: 0 }}>
-                     {editable && !Array.isArray(field[1]) ?
+                     {editable && !Array.isArray(field[1]) && editableField(field[0]) ?
                         <Input defaultValue={field[1]} style={{ width: 150 }} />
                         :
                         Array.isArray(field[1]) ? arrayRender(field[1]) : field[1]}

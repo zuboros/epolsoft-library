@@ -133,6 +133,42 @@ export const putTopic = createAsyncThunk(
    }
 )
 
+export const enableTopic = createAsyncThunk(
+   `${entities.TOPICS}/enableTopic`,
+   async ({ id }, { rejectWithValue }) => {
+      try {
+         await createRequest({
+            method: axios.POST, url: axios.PATH_ENABLE_TOPIC({ id }),
+         })
+
+      } catch (error) {
+         if (error.response && error.response.data.message) {
+            return rejectWithValue(error.response.data.message)
+         } else {
+            return rejectWithValue(error.message)
+         }
+      }
+   }
+);
+
+export const disableTopic = createAsyncThunk(
+   `${entities.TOPICS}/disableTopic`,
+   async ({ id }, { rejectWithValue }) => {
+      try {
+         await createRequest({
+            method: axios.POST, url: axios.PATH_DISABLE_TOPIC({ id }),
+         })
+
+      } catch (error) {
+         if (error.response && error.response.data.message) {
+            return rejectWithValue(error.response.data.message)
+         } else {
+            return rejectWithValue(error.message)
+         }
+      }
+   }
+);
+
 const topicSlice = createSlice({
    name: entities.TOPICS,
    initialState,

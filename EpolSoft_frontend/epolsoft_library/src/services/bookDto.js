@@ -18,7 +18,6 @@ export const putBookDto = (book, file, isExist) => {
       name: book.name,
       shortDescription: book.shortDescription,
       description: book.description,
-      userId: book.authorId,
       fileName: file.name,
       filePath: file.path,
       topicId: book.topicId,

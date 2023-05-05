@@ -57,6 +57,7 @@ const EditTopic = ({ record, getTopics }) => {
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
+            maskClosable={false}
          >
             <Form form={form}
                autoComplete="off"
@@ -79,7 +80,7 @@ const EditTopic = ({ record, getTopics }) => {
                   <Input placeholder="enter the topic name" />
                </Form.Item>
 
-               <Form.Item>
+               <Form.Item style={{ display: "flex", justifyContent: "right" }}>
                   <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>

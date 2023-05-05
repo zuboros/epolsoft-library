@@ -45,8 +45,8 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
       !!dataBefore && pre_redux_cfg?.actions.forEach((action) => redux_cfg.dispatch(action(dataBefore)));
 
       let data = await axios[method](url, exp_body, exp_axios_cfg);
+      if (data.status >= 400 || data.code === "ERR_NETWORK") {
 
-      if (data.status > 300 && data.status < 199) {
          !!extensionHandler && extensionHandler(data);
          throw new Error("server status response: " + data.status);
       }
@@ -58,18 +58,21 @@ export async function createRequest({ preCallback, pre_redux_cfg, url, method, b
       return dataAfter;
 
    } catch (error) {
+      console.log('----------------------------------------------', error);
       throw new Error("requestGenerator: " + error.message)
    }
 }
 
-export const createDownloadRequest = ({ url, postCallback }) => {
+export const createDownloadRequest = ({ url, postCallback, redux_cfg }) => {
    const userToken = localStorage.getItem('userToken')
       ? localStorage.getItem('userToken')
       : null
 
    try {
 
-      axios.get(url, { responseType: 'blob', headers: { 'Authorization': userToken, } }).then(response => postCallback(response))
+      axios.get(url, { responseType: 'blob', headers: { 'Authorization': userToken, } })
+         .then(response => postCallback(response))
+         .then(response => { redux_cfg?.actions.forEach((action) => redux_cfg.dispatch(action(response))) })
 
    } catch (error) {
       throw new Error("requestGenerator: " + error.message)

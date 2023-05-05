@@ -12,7 +12,7 @@ export const AUTH = "auth";
 export const ANONYM = "ANONYM";
 export const USER = "USER";
 export const ADMIN = "ADMIN";
-export const MODER = "MODER";
+export const MODERATOR = "MODERATOR";
 
 //Users
 export const USERS = "users"

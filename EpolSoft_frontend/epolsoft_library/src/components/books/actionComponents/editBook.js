@@ -64,6 +64,7 @@ const EditBook = ({ record, getBooks }) => {
                   {error && <h3>Server error: {error}</h3>}
                </>
             }
+            maskClosable={false}
          >
             <Form form={form}
                autoComplete="off"
@@ -173,7 +174,7 @@ const EditBook = ({ record, getBooks }) => {
                   </Upload>
                </Form.Item>
 
-               <Form.Item>
+               <Form.Item style={{ display: "flex", justifyContent: "right" }}>
                   <Button htmlType='submit' loading={loading}><SaveOutlined /></Button>
                </Form.Item>
             </Form>

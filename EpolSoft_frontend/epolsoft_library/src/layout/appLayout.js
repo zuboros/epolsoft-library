@@ -13,12 +13,11 @@ import logo from '../assets/book.svg'
 const { Header, Footer } = Layout;
 
 const AppLayout = () => {
-   const { userInfo } = useSelector((state) => state.auth)
+   const { userInfo, avatar } = useSelector((state) => state.auth)
    const dispatch = useDispatch();
-   const [avatar, setAvatar] = useState(null);
 
    useEffect(() => {
-      userInfo && dispatch(avatarDownload({ id: userInfo.id, setAvatar }));
+      userInfo && dispatch(avatarDownload({ id: userInfo.id }));
    }, [userInfo]);
 
    const logoutHandler = () => {
@@ -33,6 +32,8 @@ const AppLayout = () => {
                      <Link to="/" style={{ padding: 0, margin: 0, height: 0, width: 0 }}>
                         <img src={logo} alt='logo' />
                      </Link>
+                  </div>
+                  <div>
                   </div>
                   <Menu
                      style={{

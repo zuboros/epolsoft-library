@@ -2,70 +2,37 @@
    [
       {
          "id": 26,
-         "name": "Parizh eda",
-         "topic": "rwse",
-         "author": "MyName",
-         "description": "really cook book",
-         "shortDescription": "just cook book",
+         "name": "Paris cuisine",
+         "topic": "cuisine",
+         "author": "O. Zuboros",
+         "shortDescription": "What do you know about french cuisine",
+         "description": "French cooking is considered by many to be the most prestigious and respectable cuisine in the world. With its formal techniques, emphasis on fresh ingredients and simple flavors, pride in presentation, and rich and colorful history, French cuisine truly has come to rule the world, laying the foundations for many other styles and specialties.",
          "file": "Kyhnya.txt",
          "updatedAt": "2023-04-03T12:41:33.286917",
          "createdAt": "2023-04-02T19:23:07.000285"
       },
       {
          "id": 17,
-         "name": "Tay book",
-         "topic": "new try",
-         "author": "MyName",
-         "description": "really a book",
-         "shortDescription": "just a book",
+         "name": "American oil",
+         "topic": "history",
+         "author": "Franklin",
+         "shortDescription": "Petroleum has been a major industry in the United States.",
+         "description": "n 2014, petroleum and natural gas were the two largest sources of energy in the U.S., together providing 63 percent of the energy consumed (oil provided 35 percent and gas 28 percent)",
          "file": "thBook.txt",
          "updatedAt": "2023-03-31T09:37:08.147457",
          "createdAt": "2023-03-31T09:37:08.147457"
       },
       {
          "id": 30,
-         "name": "testDTO",
-         "topic": "rwse",
-         "author": "testDTOAuthor",
-         "description": "real DTO test post",
-         "shortDescription": "reL DTO test",
+         "name": "New world",
+         "topic": "my world",
+         "author": "H. Billy",
+         "description": "...",
+         "shortDescription": "...",
          "file": null,
          "updatedAt": "2023-04-03T14:44:58.772798",
          "createdAt": "2023-04-03T14:44:58.772798"
-      },
-      {
-         "id": 36,
-         "name": "testDTO",
-         "topic": "rwse",
-         "author": "testDTO",
-         "description": "real DTO test post",
-         "shortDescription": "reL DTO test",
-         "file": null,
-         "updatedAt": "2023-04-03T14:49:11.086325",
-         "createdAt": "2023-04-03T14:49:11.086325"
-      },
-      {
-         "id": 38,
-         "name": "testDTO",
-         "topic": "testClown",
-         "author": "testDTO",
-         "description": "real DTO test post",
-         "shortDescription": "reL DTO test",
-         "file": null,
-         "updatedAt": "2023-04-03T14:54:18.827305",
-         "createdAt": "2023-04-03T14:54:18.827305"
-      },
-      {
-         "id": 15,
-         "name": "Try book",
-         "topic": "new try",
-         "author": "new try",
-         "description": "really third book",
-         "shortDescription": "just th book",
-         "file": "thBook.txt",
-         "updatedAt": "2023-03-30T11:31:23.546031",
-         "createdAt": "2023-03-30T11:31:23.546031"
       }
    ],
-   6
+   3
 ]
